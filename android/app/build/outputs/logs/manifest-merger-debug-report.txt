@@ -1,0 +1,820 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml:2:1-44:12
+INJECTED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml:2:1-44:12
+INJECTED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml:2:1-44:12
+INJECTED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml:2:1-44:12
+MERGED from [:feature:auth] /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/feature/auth/build/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-7:12
+MERGED from [:feature:chat] /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/feature/chat/build/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-7:12
+MERGED from [:feature:status] /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/feature/status/build/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-7:12
+MERGED from [:core:network] /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/core/network/build/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-7:12
+MERGED from [:core:database] /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/core/database/build/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-7:12
+MERGED from [:core:crypto] /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/core/crypto/build/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-7:12
+MERGED from [:core:model] /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/core/model/build/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.hilt:hilt-navigation-compose:1.1.0] /Users/debasishmac/.gradle/caches/transforms-3/7611349c8168b81d97ebc5ef18610023/transformed/hilt-navigation-compose-1.1.0/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.hilt:hilt-navigation:1.1.0] /Users/debasishmac/.gradle/caches/transforms-3/b86c1ad65af1857ef8bcdab1a579c233/transformed/hilt-navigation-1.1.0/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.navigation:navigation-common:2.7.7] /Users/debasishmac/.gradle/caches/transforms-3/3d20060734ff01a614f1e52e3790052b/transformed/navigation-common-2.7.7/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.navigation:navigation-runtime:2.7.7] /Users/debasishmac/.gradle/caches/transforms-3/3397deb6f2dba0be984eb08228121135/transformed/navigation-runtime-2.7.7/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.navigation:navigation-common-ktx:2.7.7] /Users/debasishmac/.gradle/caches/transforms-3/74dff67cab28f1bd44564e32f2059bfd/transformed/navigation-common-ktx-2.7.7/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.navigation:navigation-runtime-ktx:2.7.7] /Users/debasishmac/.gradle/caches/transforms-3/53ab65ce4fc580b0bbc79a02b8551c69/transformed/navigation-runtime-ktx-2.7.7/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.navigation:navigation-compose:2.7.7] /Users/debasishmac/.gradle/caches/transforms-3/d2c65ae9296c02f71fc466352e76426b/transformed/navigation-compose-2.7.7/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.material3:material3:1.1.2] /Users/debasishmac/.gradle/caches/transforms-3/2040e0d7cc488ca0addf17be02b82cbd/transformed/material3-1.1.2/AndroidManifest.xml:17:1-22:12
+MERGED from [io.coil-kt:coil-compose:2.5.0] /Users/debasishmac/.gradle/caches/transforms-3/d0d4e185b84a33ba835933deff1d0140/transformed/coil-compose-2.5.0/AndroidManifest.xml:2:1-7:12
+MERGED from [io.coil-kt:coil-compose-base:2.5.0] /Users/debasishmac/.gradle/caches/transforms-3/47dc14ad0a45095a0ba62b36c6c49c9b/transformed/coil-compose-base-2.5.0/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.material:material-ripple-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/476fdbeb8f557b58d59a2b87b778d4a9/transformed/material-ripple-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.material:material-icons-core-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/69020fe69f8a8e4152b99a46c092679f/transformed/material-icons-core-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.material:material-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/8dadbec2131f94079aba3b71ecc5c889/transformed/material-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.animation:animation-core-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/e92e5834f7166976be4cf0bc096158ed/transformed/animation-core-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.animation:animation-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/dc06b57841c356d86f368244793e6891/transformed/animation-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.foundation:foundation-layout-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/7c30742620a7e1e5546c914d88ccf473/transformed/foundation-layout-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.foundation:foundation-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/66fd1b7295d584a997f2a25c1c37d3bf/transformed/foundation-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-tooling-data-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/cb61fd9a739d6434bc5a0ca4bbfc7e91/transformed/ui-tooling-data-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-unit-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/97834f1dc1a1d0a23f43d679daf3ee14/transformed/ui-unit-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-geometry-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/a958e1cdc5db41bfab3a5bca286bb9aa/transformed/ui-geometry-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-util-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/b49244a5c630370876303bf144ecf857/transformed/ui-util-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-text-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/5f97afebcd2af34eda351521211cc067/transformed/ui-text-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-tooling-preview-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/114c66ffd235c0a6f73a0b18fbf6ebef/transformed/ui-tooling-preview-release/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.compose.ui:ui-tooling-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/36261182bc5021104eb3c5a4f6793bd7/transformed/ui-tooling-release/AndroidManifest.xml:17:1-28:12
+MERGED from [androidx.compose.ui:ui-graphics-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/084def4f423fa9c876b7501a37aef27e/transformed/ui-graphics-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-test-manifest:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/d5a7842bad1e047ec33f2b2e4f753724/transformed/ui-test-manifest-1.5.4/AndroidManifest.xml:17:1-28:12
+MERGED from [com.google.dagger:hilt-android:2.50] /Users/debasishmac/.gradle/caches/transforms-3/50d9807f21d332e175451282cc196c68/transformed/hilt-android-2.50/AndroidManifest.xml:16:1-19:12
+MERGED from [com.google.firebase:firebase-auth-ktx:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/bf6792d216ca1a2071074c3f6e4ec768/transformed/firebase-auth-ktx-22.3.1/AndroidManifest.xml:2:1-17:12
+MERGED from [com.google.firebase:firebase-auth:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/d1be586bdd543b401a9357c08c65e234/transformed/firebase-auth-22.3.1/AndroidManifest.xml:17:1-75:12
+MERGED from [com.google.android.libraries.identity.googleid:googleid:1.1.1] /Users/debasishmac/.gradle/caches/transforms-3/5d7a542346f87b0fef830cba29f7ba3e/transformed/googleid-1.1.1/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.credentials:credentials:1.3.0-beta01] /Users/debasishmac/.gradle/caches/transforms-3/03f1bd4ecb5d9ab3b3457d54c191b162/transformed/credentials-1.3.0-beta01/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.credentials:credentials-play-services-auth:1.3.0-beta01] /Users/debasishmac/.gradle/caches/transforms-3/79526e6e5f11a254623fb60e7d2ff0f5/transformed/credentials-play-services-auth-1.3.0-beta01/AndroidManifest.xml:17:1-44:12
+MERGED from [com.google.android.gms:play-services-auth:21.1.1] /Users/debasishmac/.gradle/caches/transforms-3/1a20aebdb9b22aa3d519f74383ef19a1/transformed/play-services-auth-21.1.1/AndroidManifest.xml:17:1-40:12
+MERGED from [com.google.firebase:firebase-appcheck-interop:17.0.0] /Users/debasishmac/.gradle/caches/transforms-3/daf37cee1aa6c0e6da21381dc7060e80/transformed/firebase-appcheck-interop-17.0.0/AndroidManifest.xml:15:1-25:12
+MERGED from [com.google.android.gms:play-services-fido:21.0.0] /Users/debasishmac/.gradle/caches/transforms-3/6b8d51071b8448e2fb0092019a290025/transformed/play-services-fido-21.0.0/AndroidManifest.xml:2:1-10:12
+MERGED from [com.google.android.gms:play-services-auth-api-phone:18.0.2] /Users/debasishmac/.gradle/caches/transforms-3/70291e9a8ec2f75323a5aaf6a47a186c/transformed/play-services-auth-api-phone-18.0.2/AndroidManifest.xml:2:1-7:12
+MERGED from [com.google.android.gms:play-services-auth-base:18.0.10] /Users/debasishmac/.gradle/caches/transforms-3/a08f638d3c6fdc7a3925b41810a2b102/transformed/play-services-auth-base-18.0.10/AndroidManifest.xml:2:1-7:12
+MERGED from [com.google.android.gms:play-services-base:18.3.0] /Users/debasishmac/.gradle/caches/transforms-3/04bd71224e024c25511c3fd19896d1de/transformed/play-services-base-18.3.0/AndroidManifest.xml:16:1-24:12
+MERGED from [com.google.firebase:firebase-common-ktx:20.4.2] /Users/debasishmac/.gradle/caches/transforms-3/a10ce5132c12c5cdcdc67d43e1ae0c13/transformed/firebase-common-ktx-20.4.2/AndroidManifest.xml:2:1-18:12
+MERGED from [com.google.firebase:firebase-auth-interop:20.0.0] /Users/debasishmac/.gradle/caches/transforms-3/5e56945f1b5c2ab3f40d87b936b35a57/transformed/firebase-auth-interop-20.0.0/AndroidManifest.xml:2:1-10:12
+MERGED from [com.google.firebase:firebase-common:20.4.2] /Users/debasishmac/.gradle/caches/transforms-3/c4f3986e0b078b4449cd87a87ca4f111/transformed/firebase-common-20.4.2/AndroidManifest.xml:15:1-41:12
+MERGED from [com.google.android.recaptcha:recaptcha:18.4.0] /Users/debasishmac/.gradle/caches/transforms-3/d2d98ca81470d1a070ced8c404f638a2/transformed/recaptcha-18.4.0/AndroidManifest.xml:2:1-11:12
+MERGED from [com.google.android.play:integrity:1.2.0] /Users/debasishmac/.gradle/caches/transforms-3/a3e8ee1a4d7af22f1e44ccde68304243/transformed/integrity-1.2.0/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.runtime:runtime-saveable-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/25d24e7368596ab88ea1f911573a61a1/transformed/runtime-saveable-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.runtime:runtime-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/053d3fdc828427437e7fb094e366ff7d/transformed/runtime-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.room:room-runtime:2.6.1] /Users/debasishmac/.gradle/caches/transforms-3/854ebed58f962357909f1126697eedb0/transformed/room-runtime-2.6.1/AndroidManifest.xml:17:1-31:12
+MERGED from [androidx.room:room-ktx:2.6.1] /Users/debasishmac/.gradle/caches/transforms-3/0a175b2b6cfc5eb99ad2a4d79bf2d49a/transformed/room-ktx-2.6.1/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.camera:camera-video:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/07b7b651d6baae387538737d551420dd/transformed/camera-video-1.3.1/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.camera:camera-core:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/010b8dc1f478bbac0b82e0b9c72d242a/transformed/camera-core-1.3.1/AndroidManifest.xml:17:1-36:12
+MERGED from [androidx.camera:camera-view:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/b9d5344075a8b7c41483577b45478887/transformed/camera-view-1.3.1/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.camera:camera-camera2:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/8d848d0e071c52777084d1d68580c36a/transformed/camera-camera2-1.3.1/AndroidManifest.xml:17:1-36:12
+MERGED from [androidx.camera:camera-lifecycle:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/a9691606f0b4270ab5824dc71ce07eeb/transformed/camera-lifecycle-1.3.1/AndroidManifest.xml:2:1-7:12
+MERGED from [io.coil-kt:coil:2.5.0] /Users/debasishmac/.gradle/caches/transforms-3/c5b824c919e3e4ec243f14f9ff24537d/transformed/coil-2.5.0/AndroidManifest.xml:2:1-7:12
+MERGED from [io.coil-kt:coil-base:2.5.0] /Users/debasishmac/.gradle/caches/transforms-3/2fa6798062e547929e70790a882f936a/transformed/coil-base-2.5.0/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.appcompat:appcompat-resources:1.6.1] /Users/debasishmac/.gradle/caches/transforms-3/9b9f6ffa1c3ad47fb5b6f281e0fdda18/transformed/appcompat-resources-1.6.1/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.appcompat:appcompat:1.6.1] /Users/debasishmac/.gradle/caches/transforms-3/54877b76d6a90b17fe797a8848f7395d/transformed/appcompat-1.6.1/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.emoji2:emoji2-views-helper:1.4.0] /Users/debasishmac/.gradle/caches/transforms-3/25aebda0627f494dcd376b141b331375/transformed/emoji2-views-helper-1.4.0/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.emoji2:emoji2:1.4.0] /Users/debasishmac/.gradle/caches/transforms-3/4f94efcc95dbff69071937070fac5f5c/transformed/emoji2-1.4.0/AndroidManifest.xml:17:1-35:12
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] /Users/debasishmac/.gradle/caches/transforms-3/f4e0fb692aed2666c7f1c3da554292fe/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:17:1-35:12
+MERGED from [androidx.loader:loader:1.0.0] /Users/debasishmac/.gradle/caches/transforms-3/9ea4d0b24c7ad89ea426c8e8e223eb60/transformed/loader-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.6.2] /Users/debasishmac/.gradle/caches/transforms-3/4bcc05cd1e3143aa90e0ee3cd822bc13/transformed/lifecycle-livedata-2.6.2/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.6.2] /Users/debasishmac/.gradle/caches/transforms-3/90c9b42c59fb8779fb8da3a50d186968/transformed/lifecycle-livedata-core-2.6.2/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.6.2] /Users/debasishmac/.gradle/caches/transforms-3/ab09c38155de58e12a55cbe1240c31ed/transformed/lifecycle-viewmodel-2.6.2/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-runtime-ktx:2.6.2] /Users/debasishmac/.gradle/caches/transforms-3/3de1e06abbee93e53d08713597faf7e0/transformed/lifecycle-runtime-ktx-2.6.2/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.media3:media3-ui:1.2.1] /Users/debasishmac/.gradle/caches/transforms-3/0380f1a5d91cd0d3cca8e2fb3b655d89/transformed/media3-ui-1.2.1/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.media3:media3-extractor:1.2.1] /Users/debasishmac/.gradle/caches/transforms-3/7f4ec66365397500acd51c1641b34238/transformed/media3-extractor-1.2.1/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.media3:media3-container:1.2.1] /Users/debasishmac/.gradle/caches/transforms-3/877b346db084e13d7039f762037e34af/transformed/media3-container-1.2.1/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.media3:media3-datasource:1.2.1] /Users/debasishmac/.gradle/caches/transforms-3/c9f4ab88bb8f657bc8e31ae2f121ecbe/transformed/media3-datasource-1.2.1/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.media3:media3-decoder:1.2.1] /Users/debasishmac/.gradle/caches/transforms-3/3b1895e116d711a3f3dd0a64cb23a19d/transformed/media3-decoder-1.2.1/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.media3:media3-database:1.2.1] /Users/debasishmac/.gradle/caches/transforms-3/d3b0ed643c208d7a302fa13a7e9b3e17/transformed/media3-database-1.2.1/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.media3:media3-common:1.2.1] /Users/debasishmac/.gradle/caches/transforms-3/5fae5b010a208a7726223c60e283bda9/transformed/media3-common-1.2.1/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.media3:media3-exoplayer:1.2.1] /Users/debasishmac/.gradle/caches/transforms-3/624ccc415004ba319332c6ae48dca731/transformed/media3-exoplayer-1.2.1/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.media:media:1.6.0] /Users/debasishmac/.gradle/caches/transforms-3/196faf09b932023e8af9de3aede944b3/transformed/media-1.6.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.recyclerview:recyclerview:1.3.0] /Users/debasishmac/.gradle/caches/transforms-3/283699027a19dd2f424fd815e0889a7e/transformed/recyclerview-1.3.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.browser:browser:1.4.0] /Users/debasishmac/.gradle/caches/transforms-3/3d71a10dd4c62c184d4f979ba25a0221/transformed/browser-1.4.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.customview:customview-poolingcontainer:1.0.0] /Users/debasishmac/.gradle/caches/transforms-3/f697b6333f3c3bc7e967bc065fc74096/transformed/customview-poolingcontainer-1.0.0/AndroidManifest.xml:17:1-23:12
+MERGED from [androidx.core:core-ktx:1.12.0] /Users/debasishmac/.gradle/caches/transforms-3/0dc9e37d1ecdd3852c4c062e49aad4cf/transformed/core-ktx-1.12.0/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.viewpager:viewpager:1.0.0] /Users/debasishmac/.gradle/caches/transforms-3/93948d2e117db37e5dec555ebc762541/transformed/viewpager-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.drawerlayout:drawerlayout:1.0.0] /Users/debasishmac/.gradle/caches/transforms-3/8fc1bae28225a0ddfc52055346037f1a/transformed/drawerlayout-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.customview:customview:1.0.0] /Users/debasishmac/.gradle/caches/transforms-3/a11deac1eadb1a002a76e85adc419235/transformed/customview-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.autofill:autofill:1.0.0] /Users/debasishmac/.gradle/caches/transforms-3/4b4051494fd1542251c65fa6eff562ba/transformed/autofill-1.0.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] /Users/debasishmac/.gradle/caches/transforms-3/a5322c9110208095cf908fe6fa3da817/transformed/vectordrawable-animated-1.1.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] /Users/debasishmac/.gradle/caches/transforms-3/ed374d78cab1811ead5392e8aeec5e7f/transformed/vectordrawable-1.1.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.core:core:1.12.0] /Users/debasishmac/.gradle/caches/transforms-3/931730b06990163e9100ff808fd7b6ff/transformed/core-1.12.0/AndroidManifest.xml:17:1-30:12
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.6.2] /Users/debasishmac/.gradle/caches/transforms-3/b4c1f97faec0350cd82a097a432c162d/transformed/lifecycle-runtime-2.6.2/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.savedstate:savedstate-ktx:1.2.1] /Users/debasishmac/.gradle/caches/transforms-3/ce029a13b26bd6a501ff3e3562d1c419/transformed/savedstate-ktx-1.2.1/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.savedstate:savedstate:1.2.1] /Users/debasishmac/.gradle/caches/transforms-3/7ef2ffb77c0a62ccfae713c9b3ec860b/transformed/savedstate-1.2.1/AndroidManifest.xml:17:1-22:12
+MERGED from [com.google.accompanist:accompanist-drawablepainter:0.32.0] /Users/debasishmac/.gradle/caches/transforms-3/5af4edc601cb46cbb48daaa72b9bf21f/transformed/accompanist-drawablepainter-0.32.0/AndroidManifest.xml:17:1-23:12
+MERGED from [com.google.android.gms:play-services-tasks:18.1.0] /Users/debasishmac/.gradle/caches/transforms-3/d9d3a514e4b09b16d18389db41010127/transformed/play-services-tasks-18.1.0/AndroidManifest.xml:2:1-6:12
+MERGED from [com.google.android.gms:play-services-basement:18.3.0] /Users/debasishmac/.gradle/caches/transforms-3/88482635ebaf81e91b09f00b4d7bab6c/transformed/play-services-basement-18.3.0/AndroidManifest.xml:16:1-26:12
+MERGED from [androidx.fragment:fragment:1.5.7] /Users/debasishmac/.gradle/caches/transforms-3/9c6594908dca10915150c1bf87fd193a/transformed/fragment-1.5.7/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.activity:activity:1.8.2] /Users/debasishmac/.gradle/caches/transforms-3/1ab5841093161b77f8e0ef276397a1cc/transformed/activity-1.8.2/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.2] /Users/debasishmac/.gradle/caches/transforms-3/d0c5fdb27ad87db2c83bb165c1294863/transformed/lifecycle-viewmodel-savedstate-2.6.2/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2] /Users/debasishmac/.gradle/caches/transforms-3/54d0e69f67be4383ca5e605687bbf976/transformed/lifecycle-viewmodel-ktx-2.6.2/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2] /Users/debasishmac/.gradle/caches/transforms-3/acd89e8d6d74437bd398bc49d1a1bb39/transformed/lifecycle-viewmodel-compose-2.6.2/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.compose.ui:ui-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/43996a80ff8c320f9fefb42db3aed118/transformed/ui-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.activity:activity-ktx:1.8.2] /Users/debasishmac/.gradle/caches/transforms-3/f146ee028c5a965294ab5292de2e3a87/transformed/activity-ktx-1.8.2/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.activity:activity-compose:1.8.2] /Users/debasishmac/.gradle/caches/transforms-3/5e4af9365394709ef778c4fad5ccf314/transformed/activity-compose-1.8.2/AndroidManifest.xml:2:1-7:12
+MERGED from [net.zetetic:sqlcipher-android:4.5.4] /Users/debasishmac/.gradle/caches/transforms-3/95bbed160c97e80a570c54344c17adae/transformed/sqlcipher-android-4.5.4/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.sqlite:sqlite-framework:2.4.0] /Users/debasishmac/.gradle/caches/transforms-3/a6f0da7e5186ebc225f51e2bc104dc7c/transformed/sqlite-framework-2.4.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.sqlite:sqlite:2.4.0] /Users/debasishmac/.gradle/caches/transforms-3/e6f29b1c7ed309a59f6694fc228ae7fd/transformed/sqlite-2.4.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.sqlite:sqlite-ktx:2.4.0] /Users/debasishmac/.gradle/caches/transforms-3/1d7916d1fcd0511a3927d575a984ae38/transformed/sqlite-ktx-2.4.0/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.annotation:annotation-experimental:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/4d638a346ad485587a4a3b3d4464a24c/transformed/annotation-experimental-1.3.1/AndroidManifest.xml:17:1-22:12
+MERGED from [com.google.firebase:firebase-components:17.1.5] /Users/debasishmac/.gradle/caches/transforms-3/22d705859be97f293c2def3f2fd002ef/transformed/firebase-components-17.1.5/AndroidManifest.xml:15:1-20:12
+MERGED from [androidx.arch.core:core-runtime:2.2.0] /Users/debasishmac/.gradle/caches/transforms-3/4443ee8084d388196ba343d2908e2345/transformed/core-runtime-2.2.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.exifinterface:exifinterface:1.3.6] /Users/debasishmac/.gradle/caches/transforms-3/1666152772fb040109fbcea6026e7348/transformed/exifinterface-1.3.6/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] /Users/debasishmac/.gradle/caches/transforms-3/3deee7f7d4da8aaa941c8f278ef059a4/transformed/localbroadcastmanager-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/b8923e0949d9268af22cd23fd978c00a/transformed/profileinstaller-1.3.1/AndroidManifest.xml:17:1-55:12
+MERGED from [androidx.startup:startup-runtime:1.1.1] /Users/debasishmac/.gradle/caches/transforms-3/653b9f778afebc56e73c6ab4f126e371/transformed/startup-runtime-1.1.1/AndroidManifest.xml:17:1-33:12
+MERGED from [androidx.tracing:tracing:1.0.0] /Users/debasishmac/.gradle/caches/transforms-3/479ec96526ae4af5e97b431307c0ec7e/transformed/tracing-1.0.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.interpolator:interpolator:1.0.0] /Users/debasishmac/.gradle/caches/transforms-3/f1f0c807a7d84eed0a24dfe5080e1abc/transformed/interpolator-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /Users/debasishmac/.gradle/caches/transforms-3/62774818d815e217d3c4c63fea83d649/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:17:1-27:12
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /Users/debasishmac/.gradle/caches/transforms-3/6b53edc6c167e789e086edd3eb09b687/transformed/cursoradapter-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [com.google.dagger:dagger-lint-aar:2.50] /Users/debasishmac/.gradle/caches/transforms-3/66d4314b55e9d6fdff45df25f064a39d/transformed/dagger-lint-aar-2.50/AndroidManifest.xml:16:1-19:12
+	package
+		INJECTED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml
+	android:versionName
+		INJECTED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml
+	android:versionCode
+		INJECTED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml
+	xmlns:android
+		ADDED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml:2:11-69
+uses-permission#android.permission.INTERNET
+ADDED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml:5:5-67
+MERGED from [com.google.firebase:firebase-auth:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/d1be586bdd543b401a9357c08c65e234/transformed/firebase-auth-22.3.1/AndroidManifest.xml:25:5-67
+MERGED from [com.google.firebase:firebase-auth:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/d1be586bdd543b401a9357c08c65e234/transformed/firebase-auth-22.3.1/AndroidManifest.xml:25:5-67
+MERGED from [com.google.android.recaptcha:recaptcha:18.4.0] /Users/debasishmac/.gradle/caches/transforms-3/d2d98ca81470d1a070ced8c404f638a2/transformed/recaptcha-18.4.0/AndroidManifest.xml:7:5-67
+MERGED from [com.google.android.recaptcha:recaptcha:18.4.0] /Users/debasishmac/.gradle/caches/transforms-3/d2d98ca81470d1a070ced8c404f638a2/transformed/recaptcha-18.4.0/AndroidManifest.xml:7:5-67
+	android:name
+		ADDED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml:5:22-64
+uses-permission#android.permission.ACCESS_NETWORK_STATE
+ADDED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml:6:5-79
+MERGED from [com.google.firebase:firebase-auth:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/d1be586bdd543b401a9357c08c65e234/transformed/firebase-auth-22.3.1/AndroidManifest.xml:26:5-79
+MERGED from [com.google.firebase:firebase-auth:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/d1be586bdd543b401a9357c08c65e234/transformed/firebase-auth-22.3.1/AndroidManifest.xml:26:5-79
+MERGED from [com.google.android.recaptcha:recaptcha:18.4.0] /Users/debasishmac/.gradle/caches/transforms-3/d2d98ca81470d1a070ced8c404f638a2/transformed/recaptcha-18.4.0/AndroidManifest.xml:8:5-79
+MERGED from [com.google.android.recaptcha:recaptcha:18.4.0] /Users/debasishmac/.gradle/caches/transforms-3/d2d98ca81470d1a070ced8c404f638a2/transformed/recaptcha-18.4.0/AndroidManifest.xml:8:5-79
+MERGED from [androidx.media3:media3-common:1.2.1] /Users/debasishmac/.gradle/caches/transforms-3/5fae5b010a208a7726223c60e283bda9/transformed/media3-common-1.2.1/AndroidManifest.xml:22:5-79
+MERGED from [androidx.media3:media3-common:1.2.1] /Users/debasishmac/.gradle/caches/transforms-3/5fae5b010a208a7726223c60e283bda9/transformed/media3-common-1.2.1/AndroidManifest.xml:22:5-79
+MERGED from [androidx.media3:media3-exoplayer:1.2.1] /Users/debasishmac/.gradle/caches/transforms-3/624ccc415004ba319332c6ae48dca731/transformed/media3-exoplayer-1.2.1/AndroidManifest.xml:22:5-79
+MERGED from [androidx.media3:media3-exoplayer:1.2.1] /Users/debasishmac/.gradle/caches/transforms-3/624ccc415004ba319332c6ae48dca731/transformed/media3-exoplayer-1.2.1/AndroidManifest.xml:22:5-79
+	android:name
+		ADDED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml:6:22-76
+uses-permission#android.permission.CAMERA
+ADDED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml:9:5-65
+	android:name
+		ADDED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml:9:22-62
+uses-permission#android.permission.RECORD_AUDIO
+ADDED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml:10:5-71
+	android:name
+		ADDED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml:10:22-68
+application
+ADDED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml:12:5-42:19
+INJECTED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml:12:5-42:19
+MERGED from [androidx.compose.ui:ui-tooling-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/36261182bc5021104eb3c5a4f6793bd7/transformed/ui-tooling-release/AndroidManifest.xml:22:5-26:19
+MERGED from [androidx.compose.ui:ui-tooling-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/36261182bc5021104eb3c5a4f6793bd7/transformed/ui-tooling-release/AndroidManifest.xml:22:5-26:19
+MERGED from [androidx.compose.ui:ui-test-manifest:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/d5a7842bad1e047ec33f2b2e4f753724/transformed/ui-test-manifest-1.5.4/AndroidManifest.xml:22:5-26:19
+MERGED from [androidx.compose.ui:ui-test-manifest:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/d5a7842bad1e047ec33f2b2e4f753724/transformed/ui-test-manifest-1.5.4/AndroidManifest.xml:22:5-26:19
+MERGED from [com.google.firebase:firebase-auth-ktx:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/bf6792d216ca1a2071074c3f6e4ec768/transformed/firebase-auth-ktx-22.3.1/AndroidManifest.xml:7:5-15:19
+MERGED from [com.google.firebase:firebase-auth-ktx:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/bf6792d216ca1a2071074c3f6e4ec768/transformed/firebase-auth-ktx-22.3.1/AndroidManifest.xml:7:5-15:19
+MERGED from [com.google.firebase:firebase-auth:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/d1be586bdd543b401a9357c08c65e234/transformed/firebase-auth-22.3.1/AndroidManifest.xml:28:5-73:19
+MERGED from [com.google.firebase:firebase-auth:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/d1be586bdd543b401a9357c08c65e234/transformed/firebase-auth-22.3.1/AndroidManifest.xml:28:5-73:19
+MERGED from [androidx.credentials:credentials-play-services-auth:1.3.0-beta01] /Users/debasishmac/.gradle/caches/transforms-3/79526e6e5f11a254623fb60e7d2ff0f5/transformed/credentials-play-services-auth-1.3.0-beta01/AndroidManifest.xml:23:5-42:19
+MERGED from [androidx.credentials:credentials-play-services-auth:1.3.0-beta01] /Users/debasishmac/.gradle/caches/transforms-3/79526e6e5f11a254623fb60e7d2ff0f5/transformed/credentials-play-services-auth-1.3.0-beta01/AndroidManifest.xml:23:5-42:19
+MERGED from [com.google.android.gms:play-services-auth:21.1.1] /Users/debasishmac/.gradle/caches/transforms-3/1a20aebdb9b22aa3d519f74383ef19a1/transformed/play-services-auth-21.1.1/AndroidManifest.xml:22:5-38:19
+MERGED from [com.google.android.gms:play-services-auth:21.1.1] /Users/debasishmac/.gradle/caches/transforms-3/1a20aebdb9b22aa3d519f74383ef19a1/transformed/play-services-auth-21.1.1/AndroidManifest.xml:22:5-38:19
+MERGED from [com.google.firebase:firebase-appcheck-interop:17.0.0] /Users/debasishmac/.gradle/caches/transforms-3/daf37cee1aa6c0e6da21381dc7060e80/transformed/firebase-appcheck-interop-17.0.0/AndroidManifest.xml:23:5-20
+MERGED from [com.google.firebase:firebase-appcheck-interop:17.0.0] /Users/debasishmac/.gradle/caches/transforms-3/daf37cee1aa6c0e6da21381dc7060e80/transformed/firebase-appcheck-interop-17.0.0/AndroidManifest.xml:23:5-20
+MERGED from [com.google.android.gms:play-services-fido:21.0.0] /Users/debasishmac/.gradle/caches/transforms-3/6b8d51071b8448e2fb0092019a290025/transformed/play-services-fido-21.0.0/AndroidManifest.xml:7:5-8:19
+MERGED from [com.google.android.gms:play-services-fido:21.0.0] /Users/debasishmac/.gradle/caches/transforms-3/6b8d51071b8448e2fb0092019a290025/transformed/play-services-fido-21.0.0/AndroidManifest.xml:7:5-8:19
+MERGED from [com.google.android.gms:play-services-base:18.3.0] /Users/debasishmac/.gradle/caches/transforms-3/04bd71224e024c25511c3fd19896d1de/transformed/play-services-base-18.3.0/AndroidManifest.xml:19:5-23:19
+MERGED from [com.google.android.gms:play-services-base:18.3.0] /Users/debasishmac/.gradle/caches/transforms-3/04bd71224e024c25511c3fd19896d1de/transformed/play-services-base-18.3.0/AndroidManifest.xml:19:5-23:19
+MERGED from [com.google.firebase:firebase-common-ktx:20.4.2] /Users/debasishmac/.gradle/caches/transforms-3/a10ce5132c12c5cdcdc67d43e1ae0c13/transformed/firebase-common-ktx-20.4.2/AndroidManifest.xml:8:5-16:19
+MERGED from [com.google.firebase:firebase-common-ktx:20.4.2] /Users/debasishmac/.gradle/caches/transforms-3/a10ce5132c12c5cdcdc67d43e1ae0c13/transformed/firebase-common-ktx-20.4.2/AndroidManifest.xml:8:5-16:19
+MERGED from [com.google.firebase:firebase-auth-interop:20.0.0] /Users/debasishmac/.gradle/caches/transforms-3/5e56945f1b5c2ab3f40d87b936b35a57/transformed/firebase-auth-interop-20.0.0/AndroidManifest.xml:7:5-8:19
+MERGED from [com.google.firebase:firebase-auth-interop:20.0.0] /Users/debasishmac/.gradle/caches/transforms-3/5e56945f1b5c2ab3f40d87b936b35a57/transformed/firebase-auth-interop-20.0.0/AndroidManifest.xml:7:5-8:19
+MERGED from [com.google.firebase:firebase-common:20.4.2] /Users/debasishmac/.gradle/caches/transforms-3/c4f3986e0b078b4449cd87a87ca4f111/transformed/firebase-common-20.4.2/AndroidManifest.xml:22:5-39:19
+MERGED from [com.google.firebase:firebase-common:20.4.2] /Users/debasishmac/.gradle/caches/transforms-3/c4f3986e0b078b4449cd87a87ca4f111/transformed/firebase-common-20.4.2/AndroidManifest.xml:22:5-39:19
+MERGED from [com.google.android.play:integrity:1.2.0] /Users/debasishmac/.gradle/caches/transforms-3/a3e8ee1a4d7af22f1e44ccde68304243/transformed/integrity-1.2.0/AndroidManifest.xml:5:5-6:19
+MERGED from [com.google.android.play:integrity:1.2.0] /Users/debasishmac/.gradle/caches/transforms-3/a3e8ee1a4d7af22f1e44ccde68304243/transformed/integrity-1.2.0/AndroidManifest.xml:5:5-6:19
+MERGED from [androidx.room:room-runtime:2.6.1] /Users/debasishmac/.gradle/caches/transforms-3/854ebed58f962357909f1126697eedb0/transformed/room-runtime-2.6.1/AndroidManifest.xml:23:5-29:19
+MERGED from [androidx.room:room-runtime:2.6.1] /Users/debasishmac/.gradle/caches/transforms-3/854ebed58f962357909f1126697eedb0/transformed/room-runtime-2.6.1/AndroidManifest.xml:23:5-29:19
+MERGED from [androidx.camera:camera-core:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/010b8dc1f478bbac0b82e0b9c72d242a/transformed/camera-core-1.3.1/AndroidManifest.xml:23:5-34:19
+MERGED from [androidx.camera:camera-core:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/010b8dc1f478bbac0b82e0b9c72d242a/transformed/camera-core-1.3.1/AndroidManifest.xml:23:5-34:19
+MERGED from [androidx.camera:camera-camera2:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/8d848d0e071c52777084d1d68580c36a/transformed/camera-camera2-1.3.1/AndroidManifest.xml:23:5-34:19
+MERGED from [androidx.camera:camera-camera2:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/8d848d0e071c52777084d1d68580c36a/transformed/camera-camera2-1.3.1/AndroidManifest.xml:23:5-34:19
+MERGED from [androidx.emoji2:emoji2:1.4.0] /Users/debasishmac/.gradle/caches/transforms-3/4f94efcc95dbff69071937070fac5f5c/transformed/emoji2-1.4.0/AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.emoji2:emoji2:1.4.0] /Users/debasishmac/.gradle/caches/transforms-3/4f94efcc95dbff69071937070fac5f5c/transformed/emoji2-1.4.0/AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] /Users/debasishmac/.gradle/caches/transforms-3/f4e0fb692aed2666c7f1c3da554292fe/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] /Users/debasishmac/.gradle/caches/transforms-3/f4e0fb692aed2666c7f1c3da554292fe/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.core:core:1.12.0] /Users/debasishmac/.gradle/caches/transforms-3/931730b06990163e9100ff808fd7b6ff/transformed/core-1.12.0/AndroidManifest.xml:28:5-89
+MERGED from [androidx.core:core:1.12.0] /Users/debasishmac/.gradle/caches/transforms-3/931730b06990163e9100ff808fd7b6ff/transformed/core-1.12.0/AndroidManifest.xml:28:5-89
+MERGED from [com.google.android.gms:play-services-tasks:18.1.0] /Users/debasishmac/.gradle/caches/transforms-3/d9d3a514e4b09b16d18389db41010127/transformed/play-services-tasks-18.1.0/AndroidManifest.xml:5:5-20
+MERGED from [com.google.android.gms:play-services-tasks:18.1.0] /Users/debasishmac/.gradle/caches/transforms-3/d9d3a514e4b09b16d18389db41010127/transformed/play-services-tasks-18.1.0/AndroidManifest.xml:5:5-20
+MERGED from [com.google.android.gms:play-services-basement:18.3.0] /Users/debasishmac/.gradle/caches/transforms-3/88482635ebaf81e91b09f00b4d7bab6c/transformed/play-services-basement-18.3.0/AndroidManifest.xml:20:5-24:19
+MERGED from [com.google.android.gms:play-services-basement:18.3.0] /Users/debasishmac/.gradle/caches/transforms-3/88482635ebaf81e91b09f00b4d7bab6c/transformed/play-services-basement-18.3.0/AndroidManifest.xml:20:5-24:19
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/b8923e0949d9268af22cd23fd978c00a/transformed/profileinstaller-1.3.1/AndroidManifest.xml:23:5-53:19
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/b8923e0949d9268af22cd23fd978c00a/transformed/profileinstaller-1.3.1/AndroidManifest.xml:23:5-53:19
+MERGED from [androidx.startup:startup-runtime:1.1.1] /Users/debasishmac/.gradle/caches/transforms-3/653b9f778afebc56e73c6ab4f126e371/transformed/startup-runtime-1.1.1/AndroidManifest.xml:25:5-31:19
+MERGED from [androidx.startup:startup-runtime:1.1.1] /Users/debasishmac/.gradle/caches/transforms-3/653b9f778afebc56e73c6ab4f126e371/transformed/startup-runtime-1.1.1/AndroidManifest.xml:25:5-31:19
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /Users/debasishmac/.gradle/caches/transforms-3/62774818d815e217d3c4c63fea83d649/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:24:5-25:19
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /Users/debasishmac/.gradle/caches/transforms-3/62774818d815e217d3c4c63fea83d649/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:24:5-25:19
+	android:extractNativeLibs
+		INJECTED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml
+	android:appComponentFactory
+		ADDED from [androidx.core:core:1.12.0] /Users/debasishmac/.gradle/caches/transforms-3/931730b06990163e9100ff808fd7b6ff/transformed/core-1.12.0/AndroidManifest.xml:28:18-86
+	android:supportsRtl
+		ADDED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml:18:9-35
+	android:label
+		ADDED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml:16:9-35
+	android:roundIcon
+		ADDED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml:17:9-62
+	android:icon
+		ADDED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml:15:9-57
+	android:allowBackup
+		ADDED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml:14:9-36
+	android:theme
+		ADDED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml:19:9-66
+	android:usesCleartextTraffic
+		ADDED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml:20:9-44
+	android:name
+		ADDED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml:13:9-45
+provider#androidx.core.content.FileProvider
+ADDED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml:22:9-30:20
+	android:grantUriPermissions
+		ADDED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml:26:13-47
+	android:authorities
+		ADDED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml:24:13-61
+	android:exported
+		ADDED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml:25:13-37
+	android:name
+		ADDED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml:23:13-62
+meta-data#android.support.FILE_PROVIDER_PATHS
+ADDED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml:27:13-29:54
+	android:resource
+		ADDED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml:29:17-51
+	android:name
+		ADDED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml:28:17-67
+activity#com.quickchat.app.MainActivity
+ADDED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml:32:9-41:20
+	android:windowSoftInputMode
+		ADDED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml:36:13-55
+	android:exported
+		ADDED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml:34:13-36
+	android:configChanges
+		ADDED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml:35:13-87
+	android:name
+		ADDED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml:33:13-41
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
+ADDED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml:37:13-40:29
+action#android.intent.action.MAIN
+ADDED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml:38:17-69
+	android:name
+		ADDED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml:38:25-66
+category#android.intent.category.LAUNCHER
+ADDED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml:39:17-77
+	android:name
+		ADDED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml:39:27-74
+uses-sdk
+INJECTED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml
+INJECTED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml
+MERGED from [:feature:auth] /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/feature/auth/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [:feature:auth] /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/feature/auth/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [:feature:chat] /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/feature/chat/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [:feature:chat] /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/feature/chat/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [:feature:status] /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/feature/status/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [:feature:status] /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/feature/status/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [:core:network] /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/core/network/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [:core:network] /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/core/network/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [:core:database] /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/core/database/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [:core:database] /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/core/database/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [:core:crypto] /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/core/crypto/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [:core:crypto] /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/core/crypto/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [:core:model] /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/core/model/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [:core:model] /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/core/model/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [androidx.hilt:hilt-navigation-compose:1.1.0] /Users/debasishmac/.gradle/caches/transforms-3/7611349c8168b81d97ebc5ef18610023/transformed/hilt-navigation-compose-1.1.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.hilt:hilt-navigation-compose:1.1.0] /Users/debasishmac/.gradle/caches/transforms-3/7611349c8168b81d97ebc5ef18610023/transformed/hilt-navigation-compose-1.1.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.hilt:hilt-navigation:1.1.0] /Users/debasishmac/.gradle/caches/transforms-3/b86c1ad65af1857ef8bcdab1a579c233/transformed/hilt-navigation-1.1.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.hilt:hilt-navigation:1.1.0] /Users/debasishmac/.gradle/caches/transforms-3/b86c1ad65af1857ef8bcdab1a579c233/transformed/hilt-navigation-1.1.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.navigation:navigation-common:2.7.7] /Users/debasishmac/.gradle/caches/transforms-3/3d20060734ff01a614f1e52e3790052b/transformed/navigation-common-2.7.7/AndroidManifest.xml:20:5-44
+MERGED from [androidx.navigation:navigation-common:2.7.7] /Users/debasishmac/.gradle/caches/transforms-3/3d20060734ff01a614f1e52e3790052b/transformed/navigation-common-2.7.7/AndroidManifest.xml:20:5-44
+MERGED from [androidx.navigation:navigation-runtime:2.7.7] /Users/debasishmac/.gradle/caches/transforms-3/3397deb6f2dba0be984eb08228121135/transformed/navigation-runtime-2.7.7/AndroidManifest.xml:20:5-44
+MERGED from [androidx.navigation:navigation-runtime:2.7.7] /Users/debasishmac/.gradle/caches/transforms-3/3397deb6f2dba0be984eb08228121135/transformed/navigation-runtime-2.7.7/AndroidManifest.xml:20:5-44
+MERGED from [androidx.navigation:navigation-common-ktx:2.7.7] /Users/debasishmac/.gradle/caches/transforms-3/74dff67cab28f1bd44564e32f2059bfd/transformed/navigation-common-ktx-2.7.7/AndroidManifest.xml:5:5-44
+MERGED from [androidx.navigation:navigation-common-ktx:2.7.7] /Users/debasishmac/.gradle/caches/transforms-3/74dff67cab28f1bd44564e32f2059bfd/transformed/navigation-common-ktx-2.7.7/AndroidManifest.xml:5:5-44
+MERGED from [androidx.navigation:navigation-runtime-ktx:2.7.7] /Users/debasishmac/.gradle/caches/transforms-3/53ab65ce4fc580b0bbc79a02b8551c69/transformed/navigation-runtime-ktx-2.7.7/AndroidManifest.xml:5:5-44
+MERGED from [androidx.navigation:navigation-runtime-ktx:2.7.7] /Users/debasishmac/.gradle/caches/transforms-3/53ab65ce4fc580b0bbc79a02b8551c69/transformed/navigation-runtime-ktx-2.7.7/AndroidManifest.xml:5:5-44
+MERGED from [androidx.navigation:navigation-compose:2.7.7] /Users/debasishmac/.gradle/caches/transforms-3/d2c65ae9296c02f71fc466352e76426b/transformed/navigation-compose-2.7.7/AndroidManifest.xml:5:5-44
+MERGED from [androidx.navigation:navigation-compose:2.7.7] /Users/debasishmac/.gradle/caches/transforms-3/d2c65ae9296c02f71fc466352e76426b/transformed/navigation-compose-2.7.7/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material3:material3:1.1.2] /Users/debasishmac/.gradle/caches/transforms-3/2040e0d7cc488ca0addf17be02b82cbd/transformed/material3-1.1.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.material3:material3:1.1.2] /Users/debasishmac/.gradle/caches/transforms-3/2040e0d7cc488ca0addf17be02b82cbd/transformed/material3-1.1.2/AndroidManifest.xml:20:5-44
+MERGED from [io.coil-kt:coil-compose:2.5.0] /Users/debasishmac/.gradle/caches/transforms-3/d0d4e185b84a33ba835933deff1d0140/transformed/coil-compose-2.5.0/AndroidManifest.xml:5:5-44
+MERGED from [io.coil-kt:coil-compose:2.5.0] /Users/debasishmac/.gradle/caches/transforms-3/d0d4e185b84a33ba835933deff1d0140/transformed/coil-compose-2.5.0/AndroidManifest.xml:5:5-44
+MERGED from [io.coil-kt:coil-compose-base:2.5.0] /Users/debasishmac/.gradle/caches/transforms-3/47dc14ad0a45095a0ba62b36c6c49c9b/transformed/coil-compose-base-2.5.0/AndroidManifest.xml:5:5-44
+MERGED from [io.coil-kt:coil-compose-base:2.5.0] /Users/debasishmac/.gradle/caches/transforms-3/47dc14ad0a45095a0ba62b36c6c49c9b/transformed/coil-compose-base-2.5.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-ripple-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/476fdbeb8f557b58d59a2b87b778d4a9/transformed/material-ripple-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-ripple-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/476fdbeb8f557b58d59a2b87b778d4a9/transformed/material-ripple-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-icons-core-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/69020fe69f8a8e4152b99a46c092679f/transformed/material-icons-core-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-icons-core-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/69020fe69f8a8e4152b99a46c092679f/transformed/material-icons-core-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/8dadbec2131f94079aba3b71ecc5c889/transformed/material-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/8dadbec2131f94079aba3b71ecc5c889/transformed/material-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.animation:animation-core-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/e92e5834f7166976be4cf0bc096158ed/transformed/animation-core-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.animation:animation-core-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/e92e5834f7166976be4cf0bc096158ed/transformed/animation-core-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.animation:animation-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/dc06b57841c356d86f368244793e6891/transformed/animation-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.animation:animation-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/dc06b57841c356d86f368244793e6891/transformed/animation-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.foundation:foundation-layout-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/7c30742620a7e1e5546c914d88ccf473/transformed/foundation-layout-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.foundation:foundation-layout-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/7c30742620a7e1e5546c914d88ccf473/transformed/foundation-layout-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.foundation:foundation-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/66fd1b7295d584a997f2a25c1c37d3bf/transformed/foundation-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.foundation:foundation-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/66fd1b7295d584a997f2a25c1c37d3bf/transformed/foundation-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-tooling-data-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/cb61fd9a739d6434bc5a0ca4bbfc7e91/transformed/ui-tooling-data-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-tooling-data-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/cb61fd9a739d6434bc5a0ca4bbfc7e91/transformed/ui-tooling-data-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-unit-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/97834f1dc1a1d0a23f43d679daf3ee14/transformed/ui-unit-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-unit-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/97834f1dc1a1d0a23f43d679daf3ee14/transformed/ui-unit-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-geometry-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/a958e1cdc5db41bfab3a5bca286bb9aa/transformed/ui-geometry-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-geometry-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/a958e1cdc5db41bfab3a5bca286bb9aa/transformed/ui-geometry-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-util-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/b49244a5c630370876303bf144ecf857/transformed/ui-util-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-util-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/b49244a5c630370876303bf144ecf857/transformed/ui-util-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-text-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/5f97afebcd2af34eda351521211cc067/transformed/ui-text-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-text-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/5f97afebcd2af34eda351521211cc067/transformed/ui-text-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-tooling-preview-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/114c66ffd235c0a6f73a0b18fbf6ebef/transformed/ui-tooling-preview-release/AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.ui:ui-tooling-preview-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/114c66ffd235c0a6f73a0b18fbf6ebef/transformed/ui-tooling-preview-release/AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.ui:ui-tooling-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/36261182bc5021104eb3c5a4f6793bd7/transformed/ui-tooling-release/AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.ui:ui-tooling-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/36261182bc5021104eb3c5a4f6793bd7/transformed/ui-tooling-release/AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.ui:ui-graphics-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/084def4f423fa9c876b7501a37aef27e/transformed/ui-graphics-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-graphics-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/084def4f423fa9c876b7501a37aef27e/transformed/ui-graphics-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-test-manifest:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/d5a7842bad1e047ec33f2b2e4f753724/transformed/ui-test-manifest-1.5.4/AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.ui:ui-test-manifest:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/d5a7842bad1e047ec33f2b2e4f753724/transformed/ui-test-manifest-1.5.4/AndroidManifest.xml:20:5-44
+MERGED from [com.google.dagger:hilt-android:2.50] /Users/debasishmac/.gradle/caches/transforms-3/50d9807f21d332e175451282cc196c68/transformed/hilt-android-2.50/AndroidManifest.xml:18:3-42
+MERGED from [com.google.dagger:hilt-android:2.50] /Users/debasishmac/.gradle/caches/transforms-3/50d9807f21d332e175451282cc196c68/transformed/hilt-android-2.50/AndroidManifest.xml:18:3-42
+MERGED from [com.google.firebase:firebase-auth-ktx:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/bf6792d216ca1a2071074c3f6e4ec768/transformed/firebase-auth-ktx-22.3.1/AndroidManifest.xml:5:5-44
+MERGED from [com.google.firebase:firebase-auth-ktx:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/bf6792d216ca1a2071074c3f6e4ec768/transformed/firebase-auth-ktx-22.3.1/AndroidManifest.xml:5:5-44
+MERGED from [com.google.firebase:firebase-auth:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/d1be586bdd543b401a9357c08c65e234/transformed/firebase-auth-22.3.1/AndroidManifest.xml:21:5-23:64
+MERGED from [com.google.firebase:firebase-auth:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/d1be586bdd543b401a9357c08c65e234/transformed/firebase-auth-22.3.1/AndroidManifest.xml:21:5-23:64
+MERGED from [com.google.android.libraries.identity.googleid:googleid:1.1.1] /Users/debasishmac/.gradle/caches/transforms-3/5d7a542346f87b0fef830cba29f7ba3e/transformed/googleid-1.1.1/AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.libraries.identity.googleid:googleid:1.1.1] /Users/debasishmac/.gradle/caches/transforms-3/5d7a542346f87b0fef830cba29f7ba3e/transformed/googleid-1.1.1/AndroidManifest.xml:5:5-44
+MERGED from [androidx.credentials:credentials:1.3.0-beta01] /Users/debasishmac/.gradle/caches/transforms-3/03f1bd4ecb5d9ab3b3457d54c191b162/transformed/credentials-1.3.0-beta01/AndroidManifest.xml:5:5-44
+MERGED from [androidx.credentials:credentials:1.3.0-beta01] /Users/debasishmac/.gradle/caches/transforms-3/03f1bd4ecb5d9ab3b3457d54c191b162/transformed/credentials-1.3.0-beta01/AndroidManifest.xml:5:5-44
+MERGED from [androidx.credentials:credentials-play-services-auth:1.3.0-beta01] /Users/debasishmac/.gradle/caches/transforms-3/79526e6e5f11a254623fb60e7d2ff0f5/transformed/credentials-play-services-auth-1.3.0-beta01/AndroidManifest.xml:21:5-44
+MERGED from [androidx.credentials:credentials-play-services-auth:1.3.0-beta01] /Users/debasishmac/.gradle/caches/transforms-3/79526e6e5f11a254623fb60e7d2ff0f5/transformed/credentials-play-services-auth-1.3.0-beta01/AndroidManifest.xml:21:5-44
+MERGED from [com.google.android.gms:play-services-auth:21.1.1] /Users/debasishmac/.gradle/caches/transforms-3/1a20aebdb9b22aa3d519f74383ef19a1/transformed/play-services-auth-21.1.1/AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.gms:play-services-auth:21.1.1] /Users/debasishmac/.gradle/caches/transforms-3/1a20aebdb9b22aa3d519f74383ef19a1/transformed/play-services-auth-21.1.1/AndroidManifest.xml:20:5-44
+MERGED from [com.google.firebase:firebase-appcheck-interop:17.0.0] /Users/debasishmac/.gradle/caches/transforms-3/daf37cee1aa6c0e6da21381dc7060e80/transformed/firebase-appcheck-interop-17.0.0/AndroidManifest.xml:18:5-20:41
+MERGED from [com.google.firebase:firebase-appcheck-interop:17.0.0] /Users/debasishmac/.gradle/caches/transforms-3/daf37cee1aa6c0e6da21381dc7060e80/transformed/firebase-appcheck-interop-17.0.0/AndroidManifest.xml:18:5-20:41
+MERGED from [com.google.android.gms:play-services-fido:21.0.0] /Users/debasishmac/.gradle/caches/transforms-3/6b8d51071b8448e2fb0092019a290025/transformed/play-services-fido-21.0.0/AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.gms:play-services-fido:21.0.0] /Users/debasishmac/.gradle/caches/transforms-3/6b8d51071b8448e2fb0092019a290025/transformed/play-services-fido-21.0.0/AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.gms:play-services-auth-api-phone:18.0.2] /Users/debasishmac/.gradle/caches/transforms-3/70291e9a8ec2f75323a5aaf6a47a186c/transformed/play-services-auth-api-phone-18.0.2/AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.gms:play-services-auth-api-phone:18.0.2] /Users/debasishmac/.gradle/caches/transforms-3/70291e9a8ec2f75323a5aaf6a47a186c/transformed/play-services-auth-api-phone-18.0.2/AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.gms:play-services-auth-base:18.0.10] /Users/debasishmac/.gradle/caches/transforms-3/a08f638d3c6fdc7a3925b41810a2b102/transformed/play-services-auth-base-18.0.10/AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.gms:play-services-auth-base:18.0.10] /Users/debasishmac/.gradle/caches/transforms-3/a08f638d3c6fdc7a3925b41810a2b102/transformed/play-services-auth-base-18.0.10/AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.gms:play-services-base:18.3.0] /Users/debasishmac/.gradle/caches/transforms-3/04bd71224e024c25511c3fd19896d1de/transformed/play-services-base-18.3.0/AndroidManifest.xml:18:5-43
+MERGED from [com.google.android.gms:play-services-base:18.3.0] /Users/debasishmac/.gradle/caches/transforms-3/04bd71224e024c25511c3fd19896d1de/transformed/play-services-base-18.3.0/AndroidManifest.xml:18:5-43
+MERGED from [com.google.firebase:firebase-common-ktx:20.4.2] /Users/debasishmac/.gradle/caches/transforms-3/a10ce5132c12c5cdcdc67d43e1ae0c13/transformed/firebase-common-ktx-20.4.2/AndroidManifest.xml:5:5-44
+MERGED from [com.google.firebase:firebase-common-ktx:20.4.2] /Users/debasishmac/.gradle/caches/transforms-3/a10ce5132c12c5cdcdc67d43e1ae0c13/transformed/firebase-common-ktx-20.4.2/AndroidManifest.xml:5:5-44
+MERGED from [com.google.firebase:firebase-auth-interop:20.0.0] /Users/debasishmac/.gradle/caches/transforms-3/5e56945f1b5c2ab3f40d87b936b35a57/transformed/firebase-auth-interop-20.0.0/AndroidManifest.xml:5:5-44
+MERGED from [com.google.firebase:firebase-auth-interop:20.0.0] /Users/debasishmac/.gradle/caches/transforms-3/5e56945f1b5c2ab3f40d87b936b35a57/transformed/firebase-auth-interop-20.0.0/AndroidManifest.xml:5:5-44
+MERGED from [com.google.firebase:firebase-common:20.4.2] /Users/debasishmac/.gradle/caches/transforms-3/c4f3986e0b078b4449cd87a87ca4f111/transformed/firebase-common-20.4.2/AndroidManifest.xml:19:5-44
+MERGED from [com.google.firebase:firebase-common:20.4.2] /Users/debasishmac/.gradle/caches/transforms-3/c4f3986e0b078b4449cd87a87ca4f111/transformed/firebase-common-20.4.2/AndroidManifest.xml:19:5-44
+MERGED from [com.google.android.recaptcha:recaptcha:18.4.0] /Users/debasishmac/.gradle/caches/transforms-3/d2d98ca81470d1a070ced8c404f638a2/transformed/recaptcha-18.4.0/AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.recaptcha:recaptcha:18.4.0] /Users/debasishmac/.gradle/caches/transforms-3/d2d98ca81470d1a070ced8c404f638a2/transformed/recaptcha-18.4.0/AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.play:integrity:1.2.0] /Users/debasishmac/.gradle/caches/transforms-3/a3e8ee1a4d7af22f1e44ccde68304243/transformed/integrity-1.2.0/AndroidManifest.xml:4:5-44
+MERGED from [com.google.android.play:integrity:1.2.0] /Users/debasishmac/.gradle/caches/transforms-3/a3e8ee1a4d7af22f1e44ccde68304243/transformed/integrity-1.2.0/AndroidManifest.xml:4:5-44
+MERGED from [androidx.compose.runtime:runtime-saveable-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/25d24e7368596ab88ea1f911573a61a1/transformed/runtime-saveable-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.runtime:runtime-saveable-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/25d24e7368596ab88ea1f911573a61a1/transformed/runtime-saveable-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.runtime:runtime-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/053d3fdc828427437e7fb094e366ff7d/transformed/runtime-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.runtime:runtime-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/053d3fdc828427437e7fb094e366ff7d/transformed/runtime-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.room:room-runtime:2.6.1] /Users/debasishmac/.gradle/caches/transforms-3/854ebed58f962357909f1126697eedb0/transformed/room-runtime-2.6.1/AndroidManifest.xml:21:5-44
+MERGED from [androidx.room:room-runtime:2.6.1] /Users/debasishmac/.gradle/caches/transforms-3/854ebed58f962357909f1126697eedb0/transformed/room-runtime-2.6.1/AndroidManifest.xml:21:5-44
+MERGED from [androidx.room:room-ktx:2.6.1] /Users/debasishmac/.gradle/caches/transforms-3/0a175b2b6cfc5eb99ad2a4d79bf2d49a/transformed/room-ktx-2.6.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.room:room-ktx:2.6.1] /Users/debasishmac/.gradle/caches/transforms-3/0a175b2b6cfc5eb99ad2a4d79bf2d49a/transformed/room-ktx-2.6.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.camera:camera-video:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/07b7b651d6baae387538737d551420dd/transformed/camera-video-1.3.1/AndroidManifest.xml:5:5-44
+MERGED from [androidx.camera:camera-video:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/07b7b651d6baae387538737d551420dd/transformed/camera-video-1.3.1/AndroidManifest.xml:5:5-44
+MERGED from [androidx.camera:camera-core:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/010b8dc1f478bbac0b82e0b9c72d242a/transformed/camera-core-1.3.1/AndroidManifest.xml:21:5-44
+MERGED from [androidx.camera:camera-core:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/010b8dc1f478bbac0b82e0b9c72d242a/transformed/camera-core-1.3.1/AndroidManifest.xml:21:5-44
+MERGED from [androidx.camera:camera-view:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/b9d5344075a8b7c41483577b45478887/transformed/camera-view-1.3.1/AndroidManifest.xml:5:5-44
+MERGED from [androidx.camera:camera-view:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/b9d5344075a8b7c41483577b45478887/transformed/camera-view-1.3.1/AndroidManifest.xml:5:5-44
+MERGED from [androidx.camera:camera-camera2:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/8d848d0e071c52777084d1d68580c36a/transformed/camera-camera2-1.3.1/AndroidManifest.xml:21:5-44
+MERGED from [androidx.camera:camera-camera2:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/8d848d0e071c52777084d1d68580c36a/transformed/camera-camera2-1.3.1/AndroidManifest.xml:21:5-44
+MERGED from [androidx.camera:camera-lifecycle:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/a9691606f0b4270ab5824dc71ce07eeb/transformed/camera-lifecycle-1.3.1/AndroidManifest.xml:5:5-44
+MERGED from [androidx.camera:camera-lifecycle:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/a9691606f0b4270ab5824dc71ce07eeb/transformed/camera-lifecycle-1.3.1/AndroidManifest.xml:5:5-44
+MERGED from [io.coil-kt:coil:2.5.0] /Users/debasishmac/.gradle/caches/transforms-3/c5b824c919e3e4ec243f14f9ff24537d/transformed/coil-2.5.0/AndroidManifest.xml:5:5-44
+MERGED from [io.coil-kt:coil:2.5.0] /Users/debasishmac/.gradle/caches/transforms-3/c5b824c919e3e4ec243f14f9ff24537d/transformed/coil-2.5.0/AndroidManifest.xml:5:5-44
+MERGED from [io.coil-kt:coil-base:2.5.0] /Users/debasishmac/.gradle/caches/transforms-3/2fa6798062e547929e70790a882f936a/transformed/coil-base-2.5.0/AndroidManifest.xml:5:5-44
+MERGED from [io.coil-kt:coil-base:2.5.0] /Users/debasishmac/.gradle/caches/transforms-3/2fa6798062e547929e70790a882f936a/transformed/coil-base-2.5.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.appcompat:appcompat-resources:1.6.1] /Users/debasishmac/.gradle/caches/transforms-3/9b9f6ffa1c3ad47fb5b6f281e0fdda18/transformed/appcompat-resources-1.6.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.appcompat:appcompat-resources:1.6.1] /Users/debasishmac/.gradle/caches/transforms-3/9b9f6ffa1c3ad47fb5b6f281e0fdda18/transformed/appcompat-resources-1.6.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.appcompat:appcompat:1.6.1] /Users/debasishmac/.gradle/caches/transforms-3/54877b76d6a90b17fe797a8848f7395d/transformed/appcompat-1.6.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.appcompat:appcompat:1.6.1] /Users/debasishmac/.gradle/caches/transforms-3/54877b76d6a90b17fe797a8848f7395d/transformed/appcompat-1.6.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.emoji2:emoji2-views-helper:1.4.0] /Users/debasishmac/.gradle/caches/transforms-3/25aebda0627f494dcd376b141b331375/transformed/emoji2-views-helper-1.4.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.emoji2:emoji2-views-helper:1.4.0] /Users/debasishmac/.gradle/caches/transforms-3/25aebda0627f494dcd376b141b331375/transformed/emoji2-views-helper-1.4.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.emoji2:emoji2:1.4.0] /Users/debasishmac/.gradle/caches/transforms-3/4f94efcc95dbff69071937070fac5f5c/transformed/emoji2-1.4.0/AndroidManifest.xml:21:5-44
+MERGED from [androidx.emoji2:emoji2:1.4.0] /Users/debasishmac/.gradle/caches/transforms-3/4f94efcc95dbff69071937070fac5f5c/transformed/emoji2-1.4.0/AndroidManifest.xml:21:5-44
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] /Users/debasishmac/.gradle/caches/transforms-3/f4e0fb692aed2666c7f1c3da554292fe/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:21:5-44
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] /Users/debasishmac/.gradle/caches/transforms-3/f4e0fb692aed2666c7f1c3da554292fe/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:21:5-44
+MERGED from [androidx.loader:loader:1.0.0] /Users/debasishmac/.gradle/caches/transforms-3/9ea4d0b24c7ad89ea426c8e8e223eb60/transformed/loader-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.loader:loader:1.0.0] /Users/debasishmac/.gradle/caches/transforms-3/9ea4d0b24c7ad89ea426c8e8e223eb60/transformed/loader-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.6.2] /Users/debasishmac/.gradle/caches/transforms-3/4bcc05cd1e3143aa90e0ee3cd822bc13/transformed/lifecycle-livedata-2.6.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.6.2] /Users/debasishmac/.gradle/caches/transforms-3/4bcc05cd1e3143aa90e0ee3cd822bc13/transformed/lifecycle-livedata-2.6.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.6.2] /Users/debasishmac/.gradle/caches/transforms-3/90c9b42c59fb8779fb8da3a50d186968/transformed/lifecycle-livedata-core-2.6.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.6.2] /Users/debasishmac/.gradle/caches/transforms-3/90c9b42c59fb8779fb8da3a50d186968/transformed/lifecycle-livedata-core-2.6.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.6.2] /Users/debasishmac/.gradle/caches/transforms-3/ab09c38155de58e12a55cbe1240c31ed/transformed/lifecycle-viewmodel-2.6.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.6.2] /Users/debasishmac/.gradle/caches/transforms-3/ab09c38155de58e12a55cbe1240c31ed/transformed/lifecycle-viewmodel-2.6.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-ktx:2.6.2] /Users/debasishmac/.gradle/caches/transforms-3/3de1e06abbee93e53d08713597faf7e0/transformed/lifecycle-runtime-ktx-2.6.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-ktx:2.6.2] /Users/debasishmac/.gradle/caches/transforms-3/3de1e06abbee93e53d08713597faf7e0/transformed/lifecycle-runtime-ktx-2.6.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.media3:media3-ui:1.2.1] /Users/debasishmac/.gradle/caches/transforms-3/0380f1a5d91cd0d3cca8e2fb3b655d89/transformed/media3-ui-1.2.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.media3:media3-ui:1.2.1] /Users/debasishmac/.gradle/caches/transforms-3/0380f1a5d91cd0d3cca8e2fb3b655d89/transformed/media3-ui-1.2.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.media3:media3-extractor:1.2.1] /Users/debasishmac/.gradle/caches/transforms-3/7f4ec66365397500acd51c1641b34238/transformed/media3-extractor-1.2.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.media3:media3-extractor:1.2.1] /Users/debasishmac/.gradle/caches/transforms-3/7f4ec66365397500acd51c1641b34238/transformed/media3-extractor-1.2.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.media3:media3-container:1.2.1] /Users/debasishmac/.gradle/caches/transforms-3/877b346db084e13d7039f762037e34af/transformed/media3-container-1.2.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.media3:media3-container:1.2.1] /Users/debasishmac/.gradle/caches/transforms-3/877b346db084e13d7039f762037e34af/transformed/media3-container-1.2.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.media3:media3-datasource:1.2.1] /Users/debasishmac/.gradle/caches/transforms-3/c9f4ab88bb8f657bc8e31ae2f121ecbe/transformed/media3-datasource-1.2.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.media3:media3-datasource:1.2.1] /Users/debasishmac/.gradle/caches/transforms-3/c9f4ab88bb8f657bc8e31ae2f121ecbe/transformed/media3-datasource-1.2.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.media3:media3-decoder:1.2.1] /Users/debasishmac/.gradle/caches/transforms-3/3b1895e116d711a3f3dd0a64cb23a19d/transformed/media3-decoder-1.2.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.media3:media3-decoder:1.2.1] /Users/debasishmac/.gradle/caches/transforms-3/3b1895e116d711a3f3dd0a64cb23a19d/transformed/media3-decoder-1.2.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.media3:media3-database:1.2.1] /Users/debasishmac/.gradle/caches/transforms-3/d3b0ed643c208d7a302fa13a7e9b3e17/transformed/media3-database-1.2.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.media3:media3-database:1.2.1] /Users/debasishmac/.gradle/caches/transforms-3/d3b0ed643c208d7a302fa13a7e9b3e17/transformed/media3-database-1.2.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.media3:media3-common:1.2.1] /Users/debasishmac/.gradle/caches/transforms-3/5fae5b010a208a7726223c60e283bda9/transformed/media3-common-1.2.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.media3:media3-common:1.2.1] /Users/debasishmac/.gradle/caches/transforms-3/5fae5b010a208a7726223c60e283bda9/transformed/media3-common-1.2.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.media3:media3-exoplayer:1.2.1] /Users/debasishmac/.gradle/caches/transforms-3/624ccc415004ba319332c6ae48dca731/transformed/media3-exoplayer-1.2.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.media3:media3-exoplayer:1.2.1] /Users/debasishmac/.gradle/caches/transforms-3/624ccc415004ba319332c6ae48dca731/transformed/media3-exoplayer-1.2.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.media:media:1.6.0] /Users/debasishmac/.gradle/caches/transforms-3/196faf09b932023e8af9de3aede944b3/transformed/media-1.6.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.media:media:1.6.0] /Users/debasishmac/.gradle/caches/transforms-3/196faf09b932023e8af9de3aede944b3/transformed/media-1.6.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.recyclerview:recyclerview:1.3.0] /Users/debasishmac/.gradle/caches/transforms-3/283699027a19dd2f424fd815e0889a7e/transformed/recyclerview-1.3.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.recyclerview:recyclerview:1.3.0] /Users/debasishmac/.gradle/caches/transforms-3/283699027a19dd2f424fd815e0889a7e/transformed/recyclerview-1.3.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.browser:browser:1.4.0] /Users/debasishmac/.gradle/caches/transforms-3/3d71a10dd4c62c184d4f979ba25a0221/transformed/browser-1.4.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.browser:browser:1.4.0] /Users/debasishmac/.gradle/caches/transforms-3/3d71a10dd4c62c184d4f979ba25a0221/transformed/browser-1.4.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.customview:customview-poolingcontainer:1.0.0] /Users/debasishmac/.gradle/caches/transforms-3/f697b6333f3c3bc7e967bc065fc74096/transformed/customview-poolingcontainer-1.0.0/AndroidManifest.xml:20:5-21:38
+MERGED from [androidx.customview:customview-poolingcontainer:1.0.0] /Users/debasishmac/.gradle/caches/transforms-3/f697b6333f3c3bc7e967bc065fc74096/transformed/customview-poolingcontainer-1.0.0/AndroidManifest.xml:20:5-21:38
+MERGED from [androidx.core:core-ktx:1.12.0] /Users/debasishmac/.gradle/caches/transforms-3/0dc9e37d1ecdd3852c4c062e49aad4cf/transformed/core-ktx-1.12.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.core:core-ktx:1.12.0] /Users/debasishmac/.gradle/caches/transforms-3/0dc9e37d1ecdd3852c4c062e49aad4cf/transformed/core-ktx-1.12.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.viewpager:viewpager:1.0.0] /Users/debasishmac/.gradle/caches/transforms-3/93948d2e117db37e5dec555ebc762541/transformed/viewpager-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.viewpager:viewpager:1.0.0] /Users/debasishmac/.gradle/caches/transforms-3/93948d2e117db37e5dec555ebc762541/transformed/viewpager-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.drawerlayout:drawerlayout:1.0.0] /Users/debasishmac/.gradle/caches/transforms-3/8fc1bae28225a0ddfc52055346037f1a/transformed/drawerlayout-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.drawerlayout:drawerlayout:1.0.0] /Users/debasishmac/.gradle/caches/transforms-3/8fc1bae28225a0ddfc52055346037f1a/transformed/drawerlayout-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.customview:customview:1.0.0] /Users/debasishmac/.gradle/caches/transforms-3/a11deac1eadb1a002a76e85adc419235/transformed/customview-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.customview:customview:1.0.0] /Users/debasishmac/.gradle/caches/transforms-3/a11deac1eadb1a002a76e85adc419235/transformed/customview-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.autofill:autofill:1.0.0] /Users/debasishmac/.gradle/caches/transforms-3/4b4051494fd1542251c65fa6eff562ba/transformed/autofill-1.0.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.autofill:autofill:1.0.0] /Users/debasishmac/.gradle/caches/transforms-3/4b4051494fd1542251c65fa6eff562ba/transformed/autofill-1.0.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] /Users/debasishmac/.gradle/caches/transforms-3/a5322c9110208095cf908fe6fa3da817/transformed/vectordrawable-animated-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] /Users/debasishmac/.gradle/caches/transforms-3/a5322c9110208095cf908fe6fa3da817/transformed/vectordrawable-animated-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] /Users/debasishmac/.gradle/caches/transforms-3/ed374d78cab1811ead5392e8aeec5e7f/transformed/vectordrawable-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] /Users/debasishmac/.gradle/caches/transforms-3/ed374d78cab1811ead5392e8aeec5e7f/transformed/vectordrawable-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.core:core:1.12.0] /Users/debasishmac/.gradle/caches/transforms-3/931730b06990163e9100ff808fd7b6ff/transformed/core-1.12.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.core:core:1.12.0] /Users/debasishmac/.gradle/caches/transforms-3/931730b06990163e9100ff808fd7b6ff/transformed/core-1.12.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.6.2] /Users/debasishmac/.gradle/caches/transforms-3/b4c1f97faec0350cd82a097a432c162d/transformed/lifecycle-runtime-2.6.2/AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.6.2] /Users/debasishmac/.gradle/caches/transforms-3/b4c1f97faec0350cd82a097a432c162d/transformed/lifecycle-runtime-2.6.2/AndroidManifest.xml:5:5-44
+MERGED from [androidx.savedstate:savedstate-ktx:1.2.1] /Users/debasishmac/.gradle/caches/transforms-3/ce029a13b26bd6a501ff3e3562d1c419/transformed/savedstate-ktx-1.2.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.savedstate:savedstate-ktx:1.2.1] /Users/debasishmac/.gradle/caches/transforms-3/ce029a13b26bd6a501ff3e3562d1c419/transformed/savedstate-ktx-1.2.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.savedstate:savedstate:1.2.1] /Users/debasishmac/.gradle/caches/transforms-3/7ef2ffb77c0a62ccfae713c9b3ec860b/transformed/savedstate-1.2.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.savedstate:savedstate:1.2.1] /Users/debasishmac/.gradle/caches/transforms-3/7ef2ffb77c0a62ccfae713c9b3ec860b/transformed/savedstate-1.2.1/AndroidManifest.xml:20:5-44
+MERGED from [com.google.accompanist:accompanist-drawablepainter:0.32.0] /Users/debasishmac/.gradle/caches/transforms-3/5af4edc601cb46cbb48daaa72b9bf21f/transformed/accompanist-drawablepainter-0.32.0/AndroidManifest.xml:21:5-44
+MERGED from [com.google.accompanist:accompanist-drawablepainter:0.32.0] /Users/debasishmac/.gradle/caches/transforms-3/5af4edc601cb46cbb48daaa72b9bf21f/transformed/accompanist-drawablepainter-0.32.0/AndroidManifest.xml:21:5-44
+MERGED from [com.google.android.gms:play-services-tasks:18.1.0] /Users/debasishmac/.gradle/caches/transforms-3/d9d3a514e4b09b16d18389db41010127/transformed/play-services-tasks-18.1.0/AndroidManifest.xml:4:5-43
+MERGED from [com.google.android.gms:play-services-tasks:18.1.0] /Users/debasishmac/.gradle/caches/transforms-3/d9d3a514e4b09b16d18389db41010127/transformed/play-services-tasks-18.1.0/AndroidManifest.xml:4:5-43
+MERGED from [com.google.android.gms:play-services-basement:18.3.0] /Users/debasishmac/.gradle/caches/transforms-3/88482635ebaf81e91b09f00b4d7bab6c/transformed/play-services-basement-18.3.0/AndroidManifest.xml:18:5-43
+MERGED from [com.google.android.gms:play-services-basement:18.3.0] /Users/debasishmac/.gradle/caches/transforms-3/88482635ebaf81e91b09f00b4d7bab6c/transformed/play-services-basement-18.3.0/AndroidManifest.xml:18:5-43
+MERGED from [androidx.fragment:fragment:1.5.7] /Users/debasishmac/.gradle/caches/transforms-3/9c6594908dca10915150c1bf87fd193a/transformed/fragment-1.5.7/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.fragment:fragment:1.5.7] /Users/debasishmac/.gradle/caches/transforms-3/9c6594908dca10915150c1bf87fd193a/transformed/fragment-1.5.7/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.activity:activity:1.8.2] /Users/debasishmac/.gradle/caches/transforms-3/1ab5841093161b77f8e0ef276397a1cc/transformed/activity-1.8.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.activity:activity:1.8.2] /Users/debasishmac/.gradle/caches/transforms-3/1ab5841093161b77f8e0ef276397a1cc/transformed/activity-1.8.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.2] /Users/debasishmac/.gradle/caches/transforms-3/d0c5fdb27ad87db2c83bb165c1294863/transformed/lifecycle-viewmodel-savedstate-2.6.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.2] /Users/debasishmac/.gradle/caches/transforms-3/d0c5fdb27ad87db2c83bb165c1294863/transformed/lifecycle-viewmodel-savedstate-2.6.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2] /Users/debasishmac/.gradle/caches/transforms-3/54d0e69f67be4383ca5e605687bbf976/transformed/lifecycle-viewmodel-ktx-2.6.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2] /Users/debasishmac/.gradle/caches/transforms-3/54d0e69f67be4383ca5e605687bbf976/transformed/lifecycle-viewmodel-ktx-2.6.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2] /Users/debasishmac/.gradle/caches/transforms-3/acd89e8d6d74437bd398bc49d1a1bb39/transformed/lifecycle-viewmodel-compose-2.6.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2] /Users/debasishmac/.gradle/caches/transforms-3/acd89e8d6d74437bd398bc49d1a1bb39/transformed/lifecycle-viewmodel-compose-2.6.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.ui:ui-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/43996a80ff8c320f9fefb42db3aed118/transformed/ui-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/43996a80ff8c320f9fefb42db3aed118/transformed/ui-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.activity:activity-ktx:1.8.2] /Users/debasishmac/.gradle/caches/transforms-3/f146ee028c5a965294ab5292de2e3a87/transformed/activity-ktx-1.8.2/AndroidManifest.xml:5:5-44
+MERGED from [androidx.activity:activity-ktx:1.8.2] /Users/debasishmac/.gradle/caches/transforms-3/f146ee028c5a965294ab5292de2e3a87/transformed/activity-ktx-1.8.2/AndroidManifest.xml:5:5-44
+MERGED from [androidx.activity:activity-compose:1.8.2] /Users/debasishmac/.gradle/caches/transforms-3/5e4af9365394709ef778c4fad5ccf314/transformed/activity-compose-1.8.2/AndroidManifest.xml:5:5-44
+MERGED from [androidx.activity:activity-compose:1.8.2] /Users/debasishmac/.gradle/caches/transforms-3/5e4af9365394709ef778c4fad5ccf314/transformed/activity-compose-1.8.2/AndroidManifest.xml:5:5-44
+MERGED from [net.zetetic:sqlcipher-android:4.5.4] /Users/debasishmac/.gradle/caches/transforms-3/95bbed160c97e80a570c54344c17adae/transformed/sqlcipher-android-4.5.4/AndroidManifest.xml:5:5-44
+MERGED from [net.zetetic:sqlcipher-android:4.5.4] /Users/debasishmac/.gradle/caches/transforms-3/95bbed160c97e80a570c54344c17adae/transformed/sqlcipher-android-4.5.4/AndroidManifest.xml:5:5-44
+MERGED from [androidx.sqlite:sqlite-framework:2.4.0] /Users/debasishmac/.gradle/caches/transforms-3/a6f0da7e5186ebc225f51e2bc104dc7c/transformed/sqlite-framework-2.4.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.sqlite:sqlite-framework:2.4.0] /Users/debasishmac/.gradle/caches/transforms-3/a6f0da7e5186ebc225f51e2bc104dc7c/transformed/sqlite-framework-2.4.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.sqlite:sqlite:2.4.0] /Users/debasishmac/.gradle/caches/transforms-3/e6f29b1c7ed309a59f6694fc228ae7fd/transformed/sqlite-2.4.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.sqlite:sqlite:2.4.0] /Users/debasishmac/.gradle/caches/transforms-3/e6f29b1c7ed309a59f6694fc228ae7fd/transformed/sqlite-2.4.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.sqlite:sqlite-ktx:2.4.0] /Users/debasishmac/.gradle/caches/transforms-3/1d7916d1fcd0511a3927d575a984ae38/transformed/sqlite-ktx-2.4.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.sqlite:sqlite-ktx:2.4.0] /Users/debasishmac/.gradle/caches/transforms-3/1d7916d1fcd0511a3927d575a984ae38/transformed/sqlite-ktx-2.4.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.annotation:annotation-experimental:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/4d638a346ad485587a4a3b3d4464a24c/transformed/annotation-experimental-1.3.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.annotation:annotation-experimental:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/4d638a346ad485587a4a3b3d4464a24c/transformed/annotation-experimental-1.3.1/AndroidManifest.xml:20:5-44
+MERGED from [com.google.firebase:firebase-components:17.1.5] /Users/debasishmac/.gradle/caches/transforms-3/22d705859be97f293c2def3f2fd002ef/transformed/firebase-components-17.1.5/AndroidManifest.xml:18:5-44
+MERGED from [com.google.firebase:firebase-components:17.1.5] /Users/debasishmac/.gradle/caches/transforms-3/22d705859be97f293c2def3f2fd002ef/transformed/firebase-components-17.1.5/AndroidManifest.xml:18:5-44
+MERGED from [androidx.arch.core:core-runtime:2.2.0] /Users/debasishmac/.gradle/caches/transforms-3/4443ee8084d388196ba343d2908e2345/transformed/core-runtime-2.2.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.arch.core:core-runtime:2.2.0] /Users/debasishmac/.gradle/caches/transforms-3/4443ee8084d388196ba343d2908e2345/transformed/core-runtime-2.2.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.exifinterface:exifinterface:1.3.6] /Users/debasishmac/.gradle/caches/transforms-3/1666152772fb040109fbcea6026e7348/transformed/exifinterface-1.3.6/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.exifinterface:exifinterface:1.3.6] /Users/debasishmac/.gradle/caches/transforms-3/1666152772fb040109fbcea6026e7348/transformed/exifinterface-1.3.6/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] /Users/debasishmac/.gradle/caches/transforms-3/3deee7f7d4da8aaa941c8f278ef059a4/transformed/localbroadcastmanager-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] /Users/debasishmac/.gradle/caches/transforms-3/3deee7f7d4da8aaa941c8f278ef059a4/transformed/localbroadcastmanager-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/b8923e0949d9268af22cd23fd978c00a/transformed/profileinstaller-1.3.1/AndroidManifest.xml:21:5-44
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/b8923e0949d9268af22cd23fd978c00a/transformed/profileinstaller-1.3.1/AndroidManifest.xml:21:5-44
+MERGED from [androidx.startup:startup-runtime:1.1.1] /Users/debasishmac/.gradle/caches/transforms-3/653b9f778afebc56e73c6ab4f126e371/transformed/startup-runtime-1.1.1/AndroidManifest.xml:21:5-23:41
+MERGED from [androidx.startup:startup-runtime:1.1.1] /Users/debasishmac/.gradle/caches/transforms-3/653b9f778afebc56e73c6ab4f126e371/transformed/startup-runtime-1.1.1/AndroidManifest.xml:21:5-23:41
+MERGED from [androidx.tracing:tracing:1.0.0] /Users/debasishmac/.gradle/caches/transforms-3/479ec96526ae4af5e97b431307c0ec7e/transformed/tracing-1.0.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.tracing:tracing:1.0.0] /Users/debasishmac/.gradle/caches/transforms-3/479ec96526ae4af5e97b431307c0ec7e/transformed/tracing-1.0.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.interpolator:interpolator:1.0.0] /Users/debasishmac/.gradle/caches/transforms-3/f1f0c807a7d84eed0a24dfe5080e1abc/transformed/interpolator-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.interpolator:interpolator:1.0.0] /Users/debasishmac/.gradle/caches/transforms-3/f1f0c807a7d84eed0a24dfe5080e1abc/transformed/interpolator-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /Users/debasishmac/.gradle/caches/transforms-3/62774818d815e217d3c4c63fea83d649/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /Users/debasishmac/.gradle/caches/transforms-3/62774818d815e217d3c4c63fea83d649/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /Users/debasishmac/.gradle/caches/transforms-3/6b53edc6c167e789e086edd3eb09b687/transformed/cursoradapter-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /Users/debasishmac/.gradle/caches/transforms-3/6b53edc6c167e789e086edd3eb09b687/transformed/cursoradapter-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.google.dagger:dagger-lint-aar:2.50] /Users/debasishmac/.gradle/caches/transforms-3/66d4314b55e9d6fdff45df25f064a39d/transformed/dagger-lint-aar-2.50/AndroidManifest.xml:18:3-42
+MERGED from [com.google.dagger:dagger-lint-aar:2.50] /Users/debasishmac/.gradle/caches/transforms-3/66d4314b55e9d6fdff45df25f064a39d/transformed/dagger-lint-aar-2.50/AndroidManifest.xml:18:3-42
+	tools:overrideLibrary
+		ADDED from [com.google.firebase:firebase-auth:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/d1be586bdd543b401a9357c08c65e234/transformed/firebase-auth-22.3.1/AndroidManifest.xml:23:9-61
+	android:targetSdkVersion
+		INJECTED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/app/src/main/AndroidManifest.xml
+activity#androidx.compose.ui.tooling.PreviewActivity
+ADDED from [androidx.compose.ui:ui-tooling-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/36261182bc5021104eb3c5a4f6793bd7/transformed/ui-tooling-release/AndroidManifest.xml:23:9-25:39
+	android:exported
+		ADDED from [androidx.compose.ui:ui-tooling-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/36261182bc5021104eb3c5a4f6793bd7/transformed/ui-tooling-release/AndroidManifest.xml:25:13-36
+	android:name
+		ADDED from [androidx.compose.ui:ui-tooling-android:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/36261182bc5021104eb3c5a4f6793bd7/transformed/ui-tooling-release/AndroidManifest.xml:24:13-71
+activity#androidx.activity.ComponentActivity
+ADDED from [androidx.compose.ui:ui-test-manifest:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/d5a7842bad1e047ec33f2b2e4f753724/transformed/ui-test-manifest-1.5.4/AndroidManifest.xml:23:9-25:39
+	android:exported
+		ADDED from [androidx.compose.ui:ui-test-manifest:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/d5a7842bad1e047ec33f2b2e4f753724/transformed/ui-test-manifest-1.5.4/AndroidManifest.xml:25:13-36
+	android:name
+		ADDED from [androidx.compose.ui:ui-test-manifest:1.5.4] /Users/debasishmac/.gradle/caches/transforms-3/d5a7842bad1e047ec33f2b2e4f753724/transformed/ui-test-manifest-1.5.4/AndroidManifest.xml:24:13-63
+service#com.google.firebase.components.ComponentDiscoveryService
+ADDED from [com.google.firebase:firebase-auth-ktx:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/bf6792d216ca1a2071074c3f6e4ec768/transformed/firebase-auth-ktx-22.3.1/AndroidManifest.xml:8:9-14:19
+MERGED from [com.google.firebase:firebase-auth:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/d1be586bdd543b401a9357c08c65e234/transformed/firebase-auth-22.3.1/AndroidManifest.xml:66:9-72:19
+MERGED from [com.google.firebase:firebase-auth:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/d1be586bdd543b401a9357c08c65e234/transformed/firebase-auth-22.3.1/AndroidManifest.xml:66:9-72:19
+MERGED from [com.google.firebase:firebase-common-ktx:20.4.2] /Users/debasishmac/.gradle/caches/transforms-3/a10ce5132c12c5cdcdc67d43e1ae0c13/transformed/firebase-common-ktx-20.4.2/AndroidManifest.xml:9:9-15:19
+MERGED from [com.google.firebase:firebase-common-ktx:20.4.2] /Users/debasishmac/.gradle/caches/transforms-3/a10ce5132c12c5cdcdc67d43e1ae0c13/transformed/firebase-common-ktx-20.4.2/AndroidManifest.xml:9:9-15:19
+MERGED from [com.google.firebase:firebase-common:20.4.2] /Users/debasishmac/.gradle/caches/transforms-3/c4f3986e0b078b4449cd87a87ca4f111/transformed/firebase-common-20.4.2/AndroidManifest.xml:30:9-38:19
+MERGED from [com.google.firebase:firebase-common:20.4.2] /Users/debasishmac/.gradle/caches/transforms-3/c4f3986e0b078b4449cd87a87ca4f111/transformed/firebase-common-20.4.2/AndroidManifest.xml:30:9-38:19
+	android:exported
+		ADDED from [com.google.firebase:firebase-auth-ktx:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/bf6792d216ca1a2071074c3f6e4ec768/transformed/firebase-auth-ktx-22.3.1/AndroidManifest.xml:10:13-37
+	tools:targetApi
+		ADDED from [com.google.firebase:firebase-common:20.4.2] /Users/debasishmac/.gradle/caches/transforms-3/c4f3986e0b078b4449cd87a87ca4f111/transformed/firebase-common-20.4.2/AndroidManifest.xml:34:13-32
+	android:directBootAware
+		ADDED from [com.google.firebase:firebase-common:20.4.2] /Users/debasishmac/.gradle/caches/transforms-3/c4f3986e0b078b4449cd87a87ca4f111/transformed/firebase-common-20.4.2/AndroidManifest.xml:32:13-43
+	android:name
+		ADDED from [com.google.firebase:firebase-auth-ktx:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/bf6792d216ca1a2071074c3f6e4ec768/transformed/firebase-auth-ktx-22.3.1/AndroidManifest.xml:9:13-84
+meta-data#com.google.firebase.components:com.google.firebase.auth.ktx.FirebaseAuthLegacyRegistrar
+ADDED from [com.google.firebase:firebase-auth-ktx:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/bf6792d216ca1a2071074c3f6e4ec768/transformed/firebase-auth-ktx-22.3.1/AndroidManifest.xml:11:13-13:85
+	android:value
+		ADDED from [com.google.firebase:firebase-auth-ktx:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/bf6792d216ca1a2071074c3f6e4ec768/transformed/firebase-auth-ktx-22.3.1/AndroidManifest.xml:13:17-82
+	android:name
+		ADDED from [com.google.firebase:firebase-auth-ktx:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/bf6792d216ca1a2071074c3f6e4ec768/transformed/firebase-auth-ktx-22.3.1/AndroidManifest.xml:12:17-119
+activity#com.google.firebase.auth.internal.GenericIdpActivity
+ADDED from [com.google.firebase:firebase-auth:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/d1be586bdd543b401a9357c08c65e234/transformed/firebase-auth-22.3.1/AndroidManifest.xml:29:9-46:20
+	android:excludeFromRecents
+		ADDED from [com.google.firebase:firebase-auth:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/d1be586bdd543b401a9357c08c65e234/transformed/firebase-auth-22.3.1/AndroidManifest.xml:31:13-46
+	android:launchMode
+		ADDED from [com.google.firebase:firebase-auth:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/d1be586bdd543b401a9357c08c65e234/transformed/firebase-auth-22.3.1/AndroidManifest.xml:33:13-44
+	android:exported
+		ADDED from [com.google.firebase:firebase-auth:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/d1be586bdd543b401a9357c08c65e234/transformed/firebase-auth-22.3.1/AndroidManifest.xml:32:13-36
+	android:theme
+		ADDED from [com.google.firebase:firebase-auth:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/d1be586bdd543b401a9357c08c65e234/transformed/firebase-auth-22.3.1/AndroidManifest.xml:34:13-72
+	android:name
+		ADDED from [com.google.firebase:firebase-auth:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/d1be586bdd543b401a9357c08c65e234/transformed/firebase-auth-22.3.1/AndroidManifest.xml:30:13-80
+intent-filter#action:name:android.intent.action.VIEW+category:name:android.intent.category.BROWSABLE+category:name:android.intent.category.DEFAULT+data:host:firebase.auth+data:path:/+data:scheme:genericidp
+ADDED from [com.google.firebase:firebase-auth:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/d1be586bdd543b401a9357c08c65e234/transformed/firebase-auth-22.3.1/AndroidManifest.xml:35:13-45:29
+action#android.intent.action.VIEW
+ADDED from [com.google.firebase:firebase-auth:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/d1be586bdd543b401a9357c08c65e234/transformed/firebase-auth-22.3.1/AndroidManifest.xml:36:17-69
+	android:name
+		ADDED from [com.google.firebase:firebase-auth:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/d1be586bdd543b401a9357c08c65e234/transformed/firebase-auth-22.3.1/AndroidManifest.xml:36:25-66
+category#android.intent.category.DEFAULT
+ADDED from [com.google.firebase:firebase-auth:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/d1be586bdd543b401a9357c08c65e234/transformed/firebase-auth-22.3.1/AndroidManifest.xml:38:17-76
+	android:name
+		ADDED from [com.google.firebase:firebase-auth:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/d1be586bdd543b401a9357c08c65e234/transformed/firebase-auth-22.3.1/AndroidManifest.xml:38:27-73
+category#android.intent.category.BROWSABLE
+ADDED from [com.google.firebase:firebase-auth:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/d1be586bdd543b401a9357c08c65e234/transformed/firebase-auth-22.3.1/AndroidManifest.xml:39:17-78
+	android:name
+		ADDED from [com.google.firebase:firebase-auth:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/d1be586bdd543b401a9357c08c65e234/transformed/firebase-auth-22.3.1/AndroidManifest.xml:39:27-75
+data
+ADDED from [com.google.firebase:firebase-auth:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/d1be586bdd543b401a9357c08c65e234/transformed/firebase-auth-22.3.1/AndroidManifest.xml:41:17-44:51
+	android:path
+		ADDED from [com.google.firebase:firebase-auth:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/d1be586bdd543b401a9357c08c65e234/transformed/firebase-auth-22.3.1/AndroidManifest.xml:43:21-37
+	android:host
+		ADDED from [com.google.firebase:firebase-auth:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/d1be586bdd543b401a9357c08c65e234/transformed/firebase-auth-22.3.1/AndroidManifest.xml:42:21-49
+	android:scheme
+		ADDED from [com.google.firebase:firebase-auth:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/d1be586bdd543b401a9357c08c65e234/transformed/firebase-auth-22.3.1/AndroidManifest.xml:44:21-48
+activity#com.google.firebase.auth.internal.RecaptchaActivity
+ADDED from [com.google.firebase:firebase-auth:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/d1be586bdd543b401a9357c08c65e234/transformed/firebase-auth-22.3.1/AndroidManifest.xml:47:9-64:20
+	android:excludeFromRecents
+		ADDED from [com.google.firebase:firebase-auth:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/d1be586bdd543b401a9357c08c65e234/transformed/firebase-auth-22.3.1/AndroidManifest.xml:49:13-46
+	android:launchMode
+		ADDED from [com.google.firebase:firebase-auth:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/d1be586bdd543b401a9357c08c65e234/transformed/firebase-auth-22.3.1/AndroidManifest.xml:51:13-44
+	android:exported
+		ADDED from [com.google.firebase:firebase-auth:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/d1be586bdd543b401a9357c08c65e234/transformed/firebase-auth-22.3.1/AndroidManifest.xml:50:13-36
+	android:theme
+		ADDED from [com.google.firebase:firebase-auth:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/d1be586bdd543b401a9357c08c65e234/transformed/firebase-auth-22.3.1/AndroidManifest.xml:52:13-72
+	android:name
+		ADDED from [com.google.firebase:firebase-auth:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/d1be586bdd543b401a9357c08c65e234/transformed/firebase-auth-22.3.1/AndroidManifest.xml:48:13-79
+intent-filter#action:name:android.intent.action.VIEW+category:name:android.intent.category.BROWSABLE+category:name:android.intent.category.DEFAULT+data:host:firebase.auth+data:path:/+data:scheme:recaptcha
+ADDED from [com.google.firebase:firebase-auth:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/d1be586bdd543b401a9357c08c65e234/transformed/firebase-auth-22.3.1/AndroidManifest.xml:53:13-63:29
+meta-data#com.google.firebase.components:com.google.firebase.auth.FirebaseAuthRegistrar
+ADDED from [com.google.firebase:firebase-auth:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/d1be586bdd543b401a9357c08c65e234/transformed/firebase-auth-22.3.1/AndroidManifest.xml:69:13-71:85
+	android:value
+		ADDED from [com.google.firebase:firebase-auth:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/d1be586bdd543b401a9357c08c65e234/transformed/firebase-auth-22.3.1/AndroidManifest.xml:71:17-82
+	android:name
+		ADDED from [com.google.firebase:firebase-auth:22.3.1] /Users/debasishmac/.gradle/caches/transforms-3/d1be586bdd543b401a9357c08c65e234/transformed/firebase-auth-22.3.1/AndroidManifest.xml:70:17-109
+service#androidx.credentials.playservices.CredentialProviderMetadataHolder
+ADDED from [androidx.credentials:credentials-play-services-auth:1.3.0-beta01] /Users/debasishmac/.gradle/caches/transforms-3/79526e6e5f11a254623fb60e7d2ff0f5/transformed/credentials-play-services-auth-1.3.0-beta01/AndroidManifest.xml:24:9-32:19
+	android:enabled
+		ADDED from [androidx.credentials:credentials-play-services-auth:1.3.0-beta01] /Users/debasishmac/.gradle/caches/transforms-3/79526e6e5f11a254623fb60e7d2ff0f5/transformed/credentials-play-services-auth-1.3.0-beta01/AndroidManifest.xml:26:13-35
+	android:exported
+		ADDED from [androidx.credentials:credentials-play-services-auth:1.3.0-beta01] /Users/debasishmac/.gradle/caches/transforms-3/79526e6e5f11a254623fb60e7d2ff0f5/transformed/credentials-play-services-auth-1.3.0-beta01/AndroidManifest.xml:27:13-37
+	tools:ignore
+		ADDED from [androidx.credentials:credentials-play-services-auth:1.3.0-beta01] /Users/debasishmac/.gradle/caches/transforms-3/79526e6e5f11a254623fb60e7d2ff0f5/transformed/credentials-play-services-auth-1.3.0-beta01/AndroidManifest.xml:28:13-60
+	android:name
+		ADDED from [androidx.credentials:credentials-play-services-auth:1.3.0-beta01] /Users/debasishmac/.gradle/caches/transforms-3/79526e6e5f11a254623fb60e7d2ff0f5/transformed/credentials-play-services-auth-1.3.0-beta01/AndroidManifest.xml:25:13-94
+meta-data#androidx.credentials.CREDENTIAL_PROVIDER_KEY
+ADDED from [androidx.credentials:credentials-play-services-auth:1.3.0-beta01] /Users/debasishmac/.gradle/caches/transforms-3/79526e6e5f11a254623fb60e7d2ff0f5/transformed/credentials-play-services-auth-1.3.0-beta01/AndroidManifest.xml:29:13-31:104
+	android:value
+		ADDED from [androidx.credentials:credentials-play-services-auth:1.3.0-beta01] /Users/debasishmac/.gradle/caches/transforms-3/79526e6e5f11a254623fb60e7d2ff0f5/transformed/credentials-play-services-auth-1.3.0-beta01/AndroidManifest.xml:31:17-101
+	android:name
+		ADDED from [androidx.credentials:credentials-play-services-auth:1.3.0-beta01] /Users/debasishmac/.gradle/caches/transforms-3/79526e6e5f11a254623fb60e7d2ff0f5/transformed/credentials-play-services-auth-1.3.0-beta01/AndroidManifest.xml:30:17-76
+activity#androidx.credentials.playservices.HiddenActivity
+ADDED from [androidx.credentials:credentials-play-services-auth:1.3.0-beta01] /Users/debasishmac/.gradle/caches/transforms-3/79526e6e5f11a254623fb60e7d2ff0f5/transformed/credentials-play-services-auth-1.3.0-beta01/AndroidManifest.xml:34:9-41:20
+	android:fitsSystemWindows
+		ADDED from [androidx.credentials:credentials-play-services-auth:1.3.0-beta01] /Users/debasishmac/.gradle/caches/transforms-3/79526e6e5f11a254623fb60e7d2ff0f5/transformed/credentials-play-services-auth-1.3.0-beta01/AndroidManifest.xml:39:13-45
+	android:enabled
+		ADDED from [androidx.credentials:credentials-play-services-auth:1.3.0-beta01] /Users/debasishmac/.gradle/caches/transforms-3/79526e6e5f11a254623fb60e7d2ff0f5/transformed/credentials-play-services-auth-1.3.0-beta01/AndroidManifest.xml:37:13-35
+	android:exported
+		ADDED from [androidx.credentials:credentials-play-services-auth:1.3.0-beta01] /Users/debasishmac/.gradle/caches/transforms-3/79526e6e5f11a254623fb60e7d2ff0f5/transformed/credentials-play-services-auth-1.3.0-beta01/AndroidManifest.xml:38:13-37
+	android:configChanges
+		ADDED from [androidx.credentials:credentials-play-services-auth:1.3.0-beta01] /Users/debasishmac/.gradle/caches/transforms-3/79526e6e5f11a254623fb60e7d2ff0f5/transformed/credentials-play-services-auth-1.3.0-beta01/AndroidManifest.xml:36:13-87
+	android:theme
+		ADDED from [androidx.credentials:credentials-play-services-auth:1.3.0-beta01] /Users/debasishmac/.gradle/caches/transforms-3/79526e6e5f11a254623fb60e7d2ff0f5/transformed/credentials-play-services-auth-1.3.0-beta01/AndroidManifest.xml:40:13-48
+	android:name
+		ADDED from [androidx.credentials:credentials-play-services-auth:1.3.0-beta01] /Users/debasishmac/.gradle/caches/transforms-3/79526e6e5f11a254623fb60e7d2ff0f5/transformed/credentials-play-services-auth-1.3.0-beta01/AndroidManifest.xml:35:13-76
+activity#com.google.android.gms.auth.api.signin.internal.SignInHubActivity
+ADDED from [com.google.android.gms:play-services-auth:21.1.1] /Users/debasishmac/.gradle/caches/transforms-3/1a20aebdb9b22aa3d519f74383ef19a1/transformed/play-services-auth-21.1.1/AndroidManifest.xml:23:9-27:75
+	android:excludeFromRecents
+		ADDED from [com.google.android.gms:play-services-auth:21.1.1] /Users/debasishmac/.gradle/caches/transforms-3/1a20aebdb9b22aa3d519f74383ef19a1/transformed/play-services-auth-21.1.1/AndroidManifest.xml:25:13-46
+	android:exported
+		ADDED from [com.google.android.gms:play-services-auth:21.1.1] /Users/debasishmac/.gradle/caches/transforms-3/1a20aebdb9b22aa3d519f74383ef19a1/transformed/play-services-auth-21.1.1/AndroidManifest.xml:26:13-37
+	android:theme
+		ADDED from [com.google.android.gms:play-services-auth:21.1.1] /Users/debasishmac/.gradle/caches/transforms-3/1a20aebdb9b22aa3d519f74383ef19a1/transformed/play-services-auth-21.1.1/AndroidManifest.xml:27:13-72
+	android:name
+		ADDED from [com.google.android.gms:play-services-auth:21.1.1] /Users/debasishmac/.gradle/caches/transforms-3/1a20aebdb9b22aa3d519f74383ef19a1/transformed/play-services-auth-21.1.1/AndroidManifest.xml:24:13-93
+service#com.google.android.gms.auth.api.signin.RevocationBoundService
+ADDED from [com.google.android.gms:play-services-auth:21.1.1] /Users/debasishmac/.gradle/caches/transforms-3/1a20aebdb9b22aa3d519f74383ef19a1/transformed/play-services-auth-21.1.1/AndroidManifest.xml:33:9-37:51
+	android:exported
+		ADDED from [com.google.android.gms:play-services-auth:21.1.1] /Users/debasishmac/.gradle/caches/transforms-3/1a20aebdb9b22aa3d519f74383ef19a1/transformed/play-services-auth-21.1.1/AndroidManifest.xml:35:13-36
+	android:visibleToInstantApps
+		ADDED from [com.google.android.gms:play-services-auth:21.1.1] /Users/debasishmac/.gradle/caches/transforms-3/1a20aebdb9b22aa3d519f74383ef19a1/transformed/play-services-auth-21.1.1/AndroidManifest.xml:37:13-48
+	android:permission
+		ADDED from [com.google.android.gms:play-services-auth:21.1.1] /Users/debasishmac/.gradle/caches/transforms-3/1a20aebdb9b22aa3d519f74383ef19a1/transformed/play-services-auth-21.1.1/AndroidManifest.xml:36:13-107
+	android:name
+		ADDED from [com.google.android.gms:play-services-auth:21.1.1] /Users/debasishmac/.gradle/caches/transforms-3/1a20aebdb9b22aa3d519f74383ef19a1/transformed/play-services-auth-21.1.1/AndroidManifest.xml:34:13-89
+activity#com.google.android.gms.common.api.GoogleApiActivity
+ADDED from [com.google.android.gms:play-services-base:18.3.0] /Users/debasishmac/.gradle/caches/transforms-3/04bd71224e024c25511c3fd19896d1de/transformed/play-services-base-18.3.0/AndroidManifest.xml:20:9-22:45
+	android:exported
+		ADDED from [com.google.android.gms:play-services-base:18.3.0] /Users/debasishmac/.gradle/caches/transforms-3/04bd71224e024c25511c3fd19896d1de/transformed/play-services-base-18.3.0/AndroidManifest.xml:22:19-43
+	android:theme
+		ADDED from [com.google.android.gms:play-services-base:18.3.0] /Users/debasishmac/.gradle/caches/transforms-3/04bd71224e024c25511c3fd19896d1de/transformed/play-services-base-18.3.0/AndroidManifest.xml:21:19-78
+	android:name
+		ADDED from [com.google.android.gms:play-services-base:18.3.0] /Users/debasishmac/.gradle/caches/transforms-3/04bd71224e024c25511c3fd19896d1de/transformed/play-services-base-18.3.0/AndroidManifest.xml:20:19-85
+meta-data#com.google.firebase.components:com.google.firebase.ktx.FirebaseCommonLegacyRegistrar
+ADDED from [com.google.firebase:firebase-common-ktx:20.4.2] /Users/debasishmac/.gradle/caches/transforms-3/a10ce5132c12c5cdcdc67d43e1ae0c13/transformed/firebase-common-ktx-20.4.2/AndroidManifest.xml:12:13-14:85
+	android:value
+		ADDED from [com.google.firebase:firebase-common-ktx:20.4.2] /Users/debasishmac/.gradle/caches/transforms-3/a10ce5132c12c5cdcdc67d43e1ae0c13/transformed/firebase-common-ktx-20.4.2/AndroidManifest.xml:14:17-82
+	android:name
+		ADDED from [com.google.firebase:firebase-common-ktx:20.4.2] /Users/debasishmac/.gradle/caches/transforms-3/a10ce5132c12c5cdcdc67d43e1ae0c13/transformed/firebase-common-ktx-20.4.2/AndroidManifest.xml:13:17-116
+provider#com.google.firebase.provider.FirebaseInitProvider
+ADDED from [com.google.firebase:firebase-common:20.4.2] /Users/debasishmac/.gradle/caches/transforms-3/c4f3986e0b078b4449cd87a87ca4f111/transformed/firebase-common-20.4.2/AndroidManifest.xml:23:9-28:39
+	android:authorities
+		ADDED from [com.google.firebase:firebase-common:20.4.2] /Users/debasishmac/.gradle/caches/transforms-3/c4f3986e0b078b4449cd87a87ca4f111/transformed/firebase-common-20.4.2/AndroidManifest.xml:25:13-72
+	android:exported
+		ADDED from [com.google.firebase:firebase-common:20.4.2] /Users/debasishmac/.gradle/caches/transforms-3/c4f3986e0b078b4449cd87a87ca4f111/transformed/firebase-common-20.4.2/AndroidManifest.xml:27:13-37
+	android:directBootAware
+		ADDED from [com.google.firebase:firebase-common:20.4.2] /Users/debasishmac/.gradle/caches/transforms-3/c4f3986e0b078b4449cd87a87ca4f111/transformed/firebase-common-20.4.2/AndroidManifest.xml:26:13-43
+	android:initOrder
+		ADDED from [com.google.firebase:firebase-common:20.4.2] /Users/debasishmac/.gradle/caches/transforms-3/c4f3986e0b078b4449cd87a87ca4f111/transformed/firebase-common-20.4.2/AndroidManifest.xml:28:13-36
+	android:name
+		ADDED from [com.google.firebase:firebase-common:20.4.2] /Users/debasishmac/.gradle/caches/transforms-3/c4f3986e0b078b4449cd87a87ca4f111/transformed/firebase-common-20.4.2/AndroidManifest.xml:24:13-77
+meta-data#com.google.firebase.components:com.google.firebase.FirebaseCommonKtxRegistrar
+ADDED from [com.google.firebase:firebase-common:20.4.2] /Users/debasishmac/.gradle/caches/transforms-3/c4f3986e0b078b4449cd87a87ca4f111/transformed/firebase-common-20.4.2/AndroidManifest.xml:35:13-37:85
+	android:value
+		ADDED from [com.google.firebase:firebase-common:20.4.2] /Users/debasishmac/.gradle/caches/transforms-3/c4f3986e0b078b4449cd87a87ca4f111/transformed/firebase-common-20.4.2/AndroidManifest.xml:37:17-82
+	android:name
+		ADDED from [com.google.firebase:firebase-common:20.4.2] /Users/debasishmac/.gradle/caches/transforms-3/c4f3986e0b078b4449cd87a87ca4f111/transformed/firebase-common-20.4.2/AndroidManifest.xml:36:17-109
+uses-permission#com.google.android.providers.gsf.permission.READ_GSERVICES
+ADDED from [com.google.android.recaptcha:recaptcha:18.4.0] /Users/debasishmac/.gradle/caches/transforms-3/d2d98ca81470d1a070ced8c404f638a2/transformed/recaptcha-18.4.0/AndroidManifest.xml:9:5-98
+	android:name
+		ADDED from [com.google.android.recaptcha:recaptcha:18.4.0] /Users/debasishmac/.gradle/caches/transforms-3/d2d98ca81470d1a070ced8c404f638a2/transformed/recaptcha-18.4.0/AndroidManifest.xml:9:22-95
+service#androidx.room.MultiInstanceInvalidationService
+ADDED from [androidx.room:room-runtime:2.6.1] /Users/debasishmac/.gradle/caches/transforms-3/854ebed58f962357909f1126697eedb0/transformed/room-runtime-2.6.1/AndroidManifest.xml:24:9-28:63
+	android:exported
+		ADDED from [androidx.room:room-runtime:2.6.1] /Users/debasishmac/.gradle/caches/transforms-3/854ebed58f962357909f1126697eedb0/transformed/room-runtime-2.6.1/AndroidManifest.xml:27:13-37
+	tools:ignore
+		ADDED from [androidx.room:room-runtime:2.6.1] /Users/debasishmac/.gradle/caches/transforms-3/854ebed58f962357909f1126697eedb0/transformed/room-runtime-2.6.1/AndroidManifest.xml:28:13-60
+	android:directBootAware
+		ADDED from [androidx.room:room-runtime:2.6.1] /Users/debasishmac/.gradle/caches/transforms-3/854ebed58f962357909f1126697eedb0/transformed/room-runtime-2.6.1/AndroidManifest.xml:26:13-43
+	android:name
+		ADDED from [androidx.room:room-runtime:2.6.1] /Users/debasishmac/.gradle/caches/transforms-3/854ebed58f962357909f1126697eedb0/transformed/room-runtime-2.6.1/AndroidManifest.xml:25:13-74
+service#androidx.camera.core.impl.MetadataHolderService
+ADDED from [androidx.camera:camera-core:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/010b8dc1f478bbac0b82e0b9c72d242a/transformed/camera-core-1.3.1/AndroidManifest.xml:29:9-33:78
+MERGED from [androidx.camera:camera-camera2:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/8d848d0e071c52777084d1d68580c36a/transformed/camera-camera2-1.3.1/AndroidManifest.xml:24:9-33:19
+MERGED from [androidx.camera:camera-camera2:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/8d848d0e071c52777084d1d68580c36a/transformed/camera-camera2-1.3.1/AndroidManifest.xml:24:9-33:19
+	android:enabled
+		ADDED from [androidx.camera:camera-core:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/010b8dc1f478bbac0b82e0b9c72d242a/transformed/camera-core-1.3.1/AndroidManifest.xml:31:13-36
+	android:exported
+		ADDED from [androidx.camera:camera-core:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/010b8dc1f478bbac0b82e0b9c72d242a/transformed/camera-core-1.3.1/AndroidManifest.xml:32:13-37
+	tools:ignore
+		ADDED from [androidx.camera:camera-core:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/010b8dc1f478bbac0b82e0b9c72d242a/transformed/camera-core-1.3.1/AndroidManifest.xml:33:13-75
+	android:name
+		ADDED from [androidx.camera:camera-core:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/010b8dc1f478bbac0b82e0b9c72d242a/transformed/camera-core-1.3.1/AndroidManifest.xml:30:13-75
+meta-data#androidx.camera.core.impl.MetadataHolderService.DEFAULT_CONFIG_PROVIDER
+ADDED from [androidx.camera:camera-camera2:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/8d848d0e071c52777084d1d68580c36a/transformed/camera-camera2-1.3.1/AndroidManifest.xml:30:13-32:89
+	android:value
+		ADDED from [androidx.camera:camera-camera2:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/8d848d0e071c52777084d1d68580c36a/transformed/camera-camera2-1.3.1/AndroidManifest.xml:32:17-86
+	android:name
+		ADDED from [androidx.camera:camera-camera2:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/8d848d0e071c52777084d1d68580c36a/transformed/camera-camera2-1.3.1/AndroidManifest.xml:31:17-103
+provider#androidx.startup.InitializationProvider
+ADDED from [androidx.emoji2:emoji2:1.4.0] /Users/debasishmac/.gradle/caches/transforms-3/4f94efcc95dbff69071937070fac5f5c/transformed/emoji2-1.4.0/AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] /Users/debasishmac/.gradle/caches/transforms-3/f4e0fb692aed2666c7f1c3da554292fe/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] /Users/debasishmac/.gradle/caches/transforms-3/f4e0fb692aed2666c7f1c3da554292fe/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/b8923e0949d9268af22cd23fd978c00a/transformed/profileinstaller-1.3.1/AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/b8923e0949d9268af22cd23fd978c00a/transformed/profileinstaller-1.3.1/AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.startup:startup-runtime:1.1.1] /Users/debasishmac/.gradle/caches/transforms-3/653b9f778afebc56e73c6ab4f126e371/transformed/startup-runtime-1.1.1/AndroidManifest.xml:26:9-30:34
+MERGED from [androidx.startup:startup-runtime:1.1.1] /Users/debasishmac/.gradle/caches/transforms-3/653b9f778afebc56e73c6ab4f126e371/transformed/startup-runtime-1.1.1/AndroidManifest.xml:26:9-30:34
+	tools:node
+		ADDED from [androidx.emoji2:emoji2:1.4.0] /Users/debasishmac/.gradle/caches/transforms-3/4f94efcc95dbff69071937070fac5f5c/transformed/emoji2-1.4.0/AndroidManifest.xml:28:13-31
+	android:authorities
+		ADDED from [androidx.emoji2:emoji2:1.4.0] /Users/debasishmac/.gradle/caches/transforms-3/4f94efcc95dbff69071937070fac5f5c/transformed/emoji2-1.4.0/AndroidManifest.xml:26:13-68
+	android:exported
+		ADDED from [androidx.emoji2:emoji2:1.4.0] /Users/debasishmac/.gradle/caches/transforms-3/4f94efcc95dbff69071937070fac5f5c/transformed/emoji2-1.4.0/AndroidManifest.xml:27:13-37
+	android:name
+		ADDED from [androidx.emoji2:emoji2:1.4.0] /Users/debasishmac/.gradle/caches/transforms-3/4f94efcc95dbff69071937070fac5f5c/transformed/emoji2-1.4.0/AndroidManifest.xml:25:13-67
+meta-data#androidx.emoji2.text.EmojiCompatInitializer
+ADDED from [androidx.emoji2:emoji2:1.4.0] /Users/debasishmac/.gradle/caches/transforms-3/4f94efcc95dbff69071937070fac5f5c/transformed/emoji2-1.4.0/AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.emoji2:emoji2:1.4.0] /Users/debasishmac/.gradle/caches/transforms-3/4f94efcc95dbff69071937070fac5f5c/transformed/emoji2-1.4.0/AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.emoji2:emoji2:1.4.0] /Users/debasishmac/.gradle/caches/transforms-3/4f94efcc95dbff69071937070fac5f5c/transformed/emoji2-1.4.0/AndroidManifest.xml:30:17-75
+meta-data#androidx.lifecycle.ProcessLifecycleInitializer
+ADDED from [androidx.lifecycle:lifecycle-process:2.6.2] /Users/debasishmac/.gradle/caches/transforms-3/f4e0fb692aed2666c7f1c3da554292fe/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.lifecycle:lifecycle-process:2.6.2] /Users/debasishmac/.gradle/caches/transforms-3/f4e0fb692aed2666c7f1c3da554292fe/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.lifecycle:lifecycle-process:2.6.2] /Users/debasishmac/.gradle/caches/transforms-3/f4e0fb692aed2666c7f1c3da554292fe/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:30:17-78
+permission#${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.12.0] /Users/debasishmac/.gradle/caches/transforms-3/931730b06990163e9100ff808fd7b6ff/transformed/core-1.12.0/AndroidManifest.xml:22:5-24:47
+	android:protectionLevel
+		ADDED from [androidx.core:core:1.12.0] /Users/debasishmac/.gradle/caches/transforms-3/931730b06990163e9100ff808fd7b6ff/transformed/core-1.12.0/AndroidManifest.xml:24:9-44
+	android:name
+		ADDED from [androidx.core:core:1.12.0] /Users/debasishmac/.gradle/caches/transforms-3/931730b06990163e9100ff808fd7b6ff/transformed/core-1.12.0/AndroidManifest.xml:23:9-81
+permission#com.quickchat.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.12.0] /Users/debasishmac/.gradle/caches/transforms-3/931730b06990163e9100ff808fd7b6ff/transformed/core-1.12.0/AndroidManifest.xml:22:5-24:47
+	android:protectionLevel
+		ADDED from [androidx.core:core:1.12.0] /Users/debasishmac/.gradle/caches/transforms-3/931730b06990163e9100ff808fd7b6ff/transformed/core-1.12.0/AndroidManifest.xml:24:9-44
+	android:name
+		ADDED from [androidx.core:core:1.12.0] /Users/debasishmac/.gradle/caches/transforms-3/931730b06990163e9100ff808fd7b6ff/transformed/core-1.12.0/AndroidManifest.xml:23:9-81
+uses-permission#${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.12.0] /Users/debasishmac/.gradle/caches/transforms-3/931730b06990163e9100ff808fd7b6ff/transformed/core-1.12.0/AndroidManifest.xml:26:5-97
+	android:name
+		ADDED from [androidx.core:core:1.12.0] /Users/debasishmac/.gradle/caches/transforms-3/931730b06990163e9100ff808fd7b6ff/transformed/core-1.12.0/AndroidManifest.xml:26:22-94
+uses-permission#com.quickchat.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.12.0] /Users/debasishmac/.gradle/caches/transforms-3/931730b06990163e9100ff808fd7b6ff/transformed/core-1.12.0/AndroidManifest.xml:26:5-97
+	android:name
+		ADDED from [androidx.core:core:1.12.0] /Users/debasishmac/.gradle/caches/transforms-3/931730b06990163e9100ff808fd7b6ff/transformed/core-1.12.0/AndroidManifest.xml:26:22-94
+meta-data#com.google.android.gms.version
+ADDED from [com.google.android.gms:play-services-basement:18.3.0] /Users/debasishmac/.gradle/caches/transforms-3/88482635ebaf81e91b09f00b4d7bab6c/transformed/play-services-basement-18.3.0/AndroidManifest.xml:21:9-23:69
+	android:value
+		ADDED from [com.google.android.gms:play-services-basement:18.3.0] /Users/debasishmac/.gradle/caches/transforms-3/88482635ebaf81e91b09f00b4d7bab6c/transformed/play-services-basement-18.3.0/AndroidManifest.xml:23:13-66
+	android:name
+		ADDED from [com.google.android.gms:play-services-basement:18.3.0] /Users/debasishmac/.gradle/caches/transforms-3/88482635ebaf81e91b09f00b4d7bab6c/transformed/play-services-basement-18.3.0/AndroidManifest.xml:22:13-58
+meta-data#androidx.profileinstaller.ProfileInstallerInitializer
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/b8923e0949d9268af22cd23fd978c00a/transformed/profileinstaller-1.3.1/AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/b8923e0949d9268af22cd23fd978c00a/transformed/profileinstaller-1.3.1/AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/b8923e0949d9268af22cd23fd978c00a/transformed/profileinstaller-1.3.1/AndroidManifest.xml:30:17-85
+receiver#androidx.profileinstaller.ProfileInstallReceiver
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/b8923e0949d9268af22cd23fd978c00a/transformed/profileinstaller-1.3.1/AndroidManifest.xml:34:9-52:20
+	android:enabled
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/b8923e0949d9268af22cd23fd978c00a/transformed/profileinstaller-1.3.1/AndroidManifest.xml:37:13-35
+	android:exported
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/b8923e0949d9268af22cd23fd978c00a/transformed/profileinstaller-1.3.1/AndroidManifest.xml:38:13-36
+	android:permission
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/b8923e0949d9268af22cd23fd978c00a/transformed/profileinstaller-1.3.1/AndroidManifest.xml:39:13-57
+	android:directBootAware
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/b8923e0949d9268af22cd23fd978c00a/transformed/profileinstaller-1.3.1/AndroidManifest.xml:36:13-44
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/b8923e0949d9268af22cd23fd978c00a/transformed/profileinstaller-1.3.1/AndroidManifest.xml:35:13-76
+intent-filter#action:name:androidx.profileinstaller.action.INSTALL_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/b8923e0949d9268af22cd23fd978c00a/transformed/profileinstaller-1.3.1/AndroidManifest.xml:40:13-42:29
+action#androidx.profileinstaller.action.INSTALL_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/b8923e0949d9268af22cd23fd978c00a/transformed/profileinstaller-1.3.1/AndroidManifest.xml:41:17-91
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/b8923e0949d9268af22cd23fd978c00a/transformed/profileinstaller-1.3.1/AndroidManifest.xml:41:25-88
+intent-filter#action:name:androidx.profileinstaller.action.SKIP_FILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/b8923e0949d9268af22cd23fd978c00a/transformed/profileinstaller-1.3.1/AndroidManifest.xml:43:13-45:29
+action#androidx.profileinstaller.action.SKIP_FILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/b8923e0949d9268af22cd23fd978c00a/transformed/profileinstaller-1.3.1/AndroidManifest.xml:44:17-85
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/b8923e0949d9268af22cd23fd978c00a/transformed/profileinstaller-1.3.1/AndroidManifest.xml:44:25-82
+intent-filter#action:name:androidx.profileinstaller.action.SAVE_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/b8923e0949d9268af22cd23fd978c00a/transformed/profileinstaller-1.3.1/AndroidManifest.xml:46:13-48:29
+action#androidx.profileinstaller.action.SAVE_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/b8923e0949d9268af22cd23fd978c00a/transformed/profileinstaller-1.3.1/AndroidManifest.xml:47:17-88
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/b8923e0949d9268af22cd23fd978c00a/transformed/profileinstaller-1.3.1/AndroidManifest.xml:47:25-85
+intent-filter#action:name:androidx.profileinstaller.action.BENCHMARK_OPERATION
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/b8923e0949d9268af22cd23fd978c00a/transformed/profileinstaller-1.3.1/AndroidManifest.xml:49:13-51:29
+action#androidx.profileinstaller.action.BENCHMARK_OPERATION
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/b8923e0949d9268af22cd23fd978c00a/transformed/profileinstaller-1.3.1/AndroidManifest.xml:50:17-95
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/debasishmac/.gradle/caches/transforms-3/b8923e0949d9268af22cd23fd978c00a/transformed/profileinstaller-1.3.1/AndroidManifest.xml:50:25-92

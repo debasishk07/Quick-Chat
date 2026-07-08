@@ -1,0 +1,16 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/feature/status/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest1119210030682663260.xml:2:13-83
+INJECTED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/feature/status/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest1119210030682663260.xml:2:13-83
+	package
+		INJECTED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/feature/status/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest1119210030682663260.xml
+	xmlns:android
+		ADDED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/feature/status/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest1119210030682663260.xml:2:23-81
+uses-sdk
+INJECTED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/feature/status/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest1119210030682663260.xml reason: use-sdk injection requested
+INJECTED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/feature/status/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest1119210030682663260.xml
+INJECTED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/feature/status/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest1119210030682663260.xml
+	android:targetSdkVersion
+		INJECTED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/feature/status/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest1119210030682663260.xml
+	android:minSdkVersion
+		INJECTED from /Users/debasishmac/Desktop/Debasish/GitHub/Quick-Chat/android/feature/status/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest1119210030682663260.xml

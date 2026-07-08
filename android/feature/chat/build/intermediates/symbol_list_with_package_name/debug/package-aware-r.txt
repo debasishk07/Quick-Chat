@@ -1,0 +1,1 @@
+com.quickchat.feature.chat
