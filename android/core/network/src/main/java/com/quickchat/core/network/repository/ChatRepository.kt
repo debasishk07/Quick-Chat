@@ -41,6 +41,8 @@ interface ChatRepository {
     val activeTypingState: StateFlow<Map<String, Boolean>> // phone -> isTyping
     suspend fun getChat(phone: String): Chat?
     suspend fun clearUnreadCount(phone: String)
+    val incomingCallSignals: SharedFlow<Pair<String, String>>
+    suspend fun sendCallSignal(recipientPhone: String, signalJson: String): Boolean
 }
 
 @Singleton
@@ -58,6 +60,9 @@ class ChatRepositoryImpl @Inject constructor(
     
     private val _activeTypingState = MutableStateFlow<Map<String, Boolean>>(emptyMap())
     override val activeTypingState: StateFlow<Map<String, Boolean>> = _activeTypingState
+
+    private val _incomingCallSignals = MutableSharedFlow<Pair<String, String>>(extraBufferCapacity = 64)
+    override val incomingCallSignals: SharedFlow<Pair<String, String>> = _incomingCallSignals.asSharedFlow()
 
     init {
         observeSocketEvents()
@@ -186,6 +191,36 @@ class ChatRepositoryImpl @Inject constructor(
         socketManager.sendTyping(recipientPhone, isTyping)
     }
 
+    override suspend fun sendCallSignal(recipientPhone: String, signalJson: String): Boolean {
+        val messageId = UUID.randomUUID().toString()
+        val timestamp = System.currentTimeMillis()
+        val currentUserPhone = userRepository.currentUser.value?.phone ?: return false
+        
+        return try {
+            val session = getOrCreateSession(recipientPhone)
+            val encrypted = DoubleRatchetEngine.encrypt(session, signalJson.toByteArray(Charsets.UTF_8))
+            saveSession(recipientPhone, session)
+            
+            val socketMsg = SocketMessage(
+                id = messageId,
+                sender = currentUserPhone,
+                recipient = recipientPhone,
+                isGroup = 0,
+                ciphertext = encrypted.ciphertext,
+                iv = encrypted.iv,
+                ephemeralPublicKey = encrypted.ephemeralPublicKey,
+                messageType = MessageType.CALL_SIGNAL.name,
+                timestamp = timestamp,
+                status = "SENDING"
+            )
+            socketManager.sendMessage(socketMsg)
+            true
+        } catch (e: Exception) {
+            Log.e("ChatRepository", "Failed to send call signal", e)
+            false
+        }
+    }
+
     override suspend fun searchMessages(query: String): List<Message> {
         return messageDao.searchMessages(query).map { it.toDomain() }
     }
@@ -242,6 +277,12 @@ class ChatRepositoryImpl @Inject constructor(
             
             // Save updated session state
             saveSession(socketMsg.sender, session)
+
+            if (socketMsg.messageType == MessageType.CALL_SIGNAL.name) {
+                _incomingCallSignals.emit(Pair(socketMsg.sender, decryptedText))
+                socketManager.sendReceipt(socketMsg.id, socketMsg.sender, "DELIVERED")
+                return
+            }
 
             // Save decrypted message to database
             val domainMsg = Message(
