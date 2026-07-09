@@ -32,6 +32,15 @@ import com.quickchat.core.model.theme.SketchyDivider
 import com.quickchat.core.model.theme.sketchyBorder
 import java.text.SimpleDateFormat
 import java.util.*
+import com.quickchat.core.model.MessageType
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
+import androidx.compose.material.icons.filled.Call
+import androidx.compose.material.icons.filled.Videocam
 
 // Simple Helper import to override mutableStateOf
 import androidx.compose.runtime.mutableStateOf as mutableStateFlowOf
@@ -43,7 +52,8 @@ fun ChatRoomScreen(
     chatWallpaper: String,
     chatFontSize: Float,
     onNavigateBack: () -> Unit,
-    onNavigateToVerify: (phone: String) -> Unit
+    onNavigateToVerify: (phone: String) -> Unit,
+    onStartCall: (phone: String, isVideo: Boolean) -> Unit
 ) {
     val messages by viewModel.messages.collectAsState()
     val partnerName by viewModel.recipientName.collectAsState()
@@ -55,6 +65,32 @@ fun ChatRoomScreen(
     var textInput by remember { mutableStateFlowOf("") }
     val listState = rememberLazyListState()
     val colors = LocalSketchyColors.current
+
+    var showPermissionRationale by remember { mutableStateFlowOf(false) }
+    var isVideoCallTrigger by remember { mutableStateFlowOf(false) }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val cameraGranted = permissions[Manifest.permission.CAMERA] ?: false
+        val audioGranted = permissions[Manifest.permission.RECORD_AUDIO] ?: false
+        if (cameraGranted && audioGranted) {
+            onStartCall(partnerPhone, isVideoCallTrigger)
+        }
+    }
+
+    val context = LocalContext.current
+    val checkAndStartCall = { isVideo: Boolean ->
+        isVideoCallTrigger = isVideo
+        val hasCamera = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+        val hasAudio = ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
+        
+        if (hasCamera && hasAudio) {
+            onStartCall(partnerPhone, isVideo)
+        } else {
+            showPermissionRationale = true
+        }
+    }
 
     LaunchedEffect(messages.size, isTyping) {
         if (messages.isNotEmpty()) {
@@ -95,6 +131,12 @@ fun ChatRoomScreen(
                     }
                 },
                 actions = {
+                    IconButton(onClick = { checkAndStartCall(false) }) {
+                        Icon(Icons.Default.Call, contentDescription = "Voice Call", tint = colors.accent)
+                    }
+                    IconButton(onClick = { checkAndStartCall(true) }) {
+                        Icon(Icons.Default.Videocam, contentDescription = "Video Call", tint = colors.accent)
+                    }
                     IconButton(onClick = { onNavigateToVerify(partnerPhone) }) {
                         Icon(Icons.Outlined.Lock, contentDescription = "Verify Encryption", tint = colors.accent)
                     }
@@ -194,6 +236,49 @@ fun ChatRoomScreen(
                     }
                 }
             }
+
+            if (showPermissionRationale) {
+                AlertDialog(
+                    onDismissRequest = { showPermissionRationale = false },
+                    title = {
+                        Text(
+                            text = "Permission Required",
+                            fontFamily = androidx.compose.ui.text.font.FontFamily.Serif,
+                            fontWeight = FontWeight.Bold,
+                            color = colors.text
+                        )
+                    },
+                    text = {
+                        Text(
+                            text = "Quick Chat needs Camera and Audio permissions to establish secure E2E encrypted voice and video calls.",
+                            color = colors.text
+                        )
+                    },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                showPermissionRationale = false
+                                permissionLauncher.launch(
+                                    arrayOf(
+                                        Manifest.permission.CAMERA,
+                                        Manifest.permission.RECORD_AUDIO
+                                    )
+                                )
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = colors.accent)
+                        ) {
+                            Text("Continue", color = Color.White)
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showPermissionRationale = false }) {
+                            Text("Cancel", color = colors.text)
+                        }
+                    },
+                    containerColor = colors.surface,
+                    modifier = Modifier.sketchyBorder(2.dp, colors.border, 16.dp)
+                )
+            }
         }
     }
 }
@@ -270,11 +355,33 @@ fun MessageBubble(message: Message, isMe: Boolean, fontSize: Float) {
                     .padding(horizontal = 14.dp, vertical = 10.dp)
             ) {
                 Column(horizontalAlignment = Alignment.End) {
-                    Text(
-                        text = message.plainText ?: "[Decryption Error]",
-                        color = if (isMe) Color.White else colors.text,
-                        fontSize = fontSize.sp
-                    )
+                    if (message.messageType == MessageType.CALL_LOG) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            val isVideoCall = message.plainText?.contains("Video Call", ignoreCase = true) == true
+                            val icon = if (isVideoCall) Icons.Default.Videocam else Icons.Default.Call
+                            Icon(
+                                imageVector = icon,
+                                contentDescription = "Call Log",
+                                tint = if (isMe) Color.White else colors.accent,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Text(
+                                text = message.plainText ?: "Call",
+                                color = if (isMe) Color.White else colors.text,
+                                fontSize = fontSize.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    } else {
+                        Text(
+                            text = message.plainText ?: "[Decryption Error]",
+                            color = if (isMe) Color.White else colors.text,
+                            fontSize = fontSize.sp
+                        )
+                    }
                     
                     Spacer(modifier = Modifier.height(4.dp))
                     

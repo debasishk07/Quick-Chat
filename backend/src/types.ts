@@ -29,7 +29,7 @@ export interface MessagePayload {
   ciphertext: string; // E2E Encrypted message payload (Base64)
   iv: string; // Base64 Initialization Vector for AES
   ephemeralPublicKey: string | null; // Base64, for X3DH/Double Ratchet
-  messageType: 'TEXT' | 'IMAGE' | 'VIDEO' | 'VOICE' | 'DOCUMENT' | 'LOCATION' | 'CONTACT';
+  messageType: 'TEXT' | 'IMAGE' | 'VIDEO' | 'VOICE' | 'DOCUMENT' | 'LOCATION' | 'CONTACT' | 'CALL_SIGNAL' | 'CALL_LOG';
   timestamp: number;
   status: 'SENDING' | 'SENT' | 'DELIVERED' | 'READ';
 }

@@ -48,7 +48,7 @@ class CryptoUnitTest {
         // 4. Initialize E2E Session on Bob (receiver) side using Alice's ephemeral key from headers
         val bobSession = DoubleRatchetEngine.initBob(
             ourIdentityKey = bobIdentity,
-            ourSignedPreKey = bobSigned,
+            ourSignedPreKey = bobSignedPre,
             ourOneTimePreKey = bobOneTimePre,
             senderIdentityKey = aliceIdentity.public,
             senderEphemeralKey = SignalKeys.decodePublicKey(payload1.ephemeralPublicKey)
@@ -103,5 +103,48 @@ class CryptoUnitTest {
         )
 
         assertArrayEquals("Decrypted media bytes must match the source bytes exactly", originalFileContent, decryptedFileContent)
+    }
+
+    @Test
+    fun testCallSignalingEncryption() {
+        val aliceIdentity = SignalKeys.generateKeyPair()
+        val bobIdentity = SignalKeys.generateKeyPair()
+        val bobSignedPre = SignalKeys.generateKeyPair()
+        val bobOneTimePre = SignalKeys.generateKeyPair()
+
+        // 1. Initiate Session Alice
+        val aliceSession = DoubleRatchetEngine.initAlice(
+            ourIdentityKey = aliceIdentity,
+            recipientIdentityKey = bobIdentity.public,
+            recipientSignedPreKey = bobSignedPre.public,
+            recipientOneTimePreKey = bobOneTimePre.public
+        )
+
+        // 2. Encrypt call offer signal
+        val callSdpOffer = "v=0\r\no=alice 2890844526 2890844526 IN IP4 host.anywhere.com\r\ns=E2EE Call\r\nt=0 0"
+        val payloadOffer = DoubleRatchetEngine.encrypt(aliceSession, callSdpOffer.toByteArray(Charsets.UTF_8))
+
+        // 3. Initialize Bob Session
+        val bobSession = DoubleRatchetEngine.initBob(
+            ourIdentityKey = bobIdentity,
+            ourSignedPreKey = bobSignedPre,
+            ourOneTimePreKey = bobOneTimePre,
+            senderIdentityKey = aliceIdentity.public,
+            senderEphemeralKey = SignalKeys.decodePublicKey(payloadOffer.ephemeralPublicKey)
+        )
+
+        // 4. Bob decrypts SDP offer
+        val decryptedOfferBytes = DoubleRatchetEngine.decrypt(bobSession, payloadOffer)
+        val decryptedOffer = String(decryptedOfferBytes, Charsets.UTF_8)
+        assertEquals(callSdpOffer, decryptedOffer)
+
+        // 5. Bob encrypts call answer signal
+        val callSdpAnswer = "v=0\r\no=bob 2890844527 2890844527 IN IP4 host.anywhere.com\r\ns=E2EE Call\r\nt=0 0"
+        val payloadAnswer = DoubleRatchetEngine.encrypt(bobSession, callSdpAnswer.toByteArray(Charsets.UTF_8))
+
+        // 6. Alice decrypts SDP answer
+        val decryptedAnswerBytes = DoubleRatchetEngine.decrypt(aliceSession, payloadAnswer)
+        val decryptedAnswer = String(decryptedAnswerBytes, Charsets.UTF_8)
+        assertEquals(callSdpAnswer, decryptedAnswer)
     }
 }

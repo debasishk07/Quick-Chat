@@ -27,6 +27,7 @@ import com.quickchat.feature.status.StatusCreatorScreen
 import com.quickchat.feature.status.StatusListScreen
 import com.quickchat.feature.status.StatusViewModel
 import com.quickchat.feature.status.StatusViewerScreen
+import com.quickchat.app.call.WebRtcCallManager
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import androidx.compose.runtime.collectAsState
@@ -37,6 +38,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var userRepository: UserRepository
+
+    @Inject
+    lateinit var callManager: WebRtcCallManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,7 +64,8 @@ class MainActivity : ComponentActivity() {
                     
                     QuickChatNavHost(
                         startDestination = startDestination,
-                        settingsViewModel = settingsViewModel
+                        settingsViewModel = settingsViewModel,
+                        callManager = callManager
                     )
                 }
             }
@@ -69,7 +74,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun QuickChatNavHost(startDestination: String, settingsViewModel: SettingsViewModel) {
+fun QuickChatNavHost(startDestination: String, settingsViewModel: SettingsViewModel, callManager: WebRtcCallManager) {
     val navController = rememberNavController()
     
     // Shared ViewModels at parent activity level (to preserve states across screens)
@@ -133,6 +138,9 @@ fun QuickChatNavHost(startDestination: String, settingsViewModel: SettingsViewMo
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToVerify = { recipientPhone ->
                     navController.navigate("verify_security/$recipientPhone")
+                },
+                onStartCall = { recipientPhone, isVideo ->
+                    callManager.initiateCall(recipientPhone, isVideo)
                 }
             )
         }

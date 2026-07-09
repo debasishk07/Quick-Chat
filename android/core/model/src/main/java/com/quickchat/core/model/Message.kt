@@ -1,7 +1,7 @@
 package com.quickchat.core.model
 
 enum class MessageType {
-    TEXT, IMAGE, VIDEO, VOICE, DOCUMENT, LOCATION, CONTACT
+    TEXT, IMAGE, VIDEO, VOICE, DOCUMENT, LOCATION, CONTACT, CALL_SIGNAL, CALL_LOG
 }
 
 enum class MessageStatus {
