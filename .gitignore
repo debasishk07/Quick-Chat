@@ -1,0 +1,30 @@
+# OS-specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Android-specific
+android/.gradle/
+android/local.properties
+android/captures/
+android/.externalNativeBuild/
+android/.cxx/
+android/**/build/
+android/.idea/
+
+# Backend (Node.js)
+backend/node_modules/
+backend/dist/
+backend/quickchat.db
+backend/*.db-journal
+backend/*.db-shm
+backend/*.db-wal
+backend/.env
+backend/npm-debug.log*
+backend/yarn-debug.log*
+backend/yarn-error.log*
+backend/.pnpm-debug.log*
