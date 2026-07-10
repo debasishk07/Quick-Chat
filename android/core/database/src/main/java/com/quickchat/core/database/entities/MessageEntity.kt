@@ -18,7 +18,9 @@ data class MessageEntity(
     val messageType: String, // mapped from enum Name
     val timestamp: Long,
     val status: String,      // mapped from enum Name
-    val plainText: String?   // ONLY local decrypted text
+    val plainText: String?,   // ONLY local decrypted text
+    val isStarred: Boolean = false,
+    val expireAt: Long? = null
 ) {
     fun toDomain(): Message = Message(
         id = id,
@@ -31,7 +33,9 @@ data class MessageEntity(
         messageType = MessageType.valueOf(messageType),
         timestamp = timestamp,
         status = MessageStatus.valueOf(status),
-        plainText = plainText
+        plainText = plainText,
+        isStarred = isStarred,
+        expireAt = expireAt
     )
 
     companion object {
@@ -46,7 +50,9 @@ data class MessageEntity(
             messageType = m.messageType.name,
             timestamp = m.timestamp,
             status = m.status.name,
-            plainText = m.plainText
+            plainText = m.plainText,
+            isStarred = m.isStarred,
+            expireAt = m.expireAt
         )
     }
 }

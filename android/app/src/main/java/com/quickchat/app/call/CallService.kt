@@ -91,7 +91,7 @@ class CallService : Service() {
     }
 
     private fun startForegroundWithNotification() {
-        val notification = buildNotification("Connecting E2EE Call...")
+        val notification = buildNotification("Connecting E2EE Call...", callManager.partnerName.value)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             startForeground(
                 NOTIFICATION_ID,
@@ -116,12 +116,12 @@ class CallService : Service() {
             else -> "Ending Call..."
         }
 
-        val notification = buildNotification(statusText)
+        val notification = buildNotification(statusText, partnerName)
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         manager.notify(NOTIFICATION_ID, notification)
     }
 
-    private fun buildNotification(text: String): Notification {
+    private fun buildNotification(text: String, partnerName: String): Notification {
         val intent = Intent(this, CallActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
         }
@@ -143,10 +143,13 @@ class CallService : Service() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
+        val initialsBitmap = getAvatarBitmap(this, partnerName)
+
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("Quick Chat")
             .setContentText(text)
             .setSmallIcon(android.R.drawable.sym_def_app_icon)
+            .setLargeIcon(initialsBitmap)
             .setContentIntent(pendingIntent)
             .setOngoing(true)
             .setCategory(NotificationCompat.CATEGORY_CALL)
@@ -157,5 +160,43 @@ class CallService : Service() {
                 endCallPendingIntent
             )
             .build()
+    }
+
+    private fun getAvatarBitmap(context: Context, displayName: String): android.graphics.Bitmap {
+        val size = 128
+        val bitmap = android.graphics.Bitmap.createBitmap(size, size, android.graphics.Bitmap.Config.ARGB_8888)
+        val canvas = android.graphics.Canvas(bitmap)
+        
+        val colors = listOf(
+            0xFFE57373.toInt(), 0xFFF06292.toInt(), 0xFFBA68C8.toInt(), 0xFF9575CD.toInt(),
+            0xFF7986CB.toInt(), 0xFF64B5F6.toInt(), 0xFF4FC3F7.toInt(), 0xFF4DB6AC.toInt(),
+            0xFF81C784.toInt(), 0xFFD4E157.toInt(), 0xFFFFD54F.toInt(), 0xFFFFB74D.toInt(),
+            0xFFFF8A65.toInt(), 0xFFA1887F.toInt()
+        )
+        val nameToHash = if (displayName.isBlank()) "Guest" else displayName
+        val colorIndex = Math.abs(nameToHash.hashCode()) % colors.size
+        val bgColor = colors[colorIndex]
+        
+        val paint = android.graphics.Paint().apply {
+            color = bgColor
+            isAntiAlias = true
+            style = android.graphics.Paint.Style.FILL
+        }
+        canvas.drawCircle(size / 2f, size / 2f, size / 2f, paint)
+        
+        val textPaint = android.graphics.Paint().apply {
+            color = android.graphics.Color.WHITE
+            isAntiAlias = true
+            textSize = 54f
+            typeface = android.graphics.Typeface.create(android.graphics.Typeface.SERIF, android.graphics.Typeface.BOLD)
+            textAlign = android.graphics.Paint.Align.CENTER
+        }
+        
+        val initial = nameToHash.trim().firstOrNull()?.uppercaseChar() ?: '?'
+        val xPos = canvas.width / 2f
+        val yPos = (canvas.height / 2f) - ((textPaint.descent() + textPaint.ascent()) / 2f)
+        canvas.drawText(initial.toString(), xPos, yPos, textPaint)
+        
+        return bitmap
     }
 }

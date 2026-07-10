@@ -11,9 +11,13 @@ import com.quickchat.core.database.entities.*
         ChatEntity::class,
         StatusEntity::class,
         SessionEntity::class,
-        OutboxEntity::class
+        OutboxEntity::class,
+        UserEntity::class,
+        PhoneContactEntity::class,
+        BlockedContactEntity::class,
+        MessageFtsEntity::class
     ],
-    version = 1,
+    version = 4,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -22,4 +26,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun statusDao(): StatusDao
     abstract fun sessionDao(): SessionDao
     abstract fun outboxDao(): OutboxDao
+    abstract fun userDao(): UserDao
+    abstract fun phoneContactDao(): PhoneContactDao
+    abstract fun blockedContactDao(): BlockedContactDao
 }

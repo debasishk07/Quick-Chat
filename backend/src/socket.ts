@@ -23,7 +23,18 @@ export function setupSocketIO(io: Server) {
     // 1. Mark user as online in DB & broadcast presence
     try {
       await dbOperations.run('UPDATE users SET isOnline = 1, lastSeen = ? WHERE phone = ?', [Date.now(), phone]);
-      socket.broadcast.emit('presence-change', { phone, isOnline: true, lastSeen: Date.now() });
+      
+      // Filter presence changes: do not broadcast if blocker-blocked relationship exists
+      for (const [recipientPhone, socketId] of activeSockets.entries()) {
+        if (recipientPhone === phone) continue;
+        const isBlocked = await dbOperations.get(
+          'SELECT 1 FROM blocked_contacts WHERE (blocker = ? AND blocked = ?) OR (blocker = ? AND blocked = ?)',
+          [phone, recipientPhone, recipientPhone, phone]
+        );
+        if (!isBlocked) {
+          io.to(socketId).emit('presence-change', { phone, isOnline: true, lastSeen: Date.now() });
+        }
+      }
 
       // 2. Fetch and deliver offline messages
       const offlineMessages = await dbOperations.all<MessagePayload>(
@@ -60,6 +71,17 @@ export function setupSocketIO(io: Server) {
       console.log(`Relaying message ${message.id} from ${message.sender} to ${message.recipient}`);
       
       try {
+        // Enforce block check at the backend
+        const blockExists = await dbOperations.get(
+          'SELECT 1 FROM blocked_contacts WHERE blocker = ? AND blocked = ?',
+          [message.recipient, message.sender]
+        );
+        if (blockExists) {
+          console.log(`Message from ${message.sender} to blocker ${message.recipient} dropped.`);
+          if (ackCallback) ackCallback({ success: false });
+          return;
+        }
+
         const recipientSocketId = activeSockets.get(message.recipient);
 
         if (recipientSocketId) {
@@ -136,7 +158,17 @@ export function setupSocketIO(io: Server) {
       try {
         const lastSeenTime = Date.now();
         await dbOperations.run('UPDATE users SET isOnline = 0, lastSeen = ? WHERE phone = ?', [lastSeenTime, phone]);
-        socket.broadcast.emit('presence-change', { phone, isOnline: false, lastSeen: lastSeenTime });
+        
+        for (const [recipientPhone, socketId] of activeSockets.entries()) {
+          if (recipientPhone === phone) continue;
+          const isBlocked = await dbOperations.get(
+            'SELECT 1 FROM blocked_contacts WHERE (blocker = ? AND blocked = ?) OR (blocker = ? AND blocked = ?)',
+            [phone, recipientPhone, recipientPhone, phone]
+          );
+          if (!isBlocked) {
+            io.to(socketId).emit('presence-change', { phone, isOnline: false, lastSeen: lastSeenTime });
+          }
+        }
       } catch (err) {
         console.error('Error handling disconnect state:', err);
       }

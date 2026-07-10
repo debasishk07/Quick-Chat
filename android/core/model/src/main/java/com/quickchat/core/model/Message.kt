@@ -19,5 +19,7 @@ data class Message(
     val messageType: MessageType,
     val timestamp: Long,
     val status: MessageStatus,
-    val plainText: String? = null // ONLY populated locally after decryption
+    val plainText: String? = null, // ONLY populated locally after decryption
+    val isStarred: Boolean = false,
+    val expireAt: Long? = null
 )

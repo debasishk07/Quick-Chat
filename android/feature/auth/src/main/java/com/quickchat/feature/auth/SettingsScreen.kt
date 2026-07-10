@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.quickchat.core.model.BlockedContact
 import com.quickchat.core.model.theme.LocalSketchyColors
 import com.quickchat.core.model.theme.SketchyCard
 import com.quickchat.core.model.theme.SketchyDivider
@@ -47,6 +48,7 @@ fun SettingsScreen(
     var showWallpaperDialog by remember { mutableStateOf(false) }
     var showFontSizeDialog by remember { mutableStateOf(false) }
     var showThemeDialog by remember { mutableStateOf(false) }
+    var showBlockedContactsDialog by remember { mutableStateOf(false) }
     
     // Privacy options states
     var lastSeen by remember { mutableStateOf(viewModel.getLastSeenVisibility()) }
@@ -226,6 +228,13 @@ fun SettingsScreen(
                             colors = SwitchDefaults.colors(checkedThumbColor = colors.accent, checkedTrackColor = colors.accent.copy(alpha = 0.5f))
                         )
                     },
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent, headlineColor = colors.text, supportingColor = colors.text.copy(alpha = 0.6f))
+                )
+                ListItem(
+                    headlineContent = { Text("Blocked Contacts") },
+                    supportingContent = { Text("Manage contacts you have muted/blocked") },
+                    leadingContent = { Icon(Icons.Outlined.Block, contentDescription = null, tint = colors.text) },
+                    modifier = Modifier.clickable { showBlockedContactsDialog = true },
                     colors = ListItemDefaults.colors(containerColor = Color.Transparent, headlineColor = colors.text, supportingColor = colors.text.copy(alpha = 0.6f))
                 )
             }
@@ -574,6 +583,51 @@ fun SettingsScreen(
                 }
             },
             containerColor = colors.surface
+        )
+    }
+
+    if (showBlockedContactsDialog) {
+        val blockedList by viewModel.blockedContacts.collectAsState()
+        AlertDialog(
+            onDismissRequest = { showBlockedContactsDialog = false },
+            title = { Text("Blocked Contacts", fontFamily = androidx.compose.ui.text.font.FontFamily.Serif) },
+            text = {
+                if (blockedList.isEmpty()) {
+                    Text("No blocked contacts.")
+                } else {
+                    Column(modifier = Modifier.heightIn(max = 300.dp).verticalScroll(rememberScrollState())) {
+                        blockedList.forEach { contact ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(contact.displayName, fontWeight = FontWeight.Bold, color = colors.text)
+                                    Text(contact.phone, fontSize = 12.sp, color = colors.text.copy(alpha = 0.6f))
+                                }
+                                TextButton(onClick = {
+                                    viewModel.unblockUser(contact.phone)
+                                    Toast.makeText(context, "${contact.displayName} unblocked", Toast.LENGTH_SHORT).show()
+                                }) {
+                                    Text("Unblock", color = colors.accent)
+                                }
+                            }
+                            SketchyDivider()
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showBlockedContactsDialog = false }) {
+                    Text("Close", color = colors.accent)
+                }
+            },
+            containerColor = colors.background,
+            titleContentColor = colors.text,
+            textContentColor = colors.text
         )
     }
 }

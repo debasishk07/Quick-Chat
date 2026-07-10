@@ -10,5 +10,7 @@ data class Chat(
     val isPinned: Boolean = false,
     val isMuted: Boolean = false,
     val isArchived: Boolean = false,
-    val isTyping: Boolean = false // Volatile UI presence state
+    val isTyping: Boolean = false, // Volatile UI presence state
+    val isProfileLoaded: Boolean = false,
+    val disappearingDuration: Long = 0L
 )

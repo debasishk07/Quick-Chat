@@ -84,4 +84,13 @@ object DatabaseModule {
 
     @Provides
     fun provideOutboxDao(db: AppDatabase): OutboxDao = db.outboxDao()
+
+    @Provides
+    fun provideUserDao(db: AppDatabase): UserDao = db.userDao()
+
+    @Provides
+    fun providePhoneContactDao(db: AppDatabase): PhoneContactDao = db.phoneContactDao()
+
+    @Provides
+    fun provideBlockedContactDao(db: AppDatabase): BlockedContactDao = db.blockedContactDao()
 }

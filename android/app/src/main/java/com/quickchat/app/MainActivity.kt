@@ -116,9 +116,14 @@ fun QuickChatNavHost(startDestination: String, settingsViewModel: SettingsViewMo
         composable("home") {
             ChatListScreen(
                 viewModel = chatListViewModel,
-                onNavigateToChat = { phone ->
+                onNavigateToChat = { phone, highlightMessageId ->
                     chatRoomViewModel.initRecipient(phone)
-                    navController.navigate("chat/$phone")
+                    val route = if (highlightMessageId != null) {
+                        "chat/$phone?highlightMessageId=$highlightMessageId"
+                    } else {
+                        "chat/$phone"
+                    }
+                    navController.navigate(route)
                 },
                 onNavigateToStatus = { navController.navigate("status_list") },
                 onNavigateToProfile = { navController.navigate("profile") },
@@ -127,17 +132,29 @@ fun QuickChatNavHost(startDestination: String, settingsViewModel: SettingsViewMo
         }
         
         composable(
-            route = "chat/{phone}",
-            arguments = listOf(navArgument("phone") { type = NavType.StringType })
+            route = "chat/{phone}?highlightMessageId={highlightMessageId}",
+            arguments = listOf(
+                navArgument("phone") { type = NavType.StringType },
+                navArgument("highlightMessageId") {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                }
+            )
         ) { backStackEntry ->
             val phone = backStackEntry.arguments?.getString("phone") ?: ""
+            val highlightMessageId = backStackEntry.arguments?.getString("highlightMessageId")
             ChatRoomScreen(
                 viewModel = chatRoomViewModel,
                 chatWallpaper = chatWallpaper,
                 chatFontSize = chatFontSize,
+                highlightMessageId = highlightMessageId,
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToVerify = { recipientPhone ->
                     navController.navigate("verify_security/$recipientPhone")
+                },
+                onNavigateToContactInfo = { recipientPhone ->
+                    navController.navigate("contact_info/$recipientPhone")
                 },
                 onStartCall = { recipientPhone, isVideo ->
                     callManager.initiateCall(recipientPhone, isVideo)
@@ -206,6 +223,28 @@ fun QuickChatNavHost(startDestination: String, settingsViewModel: SettingsViewMo
                         popUpTo("home") { inclusive = true }
                     }
                 }
+            )
+        }
+
+        composable(
+            route = "contact_info/{phone}",
+            arguments = listOf(navArgument("phone") { type = NavType.StringType })
+        ) {
+            ContactInfoScreen(
+                viewModel = chatRoomViewModel,
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToVerify = { phone -> navController.navigate("verify_security/$phone") },
+                onNavigateToMediaGallery = { phone -> navController.navigate("media_gallery/$phone") }
+            )
+        }
+
+        composable(
+            route = "media_gallery/{phone}",
+            arguments = listOf(navArgument("phone") { type = NavType.StringType })
+        ) {
+            MediaGalleryScreen(
+                viewModel = chatRoomViewModel,
+                onNavigateBack = { navController.popBackStack() }
             )
         }
     }
