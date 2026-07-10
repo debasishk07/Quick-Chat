@@ -15,7 +15,8 @@ data class ChatEntity(
     val unreadCount: Int,
     val isPinned: Boolean,
     val isMuted: Boolean,
-    val isArchived: Boolean
+    val isArchived: Boolean,
+    val disappearingDuration: Long = 0L
 ) {
     fun toDomain(lastMessage: Message?): Chat = Chat(
         recipientPhone = recipientPhone,
@@ -26,7 +27,8 @@ data class ChatEntity(
         unreadCount = unreadCount,
         isPinned = isPinned,
         isMuted = isMuted,
-        isArchived = isArchived
+        isArchived = isArchived,
+        disappearingDuration = disappearingDuration
     )
 
     companion object {
@@ -39,7 +41,8 @@ data class ChatEntity(
             unreadCount = c.unreadCount,
             isPinned = c.isPinned,
             isMuted = c.isMuted,
-            isArchived = c.isArchived
+            isArchived = c.isArchived,
+            disappearingDuration = c.disappearingDuration
         )
     }
 }

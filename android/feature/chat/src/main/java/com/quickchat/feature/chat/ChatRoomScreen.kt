@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Send
 import androidx.compose.material3.*
@@ -29,6 +30,7 @@ import com.quickchat.core.model.Message
 import com.quickchat.core.model.MessageStatus
 import com.quickchat.core.model.theme.LocalSketchyColors
 import com.quickchat.core.model.theme.SketchyDivider
+import com.quickchat.core.model.theme.UserAvatar
 import com.quickchat.core.model.theme.sketchyBorder
 import java.text.SimpleDateFormat
 import java.util.*
@@ -51,13 +53,17 @@ fun ChatRoomScreen(
     viewModel: ChatRoomViewModel,
     chatWallpaper: String,
     chatFontSize: Float,
+    highlightMessageId: String? = null,
     onNavigateBack: () -> Unit,
     onNavigateToVerify: (phone: String) -> Unit,
+    onNavigateToContactInfo: (phone: String) -> Unit,
     onStartCall: (phone: String, isVideo: Boolean) -> Unit
 ) {
     val messages by viewModel.messages.collectAsState()
     val partnerName by viewModel.recipientName.collectAsState()
     val partnerPhone by viewModel.recipientPhone.collectAsState()
+    val partnerAvatar by viewModel.recipientAvatar.collectAsState()
+    val isProfileLoaded by viewModel.isProfileLoaded.collectAsState()
     val isOnline by viewModel.isPartnerOnline.collectAsState()
     val lastSeen by viewModel.partnerLastSeen.collectAsState()
     val isTyping by viewModel.partnerTyping.collectAsState()
@@ -65,6 +71,24 @@ fun ChatRoomScreen(
     var textInput by remember { mutableStateFlowOf("") }
     val listState = rememberLazyListState()
     val colors = LocalSketchyColors.current
+
+    var flashedMessageId by remember { mutableStateFlowOf<String?>(null) }
+    LaunchedEffect(highlightMessageId, messages) {
+        if (highlightMessageId != null && messages.isNotEmpty()) {
+            val index = messages.indexOfFirst { it.id == highlightMessageId }
+            if (index >= 0) {
+                listState.scrollToItem(index)
+                flashedMessageId = highlightMessageId
+            }
+        }
+    }
+
+    LaunchedEffect(flashedMessageId) {
+        if (flashedMessageId != null) {
+            kotlinx.coroutines.delay(1500)
+            flashedMessageId = null
+        }
+    }
 
     var showPermissionRationale by remember { mutableStateFlowOf(false) }
     var isVideoCallTrigger by remember { mutableStateFlowOf(false) }
@@ -102,32 +126,81 @@ fun ChatRoomScreen(
         topBar = {
             TopAppBar(
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Outlined.ArrowBack, contentDescription = "Back", tint = colors.text)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.wrapContentWidth()
+                    ) {
+                        IconButton(onClick = onNavigateBack) {
+                            Icon(Icons.Outlined.ArrowBack, contentDescription = "Back", tint = colors.text)
+                        }
+                        if (!isProfileLoaded) {
+                            Box(
+                                modifier = Modifier
+                                    .size(36.dp)
+                                    .clip(CircleShape)
+                                    .background(colors.text.copy(alpha = 0.15f))
+                            )
+                        } else {
+                            UserAvatar(
+                                avatarUrl = partnerAvatar,
+                                displayName = partnerName,
+                                size = 36.dp,
+                                modifier = Modifier.clickable { onNavigateToContactInfo(partnerPhone) }
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
                     }
                 },
                 title = {
-                    Column {
-                        Text(
-                            partnerName,
-                            color = colors.text,
-                            fontFamily = androidx.compose.ui.text.font.FontFamily.Serif,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp
-                        )
-                        Text(
-                            text = when {
-                                isTyping -> "typing..."
-                                isOnline -> "online"
-                                lastSeen > 0 -> {
-                                    val sdf = SimpleDateFormat("hh:mm a", Locale.getDefault())
-                                    "last seen at ${sdf.format(Date(lastSeen))}"
+                    Column(modifier = Modifier.clickable { onNavigateToContactInfo(partnerPhone) }) {
+                        if (!isProfileLoaded) {
+                            Box(
+                                modifier = Modifier
+                                    .width(110.dp)
+                                    .height(16.dp)
+                                    .background(colors.text.copy(alpha = 0.15f), RoundedCornerShape(4.dp))
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Box(
+                                modifier = Modifier
+                                    .width(60.dp)
+                                    .height(10.dp)
+                                    .background(colors.text.copy(alpha = 0.08f), RoundedCornerShape(4.dp))
+                            )
+                        } else {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    partnerName,
+                                    color = colors.text,
+                                    fontFamily = androidx.compose.ui.text.font.FontFamily.Serif,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 18.sp
+                                )
+                                val disappearingDuration by viewModel.recipientDisappearingDuration.collectAsState()
+                                if (disappearingDuration > 0) {
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Icon(
+                                        imageVector = Icons.Outlined.History,
+                                        contentDescription = "Disappearing messages active",
+                                        tint = colors.accent,
+                                        modifier = Modifier.size(16.dp)
+                                    )
                                 }
-                                else -> "offline"
-                            },
-                            color = if (isTyping || isOnline) colors.accent else colors.text.copy(alpha = 0.5f),
-                            fontSize = 12.sp
-                        )
+                            }
+                            Text(
+                                text = when {
+                                    isTyping -> "typing..."
+                                    isOnline -> "online"
+                                    lastSeen > 0 -> {
+                                        val sdf = SimpleDateFormat("hh:mm a", Locale.getDefault())
+                                        "last seen at ${sdf.format(Date(lastSeen))}"
+                                    }
+                                    else -> "offline"
+                                },
+                                color = if (isTyping || isOnline) colors.accent else colors.text.copy(alpha = 0.5f),
+                                fontSize = 12.sp
+                            )
+                        }
                     }
                 },
                 actions = {
@@ -171,7 +244,8 @@ fun ChatRoomScreen(
                         MessageBubble(
                             message = message,
                             isMe = isMe,
-                            fontSize = chatFontSize
+                            fontSize = chatFontSize,
+                            isHighlighted = (message.id == flashedMessageId)
                         )
                     }
                     
@@ -319,10 +393,16 @@ fun ChatRoomBackground(wallpaperStyle: String, strokeColor: Color) {
 }
 
 @Composable
-fun MessageBubble(message: Message, isMe: Boolean, fontSize: Float) {
+fun MessageBubble(message: Message, isMe: Boolean, fontSize: Float, isHighlighted: Boolean = false) {
     var showReactionMenu by remember { mutableStateFlowOf(false) }
     var selectedReaction by remember { mutableStateFlowOf<String?>(null) }
     val colors = LocalSketchyColors.current
+
+    val bubbleBgColor by androidx.compose.animation.animateColorAsState(
+        targetValue = if (isHighlighted) colors.accent.copy(alpha = 0.5f) else (if (isMe) colors.accent else colors.surface),
+        animationSpec = androidx.compose.animation.core.tween(durationMillis = 400),
+        label = "MessageHighlightPulse"
+    )
 
     Box(
         modifier = Modifier
@@ -341,7 +421,7 @@ fun MessageBubble(message: Message, isMe: Boolean, fontSize: Float) {
                             bottomEnd = if (isMe) 2.dp else 16.dp
                         )
                     )
-                    .background(if (isMe) colors.accent else colors.surface)
+                    .background(bubbleBgColor)
                     .sketchyBorder(
                         width = 1.dp,
                         color = colors.text,

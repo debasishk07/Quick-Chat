@@ -2,24 +2,37 @@ package com.quickchat.feature.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.quickchat.core.model.BlockedContact
+import com.quickchat.core.network.repository.ChatRepository
 import com.quickchat.core.network.repository.UserRepository
 import com.quickchat.core.network.settings.SettingsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val settingsManager: SettingsManager,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val chatRepository: ChatRepository
 ) : ViewModel() {
 
     val theme = settingsManager.theme
     val chatWallpaper = settingsManager.chatWallpaper
     val chatFontSize = settingsManager.chatFontSize
+
+    val blockedContacts = chatRepository.getBlockedContactsFlow().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
+
+    fun unblockUser(phone: String) {
+        viewModelScope.launch {
+            chatRepository.unblockUser(phone)
+        }
+    }
 
     private val _deleteSuccess = MutableStateFlow(false)
     val deleteSuccess: StateFlow<Boolean> = _deleteSuccess.asStateFlow()

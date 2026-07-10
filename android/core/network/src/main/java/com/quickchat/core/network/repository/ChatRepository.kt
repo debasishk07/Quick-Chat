@@ -4,19 +4,15 @@ import android.util.Base64
 import android.util.Log
 import com.google.gson.Gson
 import com.quickchat.core.crypto.*
-import com.quickchat.core.database.dao.ChatDao
-import com.quickchat.core.database.dao.MessageDao
-import com.quickchat.core.database.dao.OutboxDao
-import com.quickchat.core.database.dao.SessionDao
-import com.quickchat.core.database.entities.ChatEntity
-import com.quickchat.core.database.entities.MessageEntity
-import com.quickchat.core.database.entities.OutboxEntity
-import com.quickchat.core.database.entities.SessionEntity
+import com.quickchat.core.database.dao.*
+import com.quickchat.core.database.entities.*
 import com.quickchat.core.model.Chat
 import com.quickchat.core.model.Message
 import com.quickchat.core.model.MessageStatus
+import com.quickchat.core.model.BlockedContact
+import com.quickchat.core.model.PhoneContact
 import com.quickchat.core.model.MessageType
-import com.quickchat.core.network.api.QuickChatApi
+import com.quickchat.core.network.api.*
 import com.quickchat.core.network.websocket.SocketManager
 import com.quickchat.core.network.websocket.SocketMessage
 import kotlinx.coroutines.CoroutineScope
@@ -33,7 +29,7 @@ import javax.inject.Singleton
 interface ChatRepository {
     fun getChatsFlow(): Flow<List<Chat>>
     fun getMessagesFlow(recipientPhone: String): Flow<List<Message>>
-    suspend fun sendMessage(recipientPhone: String, messageText: String, type: MessageType): String
+    suspend fun sendMessage(recipientPhone: String, messageText: String, type: MessageType, existingMessageId: String? = null): String
     suspend fun sendTyping(recipientPhone: String, isTyping: Boolean)
     suspend fun searchMessages(query: String): List<Message>
     fun initSocketConnection(phone: String)
@@ -43,6 +39,24 @@ interface ChatRepository {
     suspend fun clearUnreadCount(phone: String)
     val incomingCallSignals: SharedFlow<Pair<String, String>>
     suspend fun sendCallSignal(recipientPhone: String, signalJson: String): Boolean
+
+    suspend fun savePhoneContact(phone: String, contactName: String)
+    suspend fun syncUserProfile(phone: String)
+    suspend fun syncAllChatProfiles()
+    suspend fun ensureChatExists(phone: String, displayName: String)
+    fun getChatFlow(phone: String): Flow<Chat?>
+    fun getStarredMessagesFlow(recipientPhone: String): Flow<List<Message>>
+    suspend fun setMessageStarred(messageId: String, isStarred: Boolean)
+    suspend fun setDisappearingDuration(phone: String, durationMs: Long)
+    fun getBlockedContactsFlow(): Flow<List<BlockedContact>>
+    fun getPhoneContactsFlow(): Flow<List<PhoneContact>>
+    suspend fun blockUser(phone: String, displayName: String)
+    suspend fun unblockUser(phone: String)
+    fun isBlockedFlow(phone: String): Flow<Boolean>
+    suspend fun clearChatHistory(phone: String)
+    suspend fun deleteChat(phone: String)
+    suspend fun searchLocalMessages(query: String): List<Message>
+    suspend fun reportUser(reportedPhone: String, reason: String, description: String?, attachMessages: Boolean, lastNMessages: List<Message>): Boolean
 }
 
 @Singleton
@@ -53,6 +67,9 @@ class ChatRepositoryImpl @Inject constructor(
     private val messageDao: MessageDao,
     private val sessionDao: SessionDao,
     private val outboxDao: OutboxDao,
+    private val userDao: UserDao,
+    private val phoneContactDao: PhoneContactDao,
+    private val blockedContactDao: BlockedContactDao,
     private val userRepository: UserRepository
 ) : ChatRepository {
 
@@ -66,6 +83,20 @@ class ChatRepositoryImpl @Inject constructor(
 
     init {
         observeSocketEvents()
+        
+        // Start background cleaner for E2EE disappearing messages
+        repositoryScope.launch {
+            while (true) {
+                try {
+                    val now = System.currentTimeMillis()
+                    messageDao.deleteExpiredMessagesFts(now)
+                    messageDao.deleteExpiredMessages(now)
+                } catch (e: Exception) {
+                    Log.e("ChatRepository", "Failed to clear expired messages", e)
+                }
+                kotlinx.coroutines.delay(5000) // check every 5 seconds
+            }
+        }
     }
 
     override fun initSocketConnection(phone: String) {
@@ -74,6 +105,25 @@ class ChatRepositoryImpl @Inject constructor(
         repositoryScope.launch {
             syncOfflineOutbox()
         }
+        // Sync blocked users
+        repositoryScope.launch {
+            try {
+                val response = api.getBlockedUsers(phone)
+                if (response.success) {
+                    val existing = blockedContactDao.getAllBlockedContacts().map { it.phone }.toSet()
+                    val serverList = response.blocked.toSet()
+                    for (p in serverList - existing) {
+                        val contactName = phoneContactDao.getPhoneContact(p)?.contactName ?: userDao.getUser(p)?.displayName ?: p
+                        blockedContactDao.insertBlockedContact(BlockedContactEntity(p, contactName))
+                    }
+                    for (p in existing - serverList) {
+                        blockedContactDao.deleteBlockedContact(p)
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("ChatRepository", "Failed to sync blocked list", e)
+            }
+        }
     }
 
     override fun closeSocketConnection() {
@@ -81,12 +131,44 @@ class ChatRepositoryImpl @Inject constructor(
     }
 
     override fun getChatsFlow(): Flow<List<Chat>> {
-        return chatDao.getAllChatsFlow().map { entities ->
-            entities.map { entity ->
+        return combine(
+            chatDao.getAllChatsFlow(),
+            userDao.getAllUsersFlow(),
+            phoneContactDao.getAllPhoneContactsFlow()
+        ) { chatsList, usersList, contactsList ->
+            val usersMap = usersList.associateBy { it.phone }
+            val contactsMap = contactsList.associateBy { it.phone }
+            
+            chatsList.map { entity ->
                 val lastMsg = entity.lastMessageId?.let { id ->
                     messageDao.getMessage(id)?.toDomain()
                 }
-                entity.toDomain(lastMsg)
+                
+                val (resolvedName, resolvedAvatar) = if (entity.isGroup) {
+                    entity.displayName to entity.avatarUrl
+                } else {
+                    val phone = entity.recipientPhone
+                    val localContactName = contactsMap[phone]?.contactName
+                    val cachedUser = usersMap[phone]
+                    
+                    val name = localContactName ?: cachedUser?.displayName ?: phone
+                    val avatar = cachedUser?.avatarUrl
+                    name to avatar
+                }
+                
+                val isLoaded = entity.isGroup || contactsMap[entity.recipientPhone] != null || usersMap[entity.recipientPhone] != null
+                Chat(
+                    recipientPhone = entity.recipientPhone,
+                    displayName = resolvedName,
+                    avatarUrl = resolvedAvatar,
+                    isGroup = entity.isGroup,
+                    lastMessage = lastMsg,
+                    unreadCount = entity.unreadCount,
+                    isPinned = entity.isPinned,
+                    isMuted = entity.isMuted,
+                    isArchived = entity.isArchived,
+                    isProfileLoaded = isLoaded
+                )
             }
         }
     }
@@ -102,17 +184,44 @@ class ChatRepositoryImpl @Inject constructor(
         val lastMsg = entity.lastMessageId?.let { id ->
             messageDao.getMessage(id)?.toDomain()
         }
-        return entity.toDomain(lastMsg)
+        val (resolvedName, resolvedAvatar) = if (entity.isGroup) {
+            entity.displayName to entity.avatarUrl
+        } else {
+            val localContactName = phoneContactDao.getPhoneContact(phone)?.contactName
+            val cachedUser = userDao.getUser(phone)
+            
+            val name = localContactName ?: cachedUser?.displayName ?: phone
+            val avatar = cachedUser?.avatarUrl
+            name to avatar
+        }
+        
+        val isLoaded = entity.isGroup || phoneContactDao.getPhoneContact(phone) != null || userDao.getUser(phone) != null
+        return Chat(
+            recipientPhone = entity.recipientPhone,
+            displayName = resolvedName,
+            avatarUrl = resolvedAvatar,
+            isGroup = entity.isGroup,
+            lastMessage = lastMsg,
+            unreadCount = entity.unreadCount,
+            isPinned = entity.isPinned,
+            isMuted = entity.isMuted,
+            isArchived = entity.isArchived,
+            isProfileLoaded = isLoaded
+        )
     }
 
     override suspend fun clearUnreadCount(phone: String) {
         chatDao.clearUnreadCount(phone)
     }
 
-    override suspend fun sendMessage(recipientPhone: String, messageText: String, type: MessageType): String {
-        val messageId = UUID.randomUUID().toString()
+    override suspend fun sendMessage(recipientPhone: String, messageText: String, type: MessageType, existingMessageId: String?): String {
+        val messageId = existingMessageId ?: UUID.randomUUID().toString()
         val timestamp = System.currentTimeMillis()
         val currentUserPhone = userRepository.currentUser.value?.phone ?: return ""
+
+        val chat = chatDao.getChat(recipientPhone)
+        val disappearingDuration = chat?.disappearingDuration ?: 0L
+        val expireAt = if (disappearingDuration > 0) timestamp + disappearingDuration else null
 
         // 1. Create a sending message entity in SENDING state locally
         val pendingMsg = Message(
@@ -125,9 +234,19 @@ class ChatRepositoryImpl @Inject constructor(
             messageType = type,
             timestamp = timestamp,
             status = MessageStatus.SENDING,
-            plainText = messageText
+            plainText = messageText,
+            expireAt = expireAt
         )
         messageDao.insertMessage(MessageEntity.fromDomain(pendingMsg))
+        if (messageText.isNotBlank()) {
+            messageDao.insertMessageFts(
+                MessageFtsEntity(
+                    messageId = messageId,
+                    chatPhone = recipientPhone,
+                    plainText = messageText
+                )
+            )
+        }
         updateChatLastMessage(recipientPhone, pendingMsg)
 
         // 2. Perform E2E Encryption and relay
@@ -233,7 +352,12 @@ class ChatRepositoryImpl @Inject constructor(
         
         for (q in queued) {
             outboxDao.dequeueMessage(q.id)
-            sendMessage(q.recipientPhone, q.plainText ?: "", MessageType.valueOf(q.messageType))
+            sendMessage(
+                recipientPhone = q.recipientPhone,
+                messageText = q.plainText ?: "",
+                type = MessageType.valueOf(q.messageType),
+                existingMessageId = q.id
+            )
         }
     }
 
@@ -257,6 +381,12 @@ class ChatRepositoryImpl @Inject constructor(
                 val updated = _activeTypingState.value.toMutableMap()
                 updated[typing.sender] = typing.isTyping
                 _activeTypingState.value = updated
+            }
+        }
+
+        repositoryScope.launch {
+            socketManager.presenceChanges.collect { presence ->
+                syncUserProfile(presence.phone)
             }
         }
     }
@@ -284,6 +414,10 @@ class ChatRepositoryImpl @Inject constructor(
                 return
             }
 
+            val chat = chatDao.getChat(socketMsg.sender)
+            val disappearingDuration = chat?.disappearingDuration ?: 0L
+            val expireAt = if (disappearingDuration > 0) socketMsg.timestamp + disappearingDuration else null
+
             // Save decrypted message to database
             val domainMsg = Message(
                 id = socketMsg.id,
@@ -296,10 +430,25 @@ class ChatRepositoryImpl @Inject constructor(
                 messageType = MessageType.valueOf(socketMsg.messageType),
                 timestamp = socketMsg.timestamp,
                 status = MessageStatus.READ, // Read locally
-                plainText = decryptedText
+                plainText = decryptedText,
+                expireAt = expireAt
             )
             messageDao.insertMessage(MessageEntity.fromDomain(domainMsg))
+            if (decryptedText != null && decryptedText.isNotBlank()) {
+                messageDao.insertMessageFts(
+                    MessageFtsEntity(
+                        messageId = socketMsg.id,
+                        chatPhone = socketMsg.sender,
+                        plainText = decryptedText
+                    )
+                )
+            }
             updateChatLastMessage(socketMsg.sender, domainMsg)
+
+            // Sync sender's profile in the background
+            repositoryScope.launch {
+                syncUserProfile(socketMsg.sender)
+            }
 
             // Reply with delivery receipt
             socketManager.sendReceipt(socketMsg.id, socketMsg.sender, "DELIVERED")
@@ -443,5 +592,198 @@ class ChatRepositoryImpl @Inject constructor(
             sequenceNumberSending = json.getInt("seqSending"),
             sequenceNumberReceiving = json.getInt("seqReceiving")
         )
+    }
+
+    override suspend fun savePhoneContact(phone: String, contactName: String) {
+        phoneContactDao.insertOrUpdatePhoneContact(PhoneContactEntity(phone, contactName))
+    }
+
+    override suspend fun syncUserProfile(phone: String) {
+        try {
+            val users = userRepository.syncContacts(listOf(phone))
+            if (users.isNotEmpty()) {
+                val user = users.first()
+                userDao.insertOrUpdateUser(UserEntity.fromDomain(user))
+            }
+        } catch (e: Exception) {
+            Log.e("ChatRepository", "Failed to sync profile for $phone", e)
+        }
+    }
+
+    override suspend fun syncAllChatProfiles() {
+        try {
+            val chatsList = chatDao.getChats()
+            val phonesToSync = chatsList.filter { !it.isGroup }.map { it.recipientPhone }
+            if (phonesToSync.isNotEmpty()) {
+                val syncedUsers = userRepository.syncContacts(phonesToSync)
+                val entities = syncedUsers.map { UserEntity.fromDomain(it) }
+                userDao.insertOrUpdateUsers(entities)
+            }
+        } catch (e: Exception) {
+            Log.e("ChatRepository", "Failed to sync all chat profiles", e)
+        }
+    }
+
+    override suspend fun ensureChatExists(phone: String, displayName: String) {
+        val existing = chatDao.getChat(phone)
+        if (existing == null) {
+            val chat = ChatEntity(
+                recipientPhone = phone,
+                displayName = displayName,
+                avatarUrl = null,
+                isGroup = false,
+                lastMessageId = null,
+                unreadCount = 0,
+                isPinned = false,
+                isMuted = false,
+                isArchived = false
+            )
+            chatDao.insertOrUpdateChat(chat)
+        }
+    }
+
+    override fun getChatFlow(phone: String): Flow<Chat?> {
+        return combine(
+            chatDao.getChatFlow(phone),
+            userDao.getUserFlow(phone),
+            phoneContactDao.getPhoneContactFlow(phone)
+        ) { chatEntity, userEntity, phoneContactEntity ->
+            val (resolvedName, resolvedAvatar) = if (chatEntity?.isGroup == true) {
+                chatEntity.displayName to chatEntity.avatarUrl
+            } else {
+                val localContactName = phoneContactEntity?.contactName
+                val name = localContactName ?: userEntity?.displayName ?: phone
+                val avatar = userEntity?.avatarUrl
+                name to avatar
+            }
+            
+            val isLoaded = chatEntity?.isGroup == true || phoneContactEntity != null || userEntity != null
+            Chat(
+                recipientPhone = phone,
+                displayName = resolvedName,
+                avatarUrl = resolvedAvatar,
+                isGroup = chatEntity?.isGroup ?: false,
+                lastMessage = chatEntity?.lastMessageId?.let { id ->
+                    messageDao.getMessage(id)?.toDomain()
+                },
+                unreadCount = chatEntity?.unreadCount ?: 0,
+                isPinned = chatEntity?.isPinned ?: false,
+                isMuted = chatEntity?.isMuted ?: false,
+                isArchived = chatEntity?.isArchived ?: false,
+                isProfileLoaded = isLoaded
+            )
+        }
+    }
+
+    override fun getStarredMessagesFlow(recipientPhone: String): Flow<List<Message>> {
+        return messageDao.getStarredMessagesFlow(recipientPhone).map { entities ->
+            entities.map { it.toDomain() }
+        }
+    }
+
+    override suspend fun setMessageStarred(messageId: String, isStarred: Boolean) {
+        messageDao.updateMessageStarred(messageId, isStarred)
+    }
+
+    override suspend fun setDisappearingDuration(phone: String, durationMs: Long) {
+        chatDao.updateDisappearingDuration(phone, durationMs)
+    }
+
+    override fun getBlockedContactsFlow(): Flow<List<BlockedContact>> =
+        blockedContactDao.getAllBlockedContactsFlow().map { list ->
+            list.map { BlockedContact(it.phone, it.displayName) }
+        }
+
+    override fun getPhoneContactsFlow(): Flow<List<PhoneContact>> =
+        phoneContactDao.getAllPhoneContactsFlow().map { list ->
+            list.map { PhoneContact(it.phone, it.contactName) }
+        }
+
+    override suspend fun blockUser(phone: String, displayName: String) {
+        val myPhone = userRepository.currentUser.value?.phone ?: return
+        try {
+            api.blockUser(BlockRequest(blockerPhone = myPhone, blockedPhone = phone))
+            blockedContactDao.insertBlockedContact(BlockedContactEntity(phone, displayName))
+        } catch (e: Exception) {
+            Log.e("ChatRepository", "Failed to block user on server", e)
+            blockedContactDao.insertBlockedContact(BlockedContactEntity(phone, displayName))
+        }
+    }
+
+    override suspend fun unblockUser(phone: String) {
+        val myPhone = userRepository.currentUser.value?.phone ?: return
+        try {
+            api.unblockUser(UnblockRequest(blockerPhone = myPhone, blockedPhone = phone))
+            blockedContactDao.deleteBlockedContact(phone)
+        } catch (e: Exception) {
+            Log.e("ChatRepository", "Failed to unblock user on server", e)
+            blockedContactDao.deleteBlockedContact(phone)
+        }
+    }
+
+    override fun isBlockedFlow(phone: String): Flow<Boolean> = blockedContactDao.isBlockedFlow(phone)
+
+    override suspend fun clearChatHistory(phone: String) {
+        messageDao.deleteMessagesForChat(phone)
+        messageDao.deleteMessagesFtsForChat(phone)
+        val chat = chatDao.getChat(phone)
+        if (chat != null) {
+            chatDao.insertOrUpdateChat(chat.copy(lastMessageId = null))
+        }
+    }
+
+    override suspend fun deleteChat(phone: String) {
+        messageDao.deleteMessagesForChat(phone)
+        messageDao.deleteMessagesFtsForChat(phone)
+        chatDao.deleteChat(phone)
+    }
+
+    override suspend fun searchLocalMessages(query: String): List<Message> {
+        if (query.isBlank()) return emptyList()
+        val ftsQuery = query.trim().split("\\s+".toRegex())
+            .filter { it.isNotBlank() }
+            .joinToString(" ") { "$it*" }
+        if (ftsQuery.isBlank()) return emptyList()
+        return messageDao.searchMessagesFts(ftsQuery).map { it.toDomain() }
+    }
+
+    override suspend fun reportUser(
+        reportedPhone: String,
+        reason: String,
+        description: String?,
+        attachMessages: Boolean,
+        lastNMessages: List<Message>
+    ): Boolean {
+        val reporterPhone = userRepository.currentUser.value?.phone ?: return false
+        val messageDtos = if (attachMessages) {
+            lastNMessages.map { msg ->
+                ReportedMessageDto(
+                    id = msg.id,
+                    senderPhone = msg.senderPhone,
+                    recipientPhone = msg.recipientPhone,
+                    text = msg.plainText ?: "",
+                    timestamp = msg.timestamp
+                )
+            }
+        } else {
+            emptyList()
+        }
+        
+        return try {
+            val response = api.reportUser(
+                ReportRequest(
+                    reporterPhone = reporterPhone,
+                    reportedPhone = reportedPhone,
+                    reason = reason,
+                    description = description,
+                    attachMessages = attachMessages,
+                    messages = messageDtos
+                )
+            )
+            response.success
+        } catch (e: Exception) {
+            Log.e("ChatRepository", "Failed to submit report", e)
+            false
+        }
     }
 }

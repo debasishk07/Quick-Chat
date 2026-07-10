@@ -425,4 +425,75 @@ router.delete('/auth/account/:userId', async (req: Request, res: Response) => {
   }
 });
 
+// 13. Block Contact
+router.post('/users/block', async (req: Request, res: Response) => {
+  const { blockerPhone, blockedPhone } = req.body;
+  if (!blockerPhone || !blockedPhone) {
+    return res.status(400).json({ error: 'blockerPhone and blockedPhone are required' });
+  }
+  try {
+    await dbOperations.run(
+      'INSERT OR REPLACE INTO blocked_contacts (blocker, blocked) VALUES (?, ?)',
+      [blockerPhone, blockedPhone]
+    );
+    res.json({ success: true });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 14. Unblock Contact
+router.post('/users/unblock', async (req: Request, res: Response) => {
+  const { blockerPhone, blockedPhone } = req.body;
+  if (!blockerPhone || !blockedPhone) {
+    return res.status(400).json({ error: 'blockerPhone and blockedPhone are required' });
+  }
+  try {
+    await dbOperations.run(
+      'DELETE FROM blocked_contacts WHERE blocker = ? AND blocked = ?',
+      [blockerPhone, blockedPhone]
+    );
+    res.json({ success: true });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 15. Get Blocked Contacts list
+router.get('/users/blocked/:phone', async (req: Request, res: Response) => {
+  const { phone } = req.params;
+  if (!phone) {
+    return res.status(400).json({ error: 'phone is required' });
+  }
+  try {
+    const blocked = await dbOperations.all<{ blocked: string }>(
+      'SELECT blocked FROM blocked_contacts WHERE blocker = ?',
+      [phone]
+    );
+    res.json({ success: true, blocked: blocked.map(b => b.blocked) });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 16. Report User Moderation
+router.post('/users/report', async (req: Request, res: Response) => {
+  const { reporterPhone, reportedPhone, reason, description, attachMessages, messages } = req.body;
+  if (!reporterPhone || !reportedPhone || !reason) {
+    return res.status(400).json({ error: 'reporterPhone, reportedPhone, and reason are required' });
+  }
+  try {
+    const id = Date.now().toString() + '-' + Math.round(Math.random() * 1e9);
+    const messagesJson = attachMessages ? JSON.stringify(messages) : '[]';
+    await dbOperations.run(
+      `INSERT INTO moderation_reports (id, reporter, reported, reason, description, messagesJson, timestamp)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [id, reporterPhone, reportedPhone, reason, description || null, messagesJson, Date.now()]
+    );
+    res.json({ success: true });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 export default router;

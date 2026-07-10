@@ -74,6 +74,9 @@ class WebRtcCallManager @Inject constructor(
     private val _partnerName = MutableStateFlow("")
     val partnerName: StateFlow<String> = _partnerName.asStateFlow()
 
+    private val _partnerAvatar = MutableStateFlow<String?>(null)
+    val partnerAvatar: StateFlow<String?> = _partnerAvatar.asStateFlow()
+
     // WebRTC Core components
     val rootEglBase: EglBase = EglBase.create()
     private var peerConnectionFactory: PeerConnectionFactory? = null
@@ -136,6 +139,7 @@ class WebRtcCallManager @Inject constructor(
                                 _partnerPhone.value = sender
                                 val chat = chatRepository.getChat(sender)
                                 _partnerName.value = chat?.displayName ?: "Contact $sender"
+                                _partnerAvatar.value = chat?.avatarUrl
                                 _isVideo.value = obj.optBoolean("isVideo", false)
                                 isCaller = false
                                 _callState.value = CallState.INCOMING_RINGING
@@ -218,6 +222,7 @@ class WebRtcCallManager @Inject constructor(
         scope.launch {
             val chat = chatRepository.getChat(recipientPhone)
             _partnerName.value = chat?.displayName ?: "Contact $recipientPhone"
+            _partnerAvatar.value = chat?.avatarUrl
         }
 
         startOutgoingRingBack()

@@ -88,6 +88,28 @@ export function initializeDatabase(): Promise<void> {
           timestamp INTEGER NOT NULL,
           PRIMARY KEY (statusId, viewer)
         )
+      `);
+
+      // Blocked Contacts table
+      db.run(`
+        CREATE TABLE IF NOT EXISTS blocked_contacts (
+          blocker TEXT NOT NULL,
+          blocked TEXT NOT NULL,
+          PRIMARY KEY (blocker, blocked)
+        )
+      `);
+
+      // Moderation Reports table
+      db.run(`
+        CREATE TABLE IF NOT EXISTS moderation_reports (
+          id TEXT PRIMARY KEY,
+          reporter TEXT NOT NULL,
+          reported TEXT NOT NULL,
+          reason TEXT NOT NULL,
+          description TEXT,
+          messagesJson TEXT,
+          timestamp INTEGER NOT NULL
+        )
       `, (err) => {
         if (err) reject(err);
         else resolve();

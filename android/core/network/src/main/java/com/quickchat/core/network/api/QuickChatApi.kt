@@ -140,4 +140,41 @@ interface QuickChatApi {
 
     @DELETE("auth/account/{userId}")
     suspend fun deleteAccountBackend(@Path("userId") userId: String): DeleteAccountResponse
+
+    @POST("users/block")
+    suspend fun blockUser(@Body request: BlockRequest): BlockResponse
+
+    @POST("users/unblock")
+    suspend fun unblockUser(@Body request: UnblockRequest): UnblockResponse
+
+    @GET("users/blocked/{phone}")
+    suspend fun getBlockedUsers(@Path("phone") phone: String): BlockedUsersResponse
+
+    @POST("users/report")
+    suspend fun reportUser(@Body request: ReportRequest): ReportResponse
 }
+
+data class BlockRequest(val blockerPhone: String, val blockedPhone: String)
+data class BlockResponse(val success: Boolean, val error: String? = null)
+
+data class UnblockRequest(val blockerPhone: String, val blockedPhone: String)
+data class UnblockResponse(val success: Boolean, val error: String? = null)
+
+data class BlockedUsersResponse(val success: Boolean, val blocked: List<String> = emptyList(), val error: String? = null)
+
+data class ReportRequest(
+    val reporterPhone: String,
+    val reportedPhone: String,
+    val reason: String,
+    val description: String?,
+    val attachMessages: Boolean,
+    val messages: List<ReportedMessageDto> = emptyList()
+)
+data class ReportedMessageDto(
+    val id: String,
+    val senderPhone: String,
+    val recipientPhone: String,
+    val text: String,
+    val timestamp: Long
+)
+data class ReportResponse(val success: Boolean, val error: String? = null)
