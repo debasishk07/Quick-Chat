@@ -20,6 +20,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import org.json.JSONArray
+import android.content.Context
+import dagger.hilt.android.qualifiers.ApplicationContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import java.security.KeyPair
 import java.security.PublicKey
 import java.util.UUID
@@ -29,7 +33,7 @@ import javax.inject.Singleton
 interface ChatRepository {
     fun getChatsFlow(): Flow<List<Chat>>
     fun getMessagesFlow(recipientPhone: String): Flow<List<Message>>
-    suspend fun sendMessage(recipientPhone: String, messageText: String, type: MessageType, existingMessageId: String? = null): String
+    suspend fun sendMessage(recipientPhone: String, messageText: String, type: MessageType, existingMessageId: String? = null, mediaPath: String? = null): String
     suspend fun sendTyping(recipientPhone: String, isTyping: Boolean)
     suspend fun searchMessages(query: String): List<Message>
     fun initSocketConnection(phone: String)
@@ -57,6 +61,18 @@ interface ChatRepository {
     suspend fun deleteChat(phone: String)
     suspend fun searchLocalMessages(query: String): List<Message>
     suspend fun reportUser(reportedPhone: String, reason: String, description: String?, attachMessages: Boolean, lastNMessages: List<Message>): Boolean
+
+    // Delight Features APIs
+    suspend fun setChatPinned(phone: String, isPinned: Boolean)
+    fun getPinnedMessagesFlow(recipientPhone: String): Flow<List<Message>>
+    suspend fun setPinMessage(messageId: String, isPinned: Boolean)
+    suspend fun setMessageReaction(messageId: String, reaction: String?)
+    suspend fun setVoiceMessagePlaybackSpeed(messageId: String, speed: Float)
+    suspend fun scheduleMessage(recipientPhone: String, messageText: String, scheduledTime: Long): Long
+    suspend fun getPendingScheduledMessages(): List<com.quickchat.core.database.entities.ScheduledMessageEntity>
+    suspend fun deleteScheduledMessage(id: Long)
+    fun getScheduledMessagesFlow(phone: String): Flow<List<com.quickchat.core.database.entities.ScheduledMessageEntity>>
+    suspend fun editMessage(messageId: String, newText: String)
 }
 
 @Singleton
@@ -70,7 +86,9 @@ class ChatRepositoryImpl @Inject constructor(
     private val userDao: UserDao,
     private val phoneContactDao: PhoneContactDao,
     private val blockedContactDao: BlockedContactDao,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val scheduledMessageDao: ScheduledMessageDao,
+    @ApplicationContext private val context: Context
 ) : ChatRepository {
 
     private val repositoryScope = CoroutineScope(Dispatchers.IO)
@@ -214,7 +232,13 @@ class ChatRepositoryImpl @Inject constructor(
         chatDao.clearUnreadCount(phone)
     }
 
-    override suspend fun sendMessage(recipientPhone: String, messageText: String, type: MessageType, existingMessageId: String?): String {
+    override suspend fun sendMessage(
+        recipientPhone: String,
+        messageText: String,
+        type: MessageType,
+        existingMessageId: String?,
+        mediaPath: String?
+    ): String {
         val messageId = existingMessageId ?: UUID.randomUUID().toString()
         val timestamp = System.currentTimeMillis()
         val currentUserPhone = userRepository.currentUser.value?.phone ?: return ""
@@ -222,6 +246,8 @@ class ChatRepositoryImpl @Inject constructor(
         val chat = chatDao.getChat(recipientPhone)
         val disappearingDuration = chat?.disappearingDuration ?: 0L
         val expireAt = if (disappearingDuration > 0) timestamp + disappearingDuration else null
+
+        val isEdit = existingMessageId != null
 
         // 1. Create a sending message entity in SENDING state locally
         val pendingMsg = Message(
@@ -235,7 +261,8 @@ class ChatRepositoryImpl @Inject constructor(
             timestamp = timestamp,
             status = MessageStatus.SENDING,
             plainText = messageText,
-            expireAt = expireAt
+            expireAt = expireAt,
+            isEdited = isEdit
         )
         messageDao.insertMessage(MessageEntity.fromDomain(pendingMsg))
         if (messageText.isNotBlank()) {
@@ -249,14 +276,55 @@ class ChatRepositoryImpl @Inject constructor(
         }
         updateChatLastMessage(recipientPhone, pendingMsg)
 
-        // 2. Perform E2E Encryption and relay
+        // 2. Perform E2E Encryption and relay in background
         repositoryScope.launch {
+            var finalMessageText = messageText
+            var finalMediaPath = mediaPath
+
             try {
+                if (finalMediaPath != null) {
+                    val mediaUrlWithKey = uploadAndEncryptMedia(finalMediaPath)
+                        ?: throw IllegalStateException("Failed to upload/encrypt media")
+
+                    if (type == MessageType.VOICE) {
+                        val parts = mediaUrlWithKey.split("#")
+                        val url = parts[0]
+                        val keyIv = parts[1].split(",")
+                        val key = keyIv[0]
+                        val iv = keyIv[1]
+                        val amplitudes = messageText.split(",").map { it.toIntOrNull() ?: 0 }
+                        val voicePayload = JSONObject().apply {
+                            put("url", url)
+                            put("key", key)
+                            put("iv", iv)
+                            put("amplitudes", JSONArray(amplitudes))
+                        }.toString()
+                        finalMessageText = voicePayload
+                    } else if (type == MessageType.IMAGE || type == MessageType.VIDEO) {
+                        if (messageText == "view_once") {
+                            finalMessageText = "view_once:$mediaUrlWithKey"
+                        } else {
+                            finalMessageText = mediaUrlWithKey
+                        }
+                    }
+                    finalMediaPath = null
+                } else {
+                    if (type == MessageType.TEXT) {
+                        finalMessageText = kotlinx.coroutines.withContext(Dispatchers.IO) {
+                            fetchLinkPreviewIfUrl(messageText)
+                        }
+                    }
+                }
+
+                // Update local Room database plainText with final plaintext details
+                val pendingUpdated = pendingMsg.copy(plainText = finalMessageText)
+                messageDao.insertMessage(MessageEntity.fromDomain(pendingUpdated))
+
                 // Get or establish E2E session
                 val session = getOrCreateSession(recipientPhone)
                 
                 // Encrypt payload
-                val encrypted = DoubleRatchetEngine.encrypt(session, messageText.toByteArray(Charsets.UTF_8))
+                val encrypted = DoubleRatchetEngine.encrypt(session, finalMessageText.toByteArray(Charsets.UTF_8))
                 
                 // Save updated session state
                 saveSession(recipientPhone, session)
@@ -276,7 +344,7 @@ class ChatRepositoryImpl @Inject constructor(
                 )
 
                 // Update local Room database with ciphertext info
-                val finalMsg = pendingMsg.copy(
+                val finalMsg = pendingUpdated.copy(
                     ciphertext = encrypted.ciphertext,
                     iv = encrypted.iv,
                     ephemeralPublicKey = encrypted.ephemeralPublicKey,
@@ -296,7 +364,7 @@ class ChatRepositoryImpl @Inject constructor(
                         isGroup = false,
                         messageType = type.name,
                         plainText = messageText,
-                        mediaPath = null,
+                        mediaPath = finalMediaPath,
                         timestamp = timestamp
                     )
                 )
@@ -356,7 +424,8 @@ class ChatRepositoryImpl @Inject constructor(
                 recipientPhone = q.recipientPhone,
                 messageText = q.plainText ?: "",
                 type = MessageType.valueOf(q.messageType),
-                existingMessageId = q.id
+                existingMessageId = q.id,
+                mediaPath = q.mediaPath
             )
         }
     }
@@ -414,9 +483,76 @@ class ChatRepositoryImpl @Inject constructor(
                 return
             }
 
+            // 1. Intercept Special Command Messages (Reactions, Pin Updates, View-Once Acknowledgements)
+            if (decryptedText.startsWith("react:")) {
+                val parts = decryptedText.split(":")
+                if (parts.size >= 3) {
+                    val targetMsgId = parts[1]
+                    val reaction = if (parts[2] == "null") null else parts[2]
+                    val existing = messageDao.getMessage(targetMsgId)
+                    if (existing != null) {
+                        messageDao.insertMessage(existing.copy(reaction = reaction))
+                    }
+                }
+                socketManager.sendReceipt(socketMsg.id, socketMsg.sender, "DELIVERED")
+                return
+            }
+
+            if (decryptedText.startsWith("pin:")) {
+                val parts = decryptedText.split(":")
+                if (parts.size >= 4) {
+                    val targetMsgId = parts[1]
+                    val action = parts[2]
+                    val sysText = parts.drop(3).joinToString(":")
+                    val existing = messageDao.getMessage(targetMsgId)
+                    if (existing != null) {
+                        messageDao.insertMessage(existing.copy(pinnedAt = if (action == "pin") System.currentTimeMillis() else null))
+                    }
+                    
+                    // Insert a local SYSTEM log message
+                    val chat = chatDao.getChat(socketMsg.sender)
+                    val disappearingDuration = chat?.disappearingDuration ?: 0L
+                    val expireAt = if (disappearingDuration > 0) socketMsg.timestamp + disappearingDuration else null
+                    val sysMsg = Message(
+                        id = UUID.randomUUID().toString(),
+                        senderPhone = socketMsg.sender,
+                        recipientPhone = socketMsg.recipient,
+                        isGroup = socketMsg.isGroup == 1,
+                        ciphertext = "",
+                        iv = "",
+                        messageType = MessageType.SYSTEM,
+                        timestamp = socketMsg.timestamp,
+                        status = MessageStatus.READ,
+                        plainText = sysText,
+                        expireAt = expireAt
+                    )
+                    messageDao.insertMessage(MessageEntity.fromDomain(sysMsg))
+                    updateChatLastMessage(socketMsg.sender, sysMsg)
+                }
+                socketManager.sendReceipt(socketMsg.id, socketMsg.sender, "DELIVERED")
+                return
+            }
+
+            if (decryptedText.startsWith("view_once_opened:")) {
+                val parts = decryptedText.split(":")
+                if (parts.size >= 2) {
+                    val targetMsgId = parts[1]
+                    val existing = messageDao.getMessage(targetMsgId)
+                    if (existing != null) {
+                        messageDao.insertMessage(existing.copy(plainText = "Opened"))
+                    }
+                }
+                socketManager.sendReceipt(socketMsg.id, socketMsg.sender, "DELIVERED")
+                return
+            }
+
             val chat = chatDao.getChat(socketMsg.sender)
             val disappearingDuration = chat?.disappearingDuration ?: 0L
             val expireAt = if (disappearingDuration > 0) socketMsg.timestamp + disappearingDuration else null
+
+            // Check if this is an edit of an existing message
+            val existingMsg = messageDao.getMessage(socketMsg.id)
+            val isEdit = existingMsg != null
 
             // Save decrypted message to database
             val domainMsg = Message(
@@ -431,7 +567,11 @@ class ChatRepositoryImpl @Inject constructor(
                 timestamp = socketMsg.timestamp,
                 status = MessageStatus.READ, // Read locally
                 plainText = decryptedText,
-                expireAt = expireAt
+                expireAt = expireAt,
+                isEdited = isEdit,
+                reaction = existingMsg?.reaction,
+                playbackSpeed = existingMsg?.playbackSpeed ?: 1.0f,
+                pinnedAt = existingMsg?.pinnedAt
             )
             messageDao.insertMessage(MessageEntity.fromDomain(domainMsg))
             if (decryptedText != null && decryptedText.isNotBlank()) {
@@ -444,6 +584,11 @@ class ChatRepositoryImpl @Inject constructor(
                 )
             }
             updateChatLastMessage(socketMsg.sender, domainMsg)
+
+            // Trigger notification in background
+            repositoryScope.launch {
+                showMessageNotification(socketMsg.sender, decryptedText, socketMsg.id)
+            }
 
             // Sync sender's profile in the background
             repositoryScope.launch {
@@ -785,5 +930,251 @@ class ChatRepositoryImpl @Inject constructor(
             Log.e("ChatRepository", "Failed to submit report", e)
             false
         }
+    }
+
+    // --- Delight Features Helpers & Implementations ---
+
+    private suspend fun uploadAndEncryptMedia(localPath: String): String? = kotlinx.coroutines.withContext(Dispatchers.IO) {
+        try {
+            val file = java.io.File(localPath)
+            if (!file.exists()) return@withContext null
+            val fileBytes = file.readBytes()
+            val encryptResult = MediaEncryptor.encryptFile(fileBytes)
+            
+            val requestFile = okhttp3.RequestBody.create("application/octet-stream".toMediaTypeOrNull(), encryptResult.encryptedBytes)
+            val body = okhttp3.MultipartBody.Part.createFormData("file", file.name, requestFile)
+            val uploadResponse = api.uploadMedia(body)
+            if (uploadResponse.success) {
+                val keyBase64 = Base64.encodeToString(encryptResult.mediaKey, Base64.NO_WRAP)
+                val ivBase64 = Base64.encodeToString(encryptResult.iv, Base64.NO_WRAP)
+                return@withContext "${uploadResponse.fileUrl}#$keyBase64,$ivBase64"
+            }
+        } catch (e: Exception) {
+            Log.e("ChatRepository", "Failed to upload/encrypt media", e)
+        }
+        null
+    }
+
+    private suspend fun fetchLinkPreviewIfUrl(text: String): String = kotlinx.coroutines.withContext(Dispatchers.IO) {
+        val urlRegex = "(https?://[\\w-]+(\\.[\\w-]+)+(/\\S*)?)".toRegex(RegexOption.IGNORE_CASE)
+        val match = urlRegex.find(text) ?: return@withContext text
+        val url = match.value
+
+        if (text.startsWith("{") && text.endsWith("}")) return@withContext text
+
+        try {
+            val client = okhttp3.OkHttpClient.Builder()
+                .connectTimeout(2, java.util.concurrent.TimeUnit.SECONDS)
+                .readTimeout(2, java.util.concurrent.TimeUnit.SECONDS)
+                .build()
+            val request = okhttp3.Request.Builder().url(url).build()
+            val response = client.newCall(request).execute()
+            if (!response.isSuccessful) return@withContext text
+            val html = response.body?.string() ?: return@withContext text
+
+            val titleRegex = "<meta\\s+[^>]*property=[\"']og:title[\"'][^>]*content=[\"']([^\"']*)[\"']".toRegex(RegexOption.IGNORE_CASE)
+            val descRegex = "<meta\\s+[^>]*property=[\"']og:description[\"'][^>]*content=[\"']([^\"']*)[\"']".toRegex(RegexOption.IGNORE_CASE)
+            val imgRegex = "<meta\\s+[^>]*property=[\"']og:image[\"'][^>]*content=[\"']([^\"']*)[\"']".toRegex(RegexOption.IGNORE_CASE)
+
+            val title = titleRegex.find(html)?.groupValues?.get(1) 
+                ?: "<title>([^<]*)</title>".toRegex(RegexOption.IGNORE_CASE).find(html)?.groupValues?.get(1)
+                ?: url
+            val desc = descRegex.find(html)?.groupValues?.get(1) ?: ""
+            val img = imgRegex.find(html)?.groupValues?.get(1) ?: ""
+
+            val previewObj = JSONObject().apply {
+                put("url", url)
+                put("title", title)
+                put("description", desc)
+                put("imageUrl", img)
+            }
+            val payloadObj = JSONObject().apply {
+                put("text", text)
+                put("linkPreview", previewObj)
+            }
+            payloadObj.toString()
+        } catch (e: java.lang.Exception) {
+            Log.d("ChatRepository", "Failed to fetch link preview: ${e.message}")
+            text
+        }
+    }
+
+    private suspend fun showMessageNotification(senderPhone: String, text: String, messageId: String) {
+        val replyLabel = "Reply"
+        val remoteInput = androidx.core.app.RemoteInput.Builder("key_text_reply")
+            .setLabel(replyLabel)
+            .build()
+
+        val replyIntent = android.content.Intent().apply {
+            setClassName(context.packageName, "com.quickchat.app.scheduling.NotificationReplyReceiver")
+            putExtra("sender_phone", senderPhone)
+            putExtra("notification_id", senderPhone.hashCode())
+            putExtra("message_id", messageId)
+        }
+        val replyPendingIntent = android.app.PendingIntent.getBroadcast(
+            context,
+            senderPhone.hashCode(),
+            replyIntent,
+            android.app.PendingIntent.FLAG_UPDATE_CURRENT or android.app.PendingIntent.FLAG_MUTABLE
+        )
+
+        val replyAction = androidx.core.app.NotificationCompat.Action.Builder(
+            android.R.drawable.ic_menu_send,
+            "Reply",
+            replyPendingIntent
+        ).addRemoteInput(remoteInput).build()
+
+        val openIntent = android.content.Intent().apply {
+            setClassName(context.packageName, "com.quickchat.app.MainActivity")
+            putExtra("navigate_to_chat", senderPhone)
+            flags = android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
+        val openPendingIntent = android.app.PendingIntent.getActivity(
+            context,
+            senderPhone.hashCode(),
+            openIntent,
+            android.app.PendingIntent.FLAG_UPDATE_CURRENT or android.app.PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val senderName = phoneContactDao.getPhoneContact(senderPhone)?.contactName 
+            ?: userDao.getUser(senderPhone)?.displayName 
+            ?: senderPhone
+
+        val channelId = "chat_messages_channel"
+        val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            val channel = android.app.NotificationChannel(
+                channelId,
+                "Chat Messages",
+                android.app.NotificationManager.IMPORTANCE_HIGH
+            )
+            manager.createNotificationChannel(channel)
+        }
+
+        val builder = androidx.core.app.NotificationCompat.Builder(context, channelId)
+            .setSmallIcon(android.R.drawable.sym_def_app_icon)
+            .setContentTitle(senderName)
+            .setContentText(if (text.startsWith("view_once:")) "View-once media" else if (text.startsWith("{") && text.contains("linkPreview")) {
+                try { JSONObject(text).getString("text") } catch(e: Exception) { text }
+            } else text)
+            .setPriority(androidx.core.app.NotificationCompat.PRIORITY_HIGH)
+            .setCategory(androidx.core.app.NotificationCompat.CATEGORY_MESSAGE)
+            .setContentIntent(openPendingIntent)
+            .addAction(replyAction)
+            .setAutoCancel(true)
+
+        manager.notify(senderPhone.hashCode(), builder.build())
+    }
+
+    override suspend fun setChatPinned(phone: String, isPinned: Boolean) {
+        val existing = chatDao.getChat(phone) ?: return
+        chatDao.insertOrUpdateChat(existing.copy(isPinned = isPinned))
+    }
+
+    override fun getPinnedMessagesFlow(recipientPhone: String): Flow<List<Message>> {
+        return messageDao.getMessagesFlow(recipientPhone).map { entities ->
+            entities.map { it.toDomain() }.filter { it.pinnedAt != null }.sortedByDescending { it.pinnedAt }
+        }
+    }
+
+    override suspend fun setPinMessage(messageId: String, isPinned: Boolean) {
+        val msg = messageDao.getMessage(messageId) ?: return
+        val updated = msg.copy(pinnedAt = if (isPinned) System.currentTimeMillis() else null)
+        messageDao.insertMessage(updated)
+
+        val action = if (isPinned) "pin" else "unpin"
+        val currentUserPhone = userRepository.currentUser.value?.phone ?: return
+        val partner = if (msg.senderPhone == currentUserPhone) msg.recipientPhone else msg.senderPhone
+        
+        val actor = "You"
+        val sysText = if (isPinned) "$actor pinned a message" else "$actor unpinned a message"
+        
+        sendMessage(partner, "pin:${msg.id}:$action:$sysText", MessageType.TEXT)
+    }
+
+    override suspend fun setMessageReaction(messageId: String, reaction: String?) {
+        val msg = messageDao.getMessage(messageId) ?: return
+        val updated = msg.copy(reaction = reaction)
+        messageDao.insertMessage(updated)
+
+        val currentUserPhone = userRepository.currentUser.value?.phone ?: return
+        val partner = if (msg.senderPhone == currentUserPhone) msg.recipientPhone else msg.senderPhone
+        sendMessage(partner, "react:${msg.id}:${reaction ?: "null"}", MessageType.TEXT)
+    }
+
+    override suspend fun setVoiceMessagePlaybackSpeed(messageId: String, speed: Float) {
+        val msg = messageDao.getMessage(messageId) ?: return
+        val updated = msg.copy(playbackSpeed = speed)
+        messageDao.insertMessage(updated)
+    }
+
+    override suspend fun scheduleMessage(recipientPhone: String, messageText: String, scheduledTime: Long): Long {
+        val entity = ScheduledMessageEntity(
+            recipientPhone = recipientPhone,
+            plainText = messageText,
+            messageType = MessageType.TEXT.name,
+            scheduledTime = scheduledTime
+        )
+        val id = scheduledMessageDao.insertScheduled(entity)
+
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as android.app.AlarmManager
+        val intent = android.content.Intent().apply {
+            setClassName(context.packageName, "com.quickchat.app.scheduling.ScheduledMessageReceiver")
+            putExtra("scheduled_id", id)
+        }
+        val pendingIntent = android.app.PendingIntent.getBroadcast(
+            context,
+            id.toInt(),
+            intent,
+            android.app.PendingIntent.FLAG_UPDATE_CURRENT or android.app.PendingIntent.FLAG_IMMUTABLE
+        )
+        try {
+            alarmManager.setExactAndAllowWhileIdle(
+                android.app.AlarmManager.RTC_WAKEUP,
+                scheduledTime,
+                pendingIntent
+            )
+        } catch (e: SecurityException) {
+            alarmManager.set(
+                android.app.AlarmManager.RTC_WAKEUP,
+                scheduledTime,
+                pendingIntent
+            )
+        }
+
+        return id
+    }
+
+    override suspend fun getPendingScheduledMessages(): List<ScheduledMessageEntity> {
+        return scheduledMessageDao.getPendingScheduledMessages(System.currentTimeMillis())
+    }
+
+    override suspend fun deleteScheduledMessage(id: Long) {
+        scheduledMessageDao.deleteScheduled(id)
+        val intent = android.content.Intent().apply {
+            setClassName(context.packageName, "com.quickchat.app.scheduling.ScheduledMessageReceiver")
+        }
+        val pendingIntent = android.app.PendingIntent.getBroadcast(
+            context,
+            id.toInt(),
+            intent,
+            android.app.PendingIntent.FLAG_NO_CREATE or android.app.PendingIntent.FLAG_IMMUTABLE
+        )
+        if (pendingIntent != null) {
+            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as android.app.AlarmManager
+            alarmManager.cancel(pendingIntent)
+        }
+    }
+
+    override fun getScheduledMessagesFlow(phone: String): Flow<List<ScheduledMessageEntity>> {
+        return scheduledMessageDao.getScheduledMessagesFlow(phone)
+    }
+
+    override suspend fun editMessage(messageId: String, newText: String) {
+        val msg = messageDao.getMessage(messageId) ?: return
+        val currentUserPhone = userRepository.currentUser.value?.phone ?: return
+        val partner = if (msg.senderPhone == currentUserPhone) msg.recipientPhone else msg.senderPhone
+
+        sendMessage(partner, newText, MessageType.valueOf(msg.messageType), messageId)
     }
 }

@@ -188,4 +188,64 @@ class ChatRoomViewModel @Inject constructor(
             onCompleted(success)
         }
     }
+
+    // Delight Features VM APIs
+    
+    fun reactToMessage(messageId: String, reaction: String?) {
+        viewModelScope.launch {
+            chatRepository.setMessageReaction(messageId, reaction)
+        }
+    }
+
+    fun pinMessage(messageId: String, isPinned: Boolean) {
+        viewModelScope.launch {
+            chatRepository.setPinMessage(messageId, isPinned)
+        }
+    }
+
+    fun setVoicePlaybackSpeed(messageId: String, speed: Float) {
+        viewModelScope.launch {
+            chatRepository.setVoiceMessagePlaybackSpeed(messageId, speed)
+        }
+    }
+
+    fun scheduleMessage(text: String, scheduledTime: Long) {
+        if (text.isBlank()) return
+        viewModelScope.launch {
+            chatRepository.scheduleMessage(_recipientPhone.value, text, scheduledTime)
+        }
+    }
+
+    fun editMessage(messageId: String, newText: String) {
+        if (newText.isBlank()) return
+        viewModelScope.launch {
+            chatRepository.editMessage(messageId, newText)
+        }
+    }
+
+    fun sendVoiceMessage(filePath: String, amplitudes: List<Int>) {
+        viewModelScope.launch {
+            val amplitudeStr = amplitudes.joinToString(",")
+            chatRepository.sendMessage(_recipientPhone.value, amplitudeStr, MessageType.VOICE, mediaPath = filePath)
+        }
+    }
+
+    fun sendViewOnceMedia(filePath: String, isVideo: Boolean) {
+        viewModelScope.launch {
+            val type = if (isVideo) MessageType.VIDEO else MessageType.IMAGE
+            chatRepository.sendMessage(_recipientPhone.value, "view_once", type, mediaPath = filePath)
+        }
+    }
+
+    fun notifyViewOnceOpened(messageId: String) {
+        viewModelScope.launch {
+            // Update local DB text to "Opened" and send acknowledgement to partner
+            val msgList = messages.value
+            val target = msgList.firstOrNull { it.id == messageId }
+            if (target != null) {
+                // Update Bob's DB locally
+                chatRepository.sendMessage(_recipientPhone.value, "view_once_opened:$messageId", MessageType.TEXT)
+            }
+        }
+    }
 }

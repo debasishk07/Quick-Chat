@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontFamily
@@ -44,6 +45,14 @@ import com.quickchat.core.model.theme.UserAvatar
 import com.quickchat.core.model.theme.sketchyBorder
 import java.text.SimpleDateFormat
 import java.util.*
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.unit.IntOffset
+import kotlin.math.roundToInt
 
 // Simple Helper import to override mutableStateOf
 import androidx.compose.runtime.mutableStateOf as mutableStateFlowOf
@@ -156,7 +165,8 @@ fun ChatListScreen(
                                 Image(
                                     painter = painterResource(id = R.drawable.status),
                                     contentDescription = "Status",
-                                    modifier = Modifier.size(24.dp)
+                                    modifier = Modifier.size(24.dp),
+                                    colorFilter = ColorFilter.tint(colors.text)
                                 )
                             }
                             Box {
@@ -244,6 +254,9 @@ fun ChatListScreen(
                         }
                     )
                 } else {
+                    val favorites by viewModel.favorites.collectAsState()
+                    var selectedChatForMenu by remember { mutableStateFlowOf<Chat?>(null) }
+
                     if (chats.isEmpty()) {
                         Column(
                             modifier = Modifier.fillMaxSize(),
@@ -266,22 +279,60 @@ fun ChatListScreen(
                             )
                         }
                     } else {
-                        LazyColumn(modifier = Modifier.fillMaxSize()) {
-                            items(chats, key = { it.recipientPhone }) { chat ->
-                                val isTyping = typingStates[chat.recipientPhone] ?: false
-                                val lastMessageText = when {
-                                    isTyping -> "typing..."
-                                    chat.lastMessage != null -> chat.lastMessage!!.plainText ?: "[Encrypted Media]"
-                                    else -> "No messages yet"
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                                if (favorites.isNotEmpty()) {
+                                    item {
+                                        FavoritesRow(
+                                            favorites = favorites,
+                                            onChatSelected = { phone -> onNavigateToChat(phone, null) },
+                                            onReorder = { newOrder -> viewModel.saveFavoriteOrder(newOrder) }
+                                        )
+                                        SketchyDivider()
+                                    }
                                 }
 
-                                ChatRow(
-                                    chat = chat,
-                                    lastMessageText = lastMessageText,
-                                    isTyping = isTyping,
-                                    onClick = { onNavigateToChat(chat.recipientPhone, null) }
-                                )
-                                SketchyDivider()
+                                items(chats, key = { it.recipientPhone }) { chat ->
+                                    val isTyping = typingStates[chat.recipientPhone] ?: false
+                                    val lastMessageText = when {
+                                        isTyping -> "typing..."
+                                        chat.lastMessage != null -> chat.lastMessage!!.plainText ?: "[Encrypted Media]"
+                                        else -> "No messages yet"
+                                    }
+
+                                    ChatRow(
+                                        chat = chat,
+                                        lastMessageText = lastMessageText,
+                                        isTyping = isTyping,
+                                        onClick = { onNavigateToChat(chat.recipientPhone, null) },
+                                        onLongClick = { selectedChatForMenu = chat }
+                                    )
+                                    SketchyDivider()
+                                }
+                            }
+
+                            selectedChatForMenu?.let { chat ->
+                                DropdownMenu(
+                                    expanded = true,
+                                    onDismissRequest = { selectedChatForMenu = null },
+                                    modifier = Modifier.background(colors.surface)
+                                ) {
+                                    val isPinned = chat.isPinned
+                                    DropdownMenuItem(
+                                        text = { Text(if (isPinned) "Unpin Chat (Remove Favorite)" else "Pin Chat (Add Favorite)", color = colors.text) },
+                                        onClick = {
+                                            viewModel.toggleChatPinned(chat.recipientPhone, !isPinned)
+                                            selectedChatForMenu = null
+                                        }
+                                    )
+                                    DropdownMenuItem(
+                                        text = { Text("Delete Chat", color = colors.text) },
+                                        onClick = {
+                                            viewModel.deleteChat(chat.recipientPhone)
+                                            selectedChatForMenu = null
+                                        }
+                                    )
+                                }
                             }
                         }
                     }
@@ -305,18 +356,23 @@ fun ChatListScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ChatRow(
     chat: Chat,
     lastMessageText: String,
     isTyping: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onLongClick: () -> Unit
 ) {
     val colors = LocalSketchyColors.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() }
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick
+            )
             .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -901,6 +957,86 @@ fun buildHighlightSnippet(
                 start = matchInSnippetIndex,
                 end = matchInSnippetIndex + cleanQuery.length
             )
+        }
+    }
+}
+
+@Composable
+fun FavoritesRow(
+    favorites: List<Chat>,
+    onChatSelected: (String) -> Unit,
+    onReorder: (List<String>) -> Unit
+) {
+    val colors = LocalSketchyColors.current
+    var list by remember(favorites) { mutableStateFlowOf(favorites) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 12.dp)
+    ) {
+        Text(
+            text = "Favorites",
+            fontWeight = FontWeight.Bold,
+            fontSize = 14.sp,
+            color = colors.accent,
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
+        )
+        
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            items(list, key = { it.recipientPhone }) { chat ->
+                val index = list.indexOf(chat)
+                val dragOffset = remember { mutableStateFlowOf(0f) }
+                
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .width(64.dp)
+                        .pointerInput(Unit) {
+                            detectHorizontalDragGestures(
+                                onDragEnd = {
+                                    val targetIndex = (index + (dragOffset.value / 80.dp.toPx()).toInt()).coerceIn(0, list.size - 1)
+                                    if (targetIndex != index) {
+                                        val newList = list.toMutableList()
+                                        val item = newList.removeAt(index)
+                                        newList.add(targetIndex, item)
+                                        list = newList
+                                        onReorder(newList.map { it.recipientPhone })
+                                    }
+                                    dragOffset.value = 0f
+                                },
+                                onDragCancel = {
+                                    dragOffset.value = 0f
+                                },
+                                onHorizontalDrag = { change, dragAmount ->
+                                    change.consume()
+                                    dragOffset.value += dragAmount
+                                }
+                            )
+                        }
+                        .offset { IntOffset(dragOffset.value.roundToInt(), 0) }
+                        .clickable { onChatSelected(chat.recipientPhone) }
+                ) {
+                    UserAvatar(
+                        avatarUrl = chat.avatarUrl,
+                        displayName = chat.displayName,
+                        size = 52.dp,
+                        modifier = Modifier.sketchyBorder(1.dp, colors.text, 26.dp)
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = chat.displayName.substringBefore(" "),
+                        fontSize = 11.sp,
+                        color = colors.text,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            }
         }
     }
 }

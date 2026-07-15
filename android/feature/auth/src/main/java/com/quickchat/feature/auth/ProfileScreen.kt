@@ -30,6 +30,7 @@ import com.quickchat.core.model.theme.SketchyCard
 import com.quickchat.core.model.theme.SketchyDivider
 import com.quickchat.core.model.theme.UserAvatar
 import com.quickchat.core.model.theme.sketchyBorder
+import com.quickchat.core.model.theme.SketchyBottomSheet
 import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -489,35 +490,36 @@ fun ProfileScreen(
 
             // Image Picker Bottom Sheet/Dialog
             if (showImageSourceOptions) {
-                AlertDialog(
-                    onDismissRequest = { showImageSourceOptions = false },
-                    title = { Text("Select Profile Photo", fontFamily = androidx.compose.ui.text.font.FontFamily.Serif, fontWeight = FontWeight.Bold) },
-                    text = {
-                        Column {
-                            ListItem(
-                                headlineContent = { Text("Take Photo (Camera)") },
-                                modifier = Modifier.clickable {
-                                    showImageSourceOptions = false
-                                    launchCamera()
-                                }
-                            )
-                            ListItem(
-                                headlineContent = { Text("Choose Existing (Gallery)") },
-                                modifier = Modifier.clickable {
-                                    showImageSourceOptions = false
-                                    galleryLauncher.launch("image/*")
-                                }
-                            )
-                        }
-                    },
-                    confirmButton = {
-                        TextButton(onClick = { showImageSourceOptions = false }) {
-                            Text("Cancel", color = colors.text)
-                        }
-                    },
-                    containerColor = colors.surface,
-                    titleContentColor = colors.text
-                )
+                SketchyBottomSheet(
+                    onDismissRequest = { showImageSourceOptions = false }
+                ) {
+                    Text(
+                        text = "Select Profile Photo",
+                        fontFamily = androidx.compose.ui.text.font.FontFamily.Serif,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp,
+                        color = colors.text,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                    Column {
+                        ListItem(
+                            headlineContent = { Text("Take Photo (Camera)", color = colors.text) },
+                            colors = ListItemDefaults.colors(containerColor = colors.background),
+                            modifier = Modifier.clickable {
+                                showImageSourceOptions = false
+                                launchCamera()
+                            }
+                        )
+                        ListItem(
+                            headlineContent = { Text("Choose Existing (Gallery)", color = colors.text) },
+                            colors = ListItemDefaults.colors(containerColor = colors.background),
+                            modifier = Modifier.clickable {
+                                showImageSourceOptions = false
+                                galleryLauncher.launch("image/*")
+                            }
+                        )
+                    }
+                }
             }
 
             // Fullscreen Avatar View Dialog

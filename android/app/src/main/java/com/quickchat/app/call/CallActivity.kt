@@ -54,6 +54,19 @@ class CallActivity : ComponentActivity() {
     private var isPipMode by mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            overrideActivityTransition(
+                OVERRIDE_TRANSITION_OPEN,
+                com.quickchat.app.R.anim.fade_scale_in,
+                com.quickchat.app.R.anim.fade_scale_out
+            )
+        } else {
+            @Suppress("DEPRECATION")
+            overridePendingTransition(
+                com.quickchat.app.R.anim.fade_scale_in,
+                com.quickchat.app.R.anim.fade_scale_out
+            )
+        }
         super.onCreate(savedInstanceState)
 
         // Show over lockscreen
@@ -96,6 +109,23 @@ class CallActivity : ComponentActivity() {
                     isPip = isPipMode
                 )
             }
+        }
+    }
+
+    override fun finish() {
+        super.finish()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            overrideActivityTransition(
+                OVERRIDE_TRANSITION_CLOSE,
+                com.quickchat.app.R.anim.fade_scale_in,
+                com.quickchat.app.R.anim.fade_scale_out
+            )
+        } else {
+            @Suppress("DEPRECATION")
+            overridePendingTransition(
+                com.quickchat.app.R.anim.fade_scale_in,
+                com.quickchat.app.R.anim.fade_scale_out
+            )
         }
     }
 

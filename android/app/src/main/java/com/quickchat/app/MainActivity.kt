@@ -32,6 +32,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -76,6 +77,21 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun QuickChatNavHost(startDestination: String, settingsViewModel: SettingsViewModel, callManager: WebRtcCallManager) {
     val navController = rememberNavController()
+    val context = androidx.compose.ui.platform.LocalContext.current
+
+    // Check system Accessibility reduced motion setting
+    val isReducedMotion = remember {
+        try {
+            val scale = android.provider.Settings.Global.getFloat(
+                context.contentResolver,
+                android.provider.Settings.Global.TRANSITION_ANIMATION_SCALE,
+                1f
+            )
+            scale == 0f
+        } catch (e: Exception) {
+            false
+        }
+    }
     
     // Shared ViewModels at parent activity level (to preserve states across screens)
     val loginViewModel: LoginViewModel = hiltViewModel()
@@ -88,9 +104,17 @@ fun QuickChatNavHost(startDestination: String, settingsViewModel: SettingsViewMo
 
     NavHost(
         navController = navController,
-        startDestination = startDestination
+        startDestination = startDestination,
+        enterTransition = { NavTransitions.pushEnter(isReducedMotion) },
+        exitTransition = { NavTransitions.pushExit(isReducedMotion) },
+        popEnterTransition = { NavTransitions.pushPopEnter(isReducedMotion) },
+        popExitTransition = { NavTransitions.pushPopExit(isReducedMotion) }
     ) {
-        composable("login") {
+        composable(
+            route = "login",
+            enterTransition = { NavTransitions.modalEnter(isReducedMotion) },
+            exitTransition = { NavTransitions.modalExit(isReducedMotion) }
+        ) {
             LoginScreen(
                 viewModel = loginViewModel,
                 onNavigateToProfileSetup = { navController.navigate("profile_setup") },
@@ -102,7 +126,11 @@ fun QuickChatNavHost(startDestination: String, settingsViewModel: SettingsViewMo
             )
         }
         
-        composable("profile_setup") {
+        composable(
+            route = "profile_setup",
+            enterTransition = { NavTransitions.modalEnter(isReducedMotion) },
+            exitTransition = { NavTransitions.modalExit(isReducedMotion) }
+        ) {
             ProfileSetupScreen(
                 viewModel = loginViewModel,
                 onNavigateToHome = {
@@ -113,7 +141,11 @@ fun QuickChatNavHost(startDestination: String, settingsViewModel: SettingsViewMo
             )
         }
         
-        composable("home") {
+        composable(
+            route = "home",
+            enterTransition = { NavTransitions.tabEnter() },
+            exitTransition = { NavTransitions.tabExit() }
+        ) {
             ChatListScreen(
                 viewModel = chatListViewModel,
                 onNavigateToChat = { phone, highlightMessageId ->
@@ -172,7 +204,11 @@ fun QuickChatNavHost(startDestination: String, settingsViewModel: SettingsViewMo
             )
         }
 
-        composable("status_list") {
+        composable(
+            route = "status_list",
+            enterTransition = { NavTransitions.tabEnter() },
+            exitTransition = { NavTransitions.tabExit() }
+        ) {
             StatusListScreen(
                 viewModel = statusViewModel,
                 onNavigateToCreateTextStatus = { navController.navigate("status_create") },
@@ -185,7 +221,9 @@ fun QuickChatNavHost(startDestination: String, settingsViewModel: SettingsViewMo
         }
 
         composable(
-            route = "status_create"
+            route = "status_create",
+            enterTransition = { NavTransitions.modalEnter(isReducedMotion) },
+            exitTransition = { NavTransitions.modalExit(isReducedMotion) }
         ) {
             StatusCreatorScreen(
                 viewModel = statusViewModel,
@@ -195,7 +233,9 @@ fun QuickChatNavHost(startDestination: String, settingsViewModel: SettingsViewMo
 
         composable(
             route = "status_view/{phone}",
-            arguments = listOf(navArgument("phone") { type = NavType.StringType })
+            arguments = listOf(navArgument("phone") { type = NavType.StringType }),
+            enterTransition = { NavTransitions.modalEnter(isReducedMotion) },
+            exitTransition = { NavTransitions.modalExit(isReducedMotion) }
         ) { backStackEntry ->
             val phone = backStackEntry.arguments?.getString("phone") ?: ""
             StatusViewerScreen(
@@ -205,14 +245,22 @@ fun QuickChatNavHost(startDestination: String, settingsViewModel: SettingsViewMo
             )
         }
 
-        composable("profile") {
+        composable(
+            route = "profile",
+            enterTransition = { NavTransitions.tabEnter() },
+            exitTransition = { NavTransitions.tabExit() }
+        ) {
             ProfileScreen(
                 viewModel = loginViewModel,
                 onNavigateBack = { navController.popBackStack() }
             )
         }
 
-        composable("settings") {
+        composable(
+            route = "settings",
+            enterTransition = { NavTransitions.tabEnter() },
+            exitTransition = { NavTransitions.tabExit() }
+        ) {
             SettingsScreen(
                 viewModel = settingsViewModel,
                 loginViewModel = loginViewModel,
