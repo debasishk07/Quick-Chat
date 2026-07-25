@@ -63,9 +63,14 @@ export function initializeDatabase(): Promise<void> {
           ephemeralPublicKey TEXT,
           messageType TEXT NOT NULL,
           timestamp INTEGER NOT NULL,
-          status TEXT NOT NULL
+          status TEXT NOT NULL,
+          isDeleted INTEGER DEFAULT 0,
+          deletedFor TEXT DEFAULT '[]'
         )
-      `);
+      `, () => {
+        db.run(`ALTER TABLE messages ADD COLUMN isDeleted INTEGER DEFAULT 0`, () => {});
+        db.run(`ALTER TABLE messages ADD COLUMN deletedFor TEXT DEFAULT '[]'`, () => {});
+      });
 
       // Status/Stories table
       db.run(`
@@ -108,6 +113,17 @@ export function initializeDatabase(): Promise<void> {
           reason TEXT NOT NULL,
           description TEXT,
           messagesJson TEXT,
+          timestamp INTEGER NOT NULL
+        )
+      `);
+
+      // Pending Events table for offline event delivery (e.g. deletions)
+      db.run(`
+        CREATE TABLE IF NOT EXISTS pending_events (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          recipient TEXT NOT NULL,
+          event TEXT NOT NULL,
+          payloadText TEXT NOT NULL,
           timestamp INTEGER NOT NULL
         )
       `, (err) => {

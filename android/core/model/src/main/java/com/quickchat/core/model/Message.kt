@@ -25,5 +25,10 @@ data class Message(
     val reaction: String? = null,
     val playbackSpeed: Float = 1.0f,
     val isEdited: Boolean = false,
-    val pinnedAt: Long? = null
+    val pinnedAt: Long? = null,
+    val isDeleted: Boolean = false,
+    val publicId: String? = null,
+    val mediaDuration: Double? = null,
+    val mediaFormat: String? = null,
+    val fileSize: Long? = null
 )

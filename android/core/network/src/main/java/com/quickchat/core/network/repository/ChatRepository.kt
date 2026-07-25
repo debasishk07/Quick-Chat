@@ -41,6 +41,7 @@ interface ChatRepository {
     val activeTypingState: StateFlow<Map<String, Boolean>> // phone -> isTyping
     suspend fun getChat(phone: String): Chat?
     suspend fun clearUnreadCount(phone: String)
+    suspend fun markMessagesAsRead(senderPhone: String)
     val incomingCallSignals: SharedFlow<Pair<String, String>>
     suspend fun sendCallSignal(recipientPhone: String, signalJson: String): Boolean
 
@@ -73,6 +74,7 @@ interface ChatRepository {
     suspend fun deleteScheduledMessage(id: Long)
     fun getScheduledMessagesFlow(phone: String): Flow<List<com.quickchat.core.database.entities.ScheduledMessageEntity>>
     suspend fun editMessage(messageId: String, newText: String)
+    suspend fun deleteMessage(messageId: String, mode: String)
 }
 
 @Singleton
@@ -102,8 +104,13 @@ class ChatRepositoryImpl @Inject constructor(
     init {
         observeSocketEvents()
         
-        // Start background cleaner for E2EE disappearing messages
+        // Start background cleaner for E2EE disappearing messages and leaked delete commands
         repositoryScope.launch {
+            try {
+                messageDao.purgeLeakedDeleteCommands()
+            } catch (e: Exception) {
+                Log.e("ChatRepository", "Failed to purge leaked delete commands", e)
+            }
             while (true) {
                 try {
                     val now = System.currentTimeMillis()
@@ -193,7 +200,9 @@ class ChatRepositoryImpl @Inject constructor(
 
     override fun getMessagesFlow(recipientPhone: String): Flow<List<Message>> {
         return messageDao.getMessagesFlow(recipientPhone).map { entities ->
-            entities.map { it.toDomain() }
+            val list = entities.map { it.toDomain() }
+            Log.d("DEBUG_DELETE_FLOW", "getMessagesFlow for $recipientPhone fetched ${list.size} messages: ${list.map { "id=${it.id}, isDeleted=${it.isDeleted}, text=${it.plainText}" }}")
+            list
         }
     }
 
@@ -230,6 +239,15 @@ class ChatRepositoryImpl @Inject constructor(
 
     override suspend fun clearUnreadCount(phone: String) {
         chatDao.clearUnreadCount(phone)
+    }
+
+    override suspend fun markMessagesAsRead(senderPhone: String) {
+        val unreadList = messageDao.getUnreadReceivedMessages(senderPhone)
+        if (unreadList.isNotEmpty()) {
+            val ids = unreadList.map { it.id }
+            messageDao.updateMessagesStatus(ids, MessageStatus.READ.name)
+            socketManager.sendBatchReceipts(ids, senderPhone, MessageStatus.READ.name)
+        }
     }
 
     override suspend fun sendMessage(
@@ -281,10 +299,20 @@ class ChatRepositoryImpl @Inject constructor(
             var finalMessageText = messageText
             var finalMediaPath = mediaPath
 
+            var publicId: String? = null
+            var duration: Double? = null
+            var format: String? = null
+            var bytes: Long? = null
+
             try {
                 if (finalMediaPath != null) {
-                    val mediaUrlWithKey = uploadAndEncryptMedia(finalMediaPath)
+                    val cResult = uploadAndEncryptMedia(finalMediaPath)
                         ?: throw IllegalStateException("Failed to upload/encrypt media")
+                    val mediaUrlWithKey = cResult.mediaUrlWithKey
+                    publicId = cResult.publicId
+                    duration = cResult.duration
+                    format = cResult.format
+                    bytes = cResult.bytes
 
                     if (type == MessageType.VOICE) {
                         val parts = mediaUrlWithKey.split("#")
@@ -298,6 +326,7 @@ class ChatRepositoryImpl @Inject constructor(
                             put("key", key)
                             put("iv", iv)
                             put("amplitudes", JSONArray(amplitudes))
+                            if (duration != null) put("duration", duration)
                         }.toString()
                         finalMessageText = voicePayload
                     } else if (type == MessageType.IMAGE || type == MessageType.VIDEO) {
@@ -316,8 +345,14 @@ class ChatRepositoryImpl @Inject constructor(
                     }
                 }
 
-                // Update local Room database plainText with final plaintext details
-                val pendingUpdated = pendingMsg.copy(plainText = finalMessageText)
+                // Update local Room database plainText with final plaintext details and Cloudinary metadata
+                val pendingUpdated = pendingMsg.copy(
+                    plainText = finalMessageText,
+                    publicId = publicId,
+                    mediaDuration = duration,
+                    mediaFormat = format,
+                    fileSize = bytes
+                )
                 messageDao.insertMessage(MessageEntity.fromDomain(pendingUpdated))
 
                 // Get or establish E2E session
@@ -441,7 +476,10 @@ class ChatRepositoryImpl @Inject constructor(
         repositoryScope.launch {
             socketManager.messageReceipts.collect { receipt ->
                 val status = MessageStatus.valueOf(receipt.status)
-                messageDao.updateMessageStatus(receipt.messageId, status.name)
+                val ids = receipt.messageIds ?: if (receipt.messageId != null) listOf(receipt.messageId) else emptyList()
+                if (ids.isNotEmpty()) {
+                    messageDao.updateMessagesStatus(ids, status.name)
+                }
             }
         }
 
@@ -456,6 +494,15 @@ class ChatRepositoryImpl @Inject constructor(
         repositoryScope.launch {
             socketManager.presenceChanges.collect { presence ->
                 syncUserProfile(presence.phone)
+            }
+        }
+
+        repositoryScope.launch {
+            socketManager.messageDeletedEvents.collect { del ->
+                if (del.mode == "everyone") {
+                    messageDao.markMessageAsDeleted(del.messageId)
+                    messageDao.deleteMessageFts(del.messageId)
+                }
             }
         }
     }
@@ -483,7 +530,21 @@ class ChatRepositoryImpl @Inject constructor(
                 return
             }
 
-            // 1. Intercept Special Command Messages (Reactions, Pin Updates, View-Once Acknowledgements)
+            // 1. Intercept Special Command Messages (Reactions, Pin Updates, Deletions, View-Once Acknowledgements)
+            if (decryptedText.startsWith("delete:")) {
+                val parts = decryptedText.split(":")
+                if (parts.size >= 3) {
+                    val targetMsgId = parts[1]
+                    val mode = parts[2]
+                    if (mode == "everyone") {
+                        messageDao.markMessageAsDeleted(targetMsgId)
+                        messageDao.deleteMessageFts(targetMsgId)
+                    }
+                }
+                socketManager.sendReceipt(socketMsg.id, socketMsg.sender, "DELIVERED")
+                return
+            }
+
             if (decryptedText.startsWith("react:")) {
                 val parts = decryptedText.split(":")
                 if (parts.size >= 3) {
@@ -550,9 +611,11 @@ class ChatRepositoryImpl @Inject constructor(
             val disappearingDuration = chat?.disappearingDuration ?: 0L
             val expireAt = if (disappearingDuration > 0) socketMsg.timestamp + disappearingDuration else null
 
-            // Check if this is an edit of an existing message
+            // Check if this is an edit of an existing message or if it's marked as deleted
             val existingMsg = messageDao.getMessage(socketMsg.id)
             val isEdit = existingMsg != null
+            val isDeleted = (socketMsg.isDeleted == 1) || (existingMsg?.isDeleted == true)
+            val textToSave = if (isDeleted) "This message was deleted" else decryptedText
 
             // Save decrypted message to database
             val domainMsg = Message(
@@ -566,12 +629,13 @@ class ChatRepositoryImpl @Inject constructor(
                 messageType = MessageType.valueOf(socketMsg.messageType),
                 timestamp = socketMsg.timestamp,
                 status = MessageStatus.READ, // Read locally
-                plainText = decryptedText,
+                plainText = textToSave,
                 expireAt = expireAt,
                 isEdited = isEdit,
                 reaction = existingMsg?.reaction,
                 playbackSpeed = existingMsg?.playbackSpeed ?: 1.0f,
-                pinnedAt = existingMsg?.pinnedAt
+                pinnedAt = existingMsg?.pinnedAt,
+                isDeleted = isDeleted
             )
             messageDao.insertMessage(MessageEntity.fromDomain(domainMsg))
             if (decryptedText != null && decryptedText.isNotBlank()) {
@@ -934,23 +998,37 @@ class ChatRepositoryImpl @Inject constructor(
 
     // --- Delight Features Helpers & Implementations ---
 
-    private suspend fun uploadAndEncryptMedia(localPath: String): String? = kotlinx.coroutines.withContext(Dispatchers.IO) {
+    private data class CloudinaryUploadResult(
+        val mediaUrlWithKey: String,
+        val publicId: String?,
+        val duration: Double?,
+        val format: String?,
+        val bytes: Long?
+    )
+
+    private suspend fun uploadAndEncryptMedia(localPath: String): CloudinaryUploadResult? = kotlinx.coroutines.withContext(Dispatchers.IO) {
         try {
             val file = java.io.File(localPath)
             if (!file.exists()) return@withContext null
             val fileBytes = file.readBytes()
             val encryptResult = MediaEncryptor.encryptFile(fileBytes)
             
-            val requestFile = okhttp3.RequestBody.create("application/octet-stream".toMediaTypeOrNull(), encryptResult.encryptedBytes)
+            val requestFile = okhttp3.RequestBody.create("application/octet-stream".toMediaTypeOrNull(), fileBytes)
             val body = okhttp3.MultipartBody.Part.createFormData("file", file.name, requestFile)
-            val uploadResponse = api.uploadMedia(body)
-            if (uploadResponse.success) {
+            val uploadResponse = api.uploadCloudinaryMedia(body)
+            if (uploadResponse.success && uploadResponse.secure_url != null) {
                 val keyBase64 = Base64.encodeToString(encryptResult.mediaKey, Base64.NO_WRAP)
                 val ivBase64 = Base64.encodeToString(encryptResult.iv, Base64.NO_WRAP)
-                return@withContext "${uploadResponse.fileUrl}#$keyBase64,$ivBase64"
+                return@withContext CloudinaryUploadResult(
+                    mediaUrlWithKey = "${uploadResponse.secure_url}#$keyBase64,$ivBase64",
+                    publicId = uploadResponse.public_id,
+                    duration = uploadResponse.duration,
+                    format = uploadResponse.format,
+                    bytes = uploadResponse.bytes
+                )
             }
         } catch (e: Exception) {
-            Log.e("ChatRepository", "Failed to upload/encrypt media", e)
+            Log.e("ChatRepository", "Failed to upload media to Cloudinary", e)
         }
         null
     }
@@ -1176,5 +1254,45 @@ class ChatRepositoryImpl @Inject constructor(
         val partner = if (msg.senderPhone == currentUserPhone) msg.recipientPhone else msg.senderPhone
 
         sendMessage(partner, newText, MessageType.valueOf(msg.messageType), messageId)
+    }
+
+    override suspend fun deleteMessage(messageId: String, mode: String) {
+        val msg = messageDao.getMessage(messageId) ?: return
+        val currentUserPhone = userRepository.currentUser.value?.phone ?: return
+        val partner = if (msg.senderPhone == currentUserPhone) msg.recipientPhone else msg.senderPhone
+
+        // Dequeue from outbox to prevent offline sync from re-sending/overwriting deleted message on restart
+        outboxDao.dequeueMessage(messageId)
+
+        if (mode == "me") {
+            messageDao.deleteMessageLocally(messageId)
+            messageDao.deleteMessageFts(messageId)
+            socketManager.sendDeleteMessage(messageId, partner, "me")
+            repositoryScope.launch {
+                try {
+                    api.deleteMessageApi(messageId, DeleteMessageRequest(currentUserPhone, partner, "me"))
+                } catch (e: Exception) {
+                    Log.e("ChatRepository", "REST deleteMessage fallback failed for mode 'me'", e)
+                }
+            }
+        } else if (mode == "everyone") {
+            if (msg.senderPhone != currentUserPhone) {
+                Log.w("ChatRepository", "Unauthorized deleteMessage for everyone by non-sender")
+                return
+            }
+            Log.d("DEBUG_DELETE_FLOW", "STEP 1 BEFORE DB UPDATE: messageId=$messageId, entity=${messageDao.getMessage(messageId)}")
+            messageDao.markMessageAsDeleted(messageId)
+            messageDao.deleteMessageFts(messageId)
+            val updatedRow = messageDao.getMessage(messageId)
+            Log.d("DEBUG_DELETE_FLOW", "STEP 1 AFTER DB UPDATE: messageId=$messageId, updatedEntity=$updatedRow, isDeleted=${updatedRow?.isDeleted}")
+            socketManager.sendDeleteMessage(messageId, partner, "everyone", msg.publicId)
+            repositoryScope.launch {
+                try {
+                    api.deleteMessageApi(messageId, DeleteMessageRequest(currentUserPhone, partner, "everyone"))
+                } catch (e: Exception) {
+                    Log.e("ChatRepository", "REST deleteMessage fallback failed for mode 'everyone'", e)
+                }
+            }
+        }
     }
 }

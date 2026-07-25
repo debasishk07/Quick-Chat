@@ -17,6 +17,8 @@ import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Send
 import androidx.compose.material.icons.outlined.Reply
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Block
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -95,6 +97,12 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.runtime.mutableStateOf as mutableStateFlowOf
@@ -126,8 +134,9 @@ fun ChatRoomScreen(
     val colors = LocalSketchyColors.current
 
     val voicePlayer = remember { VoiceMessagePlayer(context) }
-    DisposableEffect(Unit) {
+    DisposableEffect(partnerPhone) {
         onDispose {
+            viewModel.stopTyping()
             voicePlayer.stop()
         }
     }
@@ -487,7 +496,7 @@ fun ChatRoomScreen(
                                     value = textInput,
                                     onValueChange = {
                                         textInput = it
-                                        viewModel.sendTyping(it.isNotEmpty())
+                                        viewModel.onInputTextChanged(it)
                                     },
                                     placeholder = { Text("Write a message...", color = colors.text.copy(alpha = 0.5f)) },
                                     colors = OutlinedTextFieldDefaults.colors(
@@ -523,7 +532,7 @@ fun ChatRoomScreen(
                                             }
                                             textInput = ""
                                             replyingToMessage = null
-                                            viewModel.sendTyping(false)
+                                            viewModel.stopTyping()
                                         },
                                         modifier = Modifier
                                             .size(40.dp)
@@ -872,7 +881,31 @@ fun MessageBubble(
         return
     }
 
+    if (message.plainText?.matches(Regex("^delete:.+:(me|everyone)$")) == true || message.plainText?.startsWith("delete:") == true) {
+        return
+    }
+
     var showReactionMenu by remember { mutableStateFlowOf(false) }
+    var showDeleteDialog by remember { mutableStateFlowOf(false) }
+    var deleteMode by remember { mutableStateFlowOf("me") }
+    val isDeletedMsg = message.isDeleted || message.plainText == "This message was deleted"
+    val context = LocalContext.current
+    val copyableText: String? = remember(message.plainText, message.isDeleted, message.messageType) {
+        if (isDeletedMsg) null
+        else {
+            val replyInfo = parseMessageReply(message.plainText)
+            val text = replyInfo?.messageBody ?: message.plainText
+            if (text.isNullOrBlank()) null
+            else {
+                val isPureMedia = message.messageType == MessageType.VOICE ||
+                        message.messageType == MessageType.CALL_LOG ||
+                        text == "view_once" || text.startsWith("view_once:") || text == "Opened" ||
+                        (message.messageType == MessageType.IMAGE && (text.startsWith("http") || text.startsWith("/") || text.startsWith("content:"))) ||
+                        (message.messageType == MessageType.VIDEO && (text.startsWith("http") || text.startsWith("/") || text.startsWith("content:")))
+                if (isPureMedia) null else text
+            }
+        }
+    }
 
     val bubbleBgColor by androidx.compose.animation.animateColorAsState(
         targetValue = if (isHighlighted) colors.accent.copy(alpha = 0.5f) else (if (isMe) colors.accent else colors.surface),
@@ -906,18 +939,18 @@ fun MessageBubble(
                     .combinedClickable(
                         onClick = { },
                         onDoubleClick = {
-                            viewModel.reactToMessage(message.id, "❤️")
+                            if (!isDeletedMsg) viewModel.reactToMessage(message.id, "❤️")
                         },
-                        onLongClick = { showReactionMenu = true }
+                        onLongClick = { if (!isDeletedMsg) showReactionMenu = true }
                     )
                     .padding(horizontal = 14.dp, vertical = 10.dp)
             ) {
                 val replyInfo = remember(message.plainText) { parseMessageReply(message.plainText) }
                 Column(horizontalAlignment = Alignment.Start) {
-                    if (replyInfo != null) {
+                    if (replyInfo != null && !isDeletedMsg) {
                         Row(
                             modifier = Modifier
-                                .fillMaxWidth()
+                                .fillMaxWidth(0.5f)
                                 .clip(RoundedCornerShape(8.dp))
                                 .background(colors.text.copy(alpha = 0.08f))
                                 .padding(horizontal = 8.dp, vertical = 6.dp),
@@ -930,7 +963,7 @@ fun MessageBubble(
                                     .background(colors.accent)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Column {
+                            Column(modifier = Modifier.weight(1f)) {
                                 Text(
                                     text = replyInfo.senderName,
                                     fontWeight = FontWeight.Bold,
@@ -949,72 +982,123 @@ fun MessageBubble(
                         Spacer(modifier = Modifier.height(4.dp))
                     }
 
-                    when (message.messageType) {
-                        MessageType.CALL_LOG -> {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                val isVideoCall = message.plainText?.contains("Video Call", ignoreCase = true) == true
-                                val icon = if (isVideoCall) Icons.Default.Videocam else Icons.Default.Call
-                                Icon(
-                                    imageVector = icon,
-                                    contentDescription = "Call Log",
-                                    tint = if (isMe) Color.White else colors.accent,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                                Text(
-                                    text = message.plainText ?: "Call",
-                                    color = if (isMe) Color.White else colors.text,
-                                    fontSize = fontSize.sp,
-                                    fontWeight = FontWeight.Medium
-                                )
-                            }
-                        }
-                        MessageType.VOICE -> {
-                            VoiceBubble(
-                                message = message,
-                                isMe = isMe,
-                                voicePlayer = voicePlayer,
-                                viewModel = viewModel,
-                                colors = colors
+                    if (isDeletedMsg) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                            modifier = Modifier.padding(vertical = 2.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Block,
+                                contentDescription = "Deleted",
+                                tint = if (isMe) Color.White.copy(alpha = 0.7f) else colors.text.copy(alpha = 0.5f),
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Text(
+                                text = "This message was deleted",
+                                fontStyle = FontStyle.Italic,
+                                color = if (isMe) Color.White.copy(alpha = 0.8f) else colors.text.copy(alpha = 0.6f),
+                                fontSize = fontSize.sp
                             )
                         }
-                        MessageType.IMAGE, MessageType.VIDEO -> {
-                            val isViewOnce = message.plainText == "view_once" || message.plainText?.startsWith("view_once:") == true || message.plainText == "Opened"
-                            if (isViewOnce) {
-                                ViewOnceBubble(
+                    } else {
+                        when (message.messageType) {
+                            MessageType.CALL_LOG -> {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    val isVideoCall = message.plainText?.contains("Video Call", ignoreCase = true) == true
+                                    val icon = if (isVideoCall) Icons.Default.Videocam else Icons.Default.Call
+                                    Icon(
+                                        imageVector = icon,
+                                        contentDescription = "Call Log",
+                                        tint = if (isMe) Color.White else colors.accent,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                    Text(
+                                        text = message.plainText ?: "Call",
+                                        color = if (isMe) Color.White else colors.text,
+                                        fontSize = fontSize.sp,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                }
+                            }
+                            MessageType.VOICE -> {
+                                VoiceBubble(
                                     message = message,
                                     isMe = isMe,
-                                    onOpen = { onViewOnceOpened(message) },
+                                    voicePlayer = voicePlayer,
+                                    viewModel = viewModel,
                                     colors = colors
                                 )
-                            } else {
-                                AsyncImage(
-                                    model = message.plainText ?: "",
-                                    contentDescription = "E2EE Media",
-                                    modifier = Modifier
-                                        .size(180.dp)
-                                        .clip(RoundedCornerShape(8.dp))
-                                )
                             }
-                        }
-                        else -> {
-                            val preview = remember(message.plainText) { parsePreviewPayload(message.plainText) }
-                            if (preview != null) {
-                                Text(
-                                    text = preview.text,
-                                    color = if (isMe) Color.White else colors.text,
-                                    fontSize = fontSize.sp
-                                )
-                                LinkPreviewCard(preview = preview, colors = colors)
-                            } else {
-                                val bodyText = replyInfo?.messageBody ?: (message.plainText ?: "[Decryption Error]")
-                                Text(
-                                    text = bodyText,
-                                    color = if (isMe) Color.White else colors.text,
-                                    fontSize = fontSize.sp
-                                )
+                            MessageType.IMAGE, MessageType.VIDEO -> {
+                                val isViewOnce = message.plainText == "view_once" || message.plainText?.startsWith("view_once:") == true || message.plainText == "Opened"
+                                if (isViewOnce) {
+                                    ViewOnceBubble(
+                                        message = message,
+                                        isMe = isMe,
+                                        onOpen = { onViewOnceOpened(message) },
+                                        colors = colors
+                                    )
+                                } else {
+                                    val rawUrl = (message.plainText ?: "").split("#")[0]
+                                    val displayUrl = remember(rawUrl, message.messageType, message.publicId) {
+                                        if (rawUrl.contains("cloudinary.com")) {
+                                            if (message.messageType == MessageType.IMAGE) {
+                                                rawUrl.replace("/image/upload/", "/image/upload/f_auto,q_auto,w_400/")
+                                            } else {
+                                                rawUrl.replace("/video/upload/", "/video/upload/so_0,w_400,h_400,c_fill/").replace(Regex("\\.(mp4|mov|avi|mkv)$", RegexOption.IGNORE_CASE), ".jpg")
+                                            }
+                                        } else {
+                                            rawUrl
+                                        }
+                                    }
+                                    Box(contentAlignment = Alignment.Center) {
+                                        AsyncImage(
+                                            model = displayUrl,
+                                            contentDescription = "Cloudinary Media",
+                                            modifier = Modifier
+                                                .size(180.dp)
+                                                .clip(RoundedCornerShape(8.dp)),
+                                            contentScale = ContentScale.Crop
+                                        )
+                                        if (message.messageType == MessageType.VIDEO) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(40.dp)
+                                                    .background(Color.Black.copy(alpha = 0.5f), CircleShape),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Default.PlayArrow,
+                                                    contentDescription = "Play Video",
+                                                    tint = Color.White,
+                                                    modifier = Modifier.size(24.dp)
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            else -> {
+                                val preview = remember(message.plainText) { parsePreviewPayload(message.plainText) }
+                                if (preview != null) {
+                                    Text(
+                                        text = preview.text,
+                                        color = if (isMe) Color.White else colors.text,
+                                        fontSize = fontSize.sp
+                                    )
+                                    LinkPreviewCard(preview = preview, colors = colors)
+                                } else {
+                                    val bodyText = replyInfo?.messageBody ?: (message.plainText ?: "[Decryption Error]")
+                                    Text(
+                                        text = bodyText,
+                                        color = if (isMe) Color.White else colors.text,
+                                        fontSize = fontSize.sp
+                                    )
+                                }
                             }
                         }
                     }
@@ -1027,7 +1111,7 @@ fun MessageBubble(
                     ) {
                         val sdf = SimpleDateFormat("hh:mm a", Locale.getDefault())
                         Text(
-                            text = sdf.format(Date(message.timestamp)) + if (message.isEdited) " (edited)" else "",
+                            text = sdf.format(Date(message.timestamp)) + if (message.isEdited && !isDeletedMsg) " (edited)" else "",
                             color = if (isMe) Color.White.copy(alpha = 0.7f) else colors.text.copy(alpha = 0.5f),
                             fontSize = 10.sp
                         )
@@ -1039,22 +1123,29 @@ fun MessageBubble(
                                 MessageStatus.DELIVERED -> "✓✓"
                                 MessageStatus.READ -> "✓✓"
                             }
-                            val tickColor = if (message.status == MessageStatus.READ) Color(0xFF81C784) else Color.White.copy(alpha = 0.8f)
+                            val tickColor = when (message.status) {
+                                MessageStatus.READ -> Color(0xFF34B7F1)
+                                MessageStatus.DELIVERED -> Color.White.copy(alpha = 0.85f)
+                                MessageStatus.SENT -> Color.White.copy(alpha = 0.85f)
+                                MessageStatus.SENDING -> Color.White.copy(alpha = 0.5f)
+                            }
                             Text(ticks, color = tickColor, fontSize = 10.sp, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
             }
 
-            message.reaction?.let { reaction ->
-                Box(
-                    modifier = Modifier
-                        .offset(y = (-6).dp)
-                        .background(colors.surface, RoundedCornerShape(8.dp))
-                        .sketchyBorder(0.5.dp, colors.text, 8.dp)
-                        .padding(horizontal = 6.dp, vertical = 2.dp)
-                ) {
-                    Text(reaction, fontSize = 12.sp)
+            if (!isDeletedMsg) {
+                message.reaction?.let { reaction ->
+                    Box(
+                        modifier = Modifier
+                            .offset(y = (-6).dp)
+                            .background(colors.surface, RoundedCornerShape(8.dp))
+                            .sketchyBorder(0.5.dp, colors.text, 8.dp)
+                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                    ) {
+                        Text(reaction, fontSize = 12.sp)
+                    }
                 }
             }
         }
@@ -1111,7 +1202,81 @@ fun MessageBubble(
                         }
                     )
                 }
+
+                copyableText?.let { textToCopy ->
+                    androidx.compose.material3.DropdownMenuItem(
+                        text = { Text("Copy", color = colors.text) },
+                        onClick = {
+                            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                            val clip = android.content.ClipData.newPlainText("Message", textToCopy)
+                            clipboard.setPrimaryClip(clip)
+                            android.widget.Toast.makeText(context, "Copied to clipboard", android.widget.Toast.LENGTH_SHORT).show()
+                            showReactionMenu = false
+                        }
+                    )
+                }
+
+                androidx.compose.material3.DropdownMenuItem(
+                    text = { Text("Delete for Me", color = colors.text) },
+                    onClick = {
+                        deleteMode = "me"
+                        showDeleteDialog = true
+                        showReactionMenu = false
+                    }
+                )
+
+                if (isMe) {
+                    androidx.compose.material3.DropdownMenuItem(
+                        text = { Text("Delete for Everyone", color = Color(0xFFE53935)) },
+                        onClick = {
+                            deleteMode = "everyone"
+                            showDeleteDialog = true
+                            showReactionMenu = false
+                        }
+                    )
+                }
             }
+        }
+
+        if (showDeleteDialog) {
+            AlertDialog(
+                onDismissRequest = { showDeleteDialog = false },
+                title = {
+                    Text(
+                        text = if (deleteMode == "everyone") "Delete for Everyone?" else "Delete for Me?",
+                        fontFamily = androidx.compose.ui.text.font.FontFamily.Serif,
+                        fontWeight = FontWeight.Bold,
+                        color = colors.text
+                    )
+                },
+                text = {
+                    Text(
+                        text = if (deleteMode == "everyone")
+                            "This message will be deleted for all participants in the chat."
+                        else
+                            "This message will be deleted from your device only.",
+                        color = colors.text
+                    )
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            viewModel.deleteMessage(message.id, deleteMode)
+                            showDeleteDialog = false
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (deleteMode == "everyone") Color(0xFFE53935) else colors.accent
+                        )
+                    ) {
+                        Text("Delete", color = Color.White)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDeleteDialog = false }) {
+                        Text("Cancel", color = colors.text)
+                    }
+                }
+            )
         }
     }
 }
@@ -1119,20 +1284,50 @@ fun MessageBubble(
 @Composable
 fun TypingBubble(partnerName: String) {
     val colors = LocalSketchyColors.current
+    val infiniteTransition = rememberInfiniteTransition()
+    val alpha1 by infiniteTransition.animateFloat(
+        initialValue = 0.2f, targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(600, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
+    val alpha2 by infiniteTransition.animateFloat(
+        initialValue = 0.2f, targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(600, delayMillis = 200, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
+    val alpha3 by infiniteTransition.animateFloat(
+        initialValue = 0.2f, targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(600, delayMillis = 400, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp),
         horizontalArrangement = Arrangement.Start
     ) {
-        Box(
+        Row(
             modifier = Modifier
                 .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomStart = 2.dp, bottomEnd = 16.dp))
                 .background(colors.surface)
                 .sketchyBorder(0.5.dp, colors.text, 16.dp)
-                .padding(horizontal = 12.dp, vertical = 8.dp)
+                .padding(horizontal = 14.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("$partnerName is typing...", color = colors.accent, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+            Text("$partnerName is typing", color = colors.accent, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+            Spacer(modifier = Modifier.width(4.dp))
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(3.dp)) {
+                Box(modifier = Modifier.size(4.dp).alpha(alpha1).background(colors.accent, CircleShape))
+                Box(modifier = Modifier.size(4.dp).alpha(alpha2).background(colors.accent, CircleShape))
+                Box(modifier = Modifier.size(4.dp).alpha(alpha3).background(colors.accent, CircleShape))
+            }
         }
     }
 }

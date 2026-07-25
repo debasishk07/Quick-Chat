@@ -38,6 +38,7 @@ interface UserRepository {
     suspend fun uploadAvatar(mediaBytes: ByteArray): String?
     
     // New features
+    suspend fun verifyFirebaseToken(idToken: String, provider: String? = null, email: String? = null, phone: String? = null, displayName: String? = null, avatarUrl: String? = null): Boolean
     suspend fun googleLogin(googleUid: String, email: String, displayName: String, avatarUrl: String?): Boolean
     suspend fun linkPhone(userId: String, phone: String, code: String): Boolean
     suspend fun updateUsername(userId: String, username: String): String?
@@ -246,7 +247,10 @@ class UserRepositoryImpl @Inject constructor(
 
     override fun logout() {
         _currentUser.value = null
-        prefs.edit().remove("current_user_profile").apply()
+        prefs.edit()
+            .remove("current_user_profile")
+            .remove("auth_session_token")
+            .apply()
         // Purge all Room database cache tables
         kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
             try {
@@ -254,6 +258,41 @@ class UserRepositoryImpl @Inject constructor(
             } catch (e: Exception) {
                 Log.e("UserRepository", "Failed to clear Room database on logout", e)
             }
+        }
+    }
+
+    override suspend fun verifyFirebaseToken(
+        idToken: String,
+        provider: String?,
+        email: String?,
+        phone: String?,
+        displayName: String?,
+        avatarUrl: String?
+    ): Boolean {
+        return try {
+            val response = api.verifyFirebaseToken(
+                com.quickchat.core.network.api.VerifyFirebaseTokenRequest(
+                    idToken = idToken,
+                    provider = provider,
+                    email = email,
+                    phone = phone,
+                    displayName = displayName,
+                    avatarUrl = avatarUrl
+                )
+            )
+            if (response.success && response.user != null) {
+                val u = mapApiUser(response.user)
+                saveUserLocally(u)
+                if (response.token != null) {
+                    prefs.edit().putString("auth_session_token", response.token).apply()
+                }
+                true
+            } else {
+                false
+            }
+        } catch (e: Exception) {
+            Log.e("UserRepository", "Firebase token verification failed", e)
+            false
         }
     }
 

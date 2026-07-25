@@ -86,6 +86,7 @@ class ChatRoomViewModel @Inject constructor(
         viewModelScope.launch {
             chatRepository.syncUserProfile(phone)
             chatRepository.clearUnreadCount(phone)
+            chatRepository.markMessagesAsRead(phone)
         }
 
         // 2. Collect messages flow
@@ -93,6 +94,7 @@ class ChatRoomViewModel @Inject constructor(
         messageCollectionJob = viewModelScope.launch {
             chatRepository.getMessagesFlow(phone).collect { list ->
                 _messages.value = list
+                chatRepository.markMessagesAsRead(phone)
             }
         }
 
@@ -118,8 +120,37 @@ class ChatRoomViewModel @Inject constructor(
         computeSecurityFingerprint(phone)
     }
 
+    private var typingJob: Job? = null
+    private var isTypingStateSent = false
+
+    fun onInputTextChanged(text: String) {
+        if (text.isNotEmpty()) {
+            if (!isTypingStateSent) {
+                isTypingStateSent = true
+                sendTyping(true)
+            }
+            typingJob?.cancel()
+            typingJob = viewModelScope.launch {
+                kotlinx.coroutines.delay(2500)
+                sendTyping(false)
+                isTypingStateSent = false
+            }
+        } else {
+            stopTyping()
+        }
+    }
+
+    fun stopTyping() {
+        typingJob?.cancel()
+        if (isTypingStateSent) {
+            isTypingStateSent = false
+            sendTyping(false)
+        }
+    }
+
     fun sendMessage(text: String) {
         if (text.isBlank()) return
+        stopTyping()
         viewModelScope.launch {
             chatRepository.sendMessage(_recipientPhone.value, text, MessageType.TEXT)
         }
@@ -129,6 +160,11 @@ class ChatRoomViewModel @Inject constructor(
         viewModelScope.launch {
             chatRepository.sendTyping(_recipientPhone.value, isTyping)
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        stopTyping()
     }
 
     private fun computeSecurityFingerprint(phone: String) {
@@ -246,6 +282,12 @@ class ChatRoomViewModel @Inject constructor(
                 // Update Bob's DB locally
                 chatRepository.sendMessage(_recipientPhone.value, "view_once_opened:$messageId", MessageType.TEXT)
             }
+        }
+    }
+
+    fun deleteMessage(messageId: String, mode: String) {
+        viewModelScope.launch {
+            chatRepository.deleteMessage(messageId, mode)
         }
     }
 }

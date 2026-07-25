@@ -24,7 +24,12 @@ data class MessageEntity(
     val reaction: String? = null,
     val playbackSpeed: Float = 1.0f,
     val isEdited: Boolean = false,
-    val pinnedAt: Long? = null
+    val pinnedAt: Long? = null,
+    val isDeleted: Boolean = false,
+    val publicId: String? = null,
+    val mediaDuration: Double? = null,
+    val mediaFormat: String? = null,
+    val fileSize: Long? = null
 ) {
     fun toDomain(): Message = Message(
         id = id,
@@ -43,7 +48,12 @@ data class MessageEntity(
         reaction = reaction,
         playbackSpeed = playbackSpeed,
         isEdited = isEdited,
-        pinnedAt = pinnedAt
+        pinnedAt = pinnedAt,
+        isDeleted = isDeleted,
+        publicId = publicId,
+        mediaDuration = mediaDuration,
+        mediaFormat = mediaFormat,
+        fileSize = fileSize
     )
 
     companion object {
@@ -64,7 +74,12 @@ data class MessageEntity(
             reaction = m.reaction,
             playbackSpeed = m.playbackSpeed,
             isEdited = m.isEdited,
-            pinnedAt = m.pinnedAt
+            pinnedAt = m.pinnedAt,
+            isDeleted = m.isDeleted,
+            publicId = m.publicId,
+            mediaDuration = m.mediaDuration,
+            mediaFormat = m.mediaFormat,
+            fileSize = m.fileSize
         )
     }
 }

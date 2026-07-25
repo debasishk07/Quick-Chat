@@ -6,6 +6,21 @@ import retrofit2.http.*
 data class VerifyOtpRequest(val phone: String, val code: String)
 data class VerifyOtpResponse(val success: Boolean, val isNewUser: Boolean, val user: ApiUser?)
 
+data class VerifyFirebaseTokenRequest(
+    val idToken: String,
+    val provider: String? = null,
+    val email: String? = null,
+    val phone: String? = null,
+    val displayName: String? = null,
+    val avatarUrl: String? = null
+)
+data class VerifyFirebaseTokenResponse(
+    val success: Boolean,
+    val isNewUser: Boolean,
+    val token: String?,
+    val user: ApiUser?
+)
+
 data class RegisterProfileRequest(val phone: String, val displayName: String, val avatarUrl: String?, val about: String?)
 data class RegisterProfileResponse(val success: Boolean, val user: ApiUser)
 
@@ -30,6 +45,16 @@ data class PreKeyBundleResponse(
 )
 
 data class UploadMediaResponse(val success: Boolean, val fileUrl: String)
+
+data class CloudinaryUploadResponse(
+    val success: Boolean,
+    val secure_url: String?,
+    val public_id: String?,
+    val resource_type: String?,
+    val duration: Double?,
+    val format: String?,
+    val bytes: Long?
+)
 
 data class GoogleLoginRequest(
     val googleUid: String,
@@ -95,6 +120,9 @@ data class ApiUser(
 data class CheckUsernameResponse(val available: Boolean, val error: String?)
 
 interface QuickChatApi {
+    @POST("auth/verify")
+    suspend fun verifyFirebaseToken(@Body request: VerifyFirebaseTokenRequest): VerifyFirebaseTokenResponse
+
     @POST("auth/verify-otp")
     suspend fun verifyOtp(@Body request: VerifyOtpRequest): VerifyOtpResponse
 
@@ -113,6 +141,10 @@ interface QuickChatApi {
     @Multipart
     @POST("media/upload")
     suspend fun uploadMedia(@Part file: MultipartBody.Part): UploadMediaResponse
+
+    @Multipart
+    @POST("media/upload-cloudinary")
+    suspend fun uploadCloudinaryMedia(@Part file: MultipartBody.Part): CloudinaryUploadResponse
 
     @POST("auth/google")
     suspend fun googleLogin(@Body request: GoogleLoginRequest): GoogleLoginResponse
@@ -152,7 +184,16 @@ interface QuickChatApi {
 
     @POST("users/report")
     suspend fun reportUser(@Body request: ReportRequest): ReportResponse
+
+    @POST("messages/{id}/delete")
+    suspend fun deleteMessageApi(
+        @Path("id") id: String,
+        @Body request: DeleteMessageRequest
+    ): DeleteMessageResponse
 }
+
+data class DeleteMessageRequest(val requesterPhone: String, val recipientPhone: String, val mode: String)
+data class DeleteMessageResponse(val success: Boolean, val error: String? = null)
 
 data class BlockRequest(val blockerPhone: String, val blockedPhone: String)
 data class BlockResponse(val success: Boolean, val error: String? = null)

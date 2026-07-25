@@ -2,10 +2,21 @@ import { Router, Request, Response } from 'express';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import jwt from 'jsonwebtoken';
+import { v2 as cloudinary } from 'cloudinary';
 import { dbOperations } from './database';
 import { User, PreKeyBundle } from './types';
+import { verifyFirebaseIdToken } from './firebase';
 
 const router = Router();
+const JWT_SECRET = process.env.JWT_SECRET || 'quickchat_jwt_secret_key_2026';
+
+// Cloudinary configuration
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'quickchat',
+  api_key: process.env.CLOUDINARY_API_KEY || '1234567890',
+  api_secret: process.env.CLOUDINARY_API_SECRET || 'secret'
+});
 
 // Multer setup for media upload
 const storage = multer.diskStorage({
@@ -167,7 +178,7 @@ router.get('/prekeys/:phone', async (req: Request, res: Response) => {
   }
 });
 
-// 6. Media upload
+// 6. Media upload (Local Fallback & Cloudinary Direct)
 router.post('/media/upload', upload.single('file'), (req: Request, res: Response) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded' });
@@ -175,6 +186,124 @@ router.post('/media/upload', upload.single('file'), (req: Request, res: Response
 
   const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
   res.json({ success: true, fileUrl });
+});
+
+router.post('/media/upload-cloudinary', upload.single('file'), async (req: Request, res: Response) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No file uploaded' });
+  }
+
+  try {
+    const result = await cloudinary.uploader.upload(req.file.path, {
+      resource_type: 'auto',
+      folder: 'quickchat_media'
+    });
+
+    try { fs.unlinkSync(req.file.path); } catch (e) {}
+
+    return res.json({
+      success: true,
+      secure_url: result.secure_url,
+      public_id: result.public_id,
+      resource_type: result.resource_type,
+      duration: result.duration || null,
+      format: result.format || null,
+      bytes: result.bytes || req.file.size
+    });
+  } catch (err: any) {
+    console.error('Cloudinary upload error:', err);
+    const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+    const ext = path.extname(req.file.filename).replace('.', '');
+    return res.json({
+      success: true,
+      secure_url: fileUrl,
+      public_id: req.file.filename,
+      resource_type: 'auto',
+      duration: null,
+      format: ext,
+      bytes: req.file.size
+    });
+  }
+});
+
+// 6b. Firebase Auth Token Verification & Account Linking
+router.post('/auth/verify', async (req: Request, res: Response) => {
+  const { idToken, provider } = req.body;
+  if (!idToken) {
+    return res.status(400).json({ error: 'idToken is required' });
+  }
+
+  try {
+    const decoded = await verifyFirebaseIdToken(idToken);
+    const firebaseUid = decoded.uid;
+    const email = decoded.email || req.body.email || null;
+    const phoneNumber = decoded.phone_number || req.body.phone || null;
+    const displayName = decoded.name || req.body.displayName || (email ? email.split('@')[0] : 'User');
+    const avatarUrl = decoded.picture || req.body.avatarUrl || null;
+
+    let user = null;
+    if (firebaseUid) {
+      user = await dbOperations.get<User>(
+        'SELECT * FROM users WHERE phone = ? OR (email IS NOT NULL AND email = ?) OR (phoneNumber IS NOT NULL AND phoneNumber = ?)',
+        [firebaseUid, email || 'NO_MATCH', phoneNumber || 'NO_MATCH']
+      );
+    }
+
+    let isNewUser = false;
+    if (!user) {
+      isNewUser = true;
+      const internalId = firebaseUid || `user_${Date.now()}`;
+      const authProviderName = provider || (email ? 'google' : 'phone');
+
+      await dbOperations.run(
+        'INSERT INTO users (phone, phoneNumber, email, authProviders, displayName, avatarUrl, about, lastSeen, isOnline, usernameSearchEnabled) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [internalId, phoneNumber, email, authProviderName, displayName, avatarUrl, 'Hey there! I am using Quick Chat.', Date.now(), 1, 1]
+      );
+      user = await dbOperations.get<User>('SELECT * FROM users WHERE phone = ?', [internalId]);
+    } else {
+      // Account Linking
+      const currentProviders = (user.authProviders || '').split(',').filter(Boolean);
+      const newProvider = provider || (email ? 'google' : 'phone');
+      let updated = false;
+
+      if (!currentProviders.includes(newProvider)) {
+        currentProviders.push(newProvider);
+        updated = true;
+      }
+      if (email && !user.email) {
+        user.email = email;
+        updated = true;
+      }
+      if (phoneNumber && !user.phoneNumber) {
+        user.phoneNumber = phoneNumber;
+        updated = true;
+      }
+
+      if (updated) {
+        await dbOperations.run(
+          'UPDATE users SET authProviders = ?, email = ?, phoneNumber = ? WHERE phone = ?',
+          [currentProviders.join(','), user.email, user.phoneNumber, user.phone]
+        );
+        user.authProviders = currentProviders.join(',');
+      }
+    }
+
+    const token = jwt.sign(
+      { userId: user?.phone, email: user?.email, phone: user?.phoneNumber },
+      JWT_SECRET,
+      { expiresIn: '30d' }
+    );
+
+    return res.json({
+      success: true,
+      isNewUser,
+      token,
+      user
+    });
+  } catch (err: any) {
+    console.error('Firebase Auth verification error:', err);
+    return res.status(401).json({ error: 'Authentication failed: ' + err.message });
+  }
 });
 
 // 7. Google Login
@@ -493,6 +622,47 @@ router.post('/users/report', async (req: Request, res: Response) => {
     res.json({ success: true });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+// 17. Message Deletion (REST fallback)
+router.post('/messages/:id/delete', async (req: Request, res: Response) => {
+  const messageId = req.params.id;
+  const { requesterPhone, recipientPhone, mode } = req.body;
+  if (!requesterPhone || !mode) {
+    return res.status(400).json({ error: 'requesterPhone and mode are required' });
+  }
+
+  try {
+    if (mode === 'everyone') {
+      const queued = await dbOperations.get<{ sender: string }>('SELECT sender FROM messages WHERE id = ?', [messageId]);
+      if (queued && queued.sender !== requesterPhone) {
+        return res.status(403).json({ error: 'Unauthorized: Only sender can delete for everyone' });
+      }
+      await dbOperations.run('UPDATE messages SET ciphertext = ?, isDeleted = 1 WHERE id = ?', ['', messageId]);
+      if (recipientPhone) {
+        const delPayload = { messageId, deletedBy: requesterPhone, mode: 'everyone' };
+        await dbOperations.run(
+          'INSERT INTO pending_events (recipient, event, payloadText, timestamp) VALUES (?, ?, ?, ?)',
+          [recipientPhone, 'message-deleted', JSON.stringify(delPayload), Date.now()]
+        );
+      }
+      return res.json({ success: true });
+    } else if (mode === 'me') {
+      const queued = await dbOperations.get<{ deletedFor: string }>('SELECT deletedFor FROM messages WHERE id = ?', [messageId]);
+      if (queued) {
+        let list: string[] = [];
+        try { list = JSON.parse(queued.deletedFor || '[]'); } catch (e) {}
+        if (!list.includes(requesterPhone)) {
+          list.push(requesterPhone);
+          await dbOperations.run('UPDATE messages SET deletedFor = ? WHERE id = ?', [JSON.stringify(list), messageId]);
+        }
+      }
+      return res.json({ success: true });
+    }
+    return res.status(400).json({ error: 'Invalid mode' });
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message });
   }
 });
 

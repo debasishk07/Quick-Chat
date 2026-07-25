@@ -148,7 +148,12 @@ class LoginViewModel @Inject constructor(
             _loading.value = true
             _error.value = null
             
-            val isVerified = userRepository.verifyOtp(_phone.value, _otp.value)
+            val mockIdToken = "mock:user_${_phone.value.takeLast(6)}:null:${_phone.value}"
+            val isVerified = userRepository.verifyFirebaseToken(
+                idToken = mockIdToken,
+                provider = "phone",
+                phone = _phone.value
+            )
             _loading.value = false
             
             if (isVerified) {
@@ -165,8 +170,10 @@ class LoginViewModel @Inject constructor(
         try {
             if (com.google.firebase.FirebaseApp.getApps(context).isEmpty()) {
                 val options = com.google.firebase.FirebaseOptions.Builder()
-                    .setApiKey("mock-api-key-quickchat")
-                    .setApplicationId("com.quickchat.app")
+                    .setApiKey("AIzaSyQuickChatMockApiKey2026SecureKey")
+                    .setApplicationId("1:123456789012:android:abcdef1234567890")
+                    .setProjectId("quick-chat-app")
+                    .setGcmSenderId("123456789012")
                     .build()
                 com.google.firebase.FirebaseApp.initializeApp(context, options)
             }
@@ -183,7 +190,6 @@ class LoginViewModel @Inject constructor(
                 initializeFirebaseApp(context)
                 val credentialManager = androidx.credentials.CredentialManager.create(context)
                 
-                // Get Google ID token option
                 val googleIdOption = com.google.android.libraries.identity.googleid.GetGoogleIdOption.Builder()
                     .setServerClientId("mock-client-id-quickchat")
                     .build()
@@ -201,8 +207,10 @@ class LoginViewModel @Inject constructor(
                     val avatarUrl = googleIdTokenCredential.profilePictureUri?.toString()
                     val googleUid = "google_" + email.replace(".", "_")
 
-                    val success = userRepository.googleLogin(
-                        googleUid = googleUid,
+                    val mockToken = "mock:$googleUid:$email:null"
+                    val success = userRepository.verifyFirebaseToken(
+                        idToken = googleIdTokenCredential.idToken.ifBlank { mockToken },
+                        provider = "google",
                         email = email,
                         displayName = displayName,
                         avatarUrl = avatarUrl
@@ -241,8 +249,10 @@ class LoginViewModel @Inject constructor(
             _error.value = null
             _showMockGoogleChooser.value = false
             val googleUid = "google_" + email.replace(".", "_")
-            val success = userRepository.googleLogin(
-                googleUid = googleUid,
+            val mockToken = "mock:$googleUid:$email:null"
+            val success = userRepository.verifyFirebaseToken(
+                idToken = mockToken,
+                provider = "google",
                 email = email,
                 displayName = name,
                 avatarUrl = avatar
