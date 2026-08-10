@@ -38,4 +38,10 @@ dependencies {
     // Hilt DI
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
+
+    // Testing
+    testImplementation(libs.junit)
+    testImplementation("org.xerial:sqlite-jdbc:3.45.1.0")
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.room.testing)
 }

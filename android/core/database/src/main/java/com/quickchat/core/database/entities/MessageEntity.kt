@@ -20,7 +20,16 @@ data class MessageEntity(
     val status: String,      // mapped from enum Name
     val plainText: String?,   // ONLY local decrypted text
     val isStarred: Boolean = false,
-    val expireAt: Long? = null
+    val expireAt: Long? = null,
+    val reaction: String? = null,
+    val playbackSpeed: Float = 1.0f,
+    val isEdited: Boolean = false,
+    val pinnedAt: Long? = null,
+    val isDeleted: Boolean = false,
+    val publicId: String? = null,
+    val mediaDuration: Double? = null,
+    val mediaFormat: String? = null,
+    val fileSize: Long? = null
 ) {
     fun toDomain(): Message = Message(
         id = id,
@@ -35,7 +44,16 @@ data class MessageEntity(
         status = MessageStatus.valueOf(status),
         plainText = plainText,
         isStarred = isStarred,
-        expireAt = expireAt
+        expireAt = expireAt,
+        reaction = reaction,
+        playbackSpeed = playbackSpeed,
+        isEdited = isEdited,
+        pinnedAt = pinnedAt,
+        isDeleted = isDeleted,
+        publicId = publicId,
+        mediaDuration = mediaDuration,
+        mediaFormat = mediaFormat,
+        fileSize = fileSize
     )
 
     companion object {
@@ -52,7 +70,16 @@ data class MessageEntity(
             status = m.status.name,
             plainText = m.plainText,
             isStarred = m.isStarred,
-            expireAt = m.expireAt
+            expireAt = m.expireAt,
+            reaction = m.reaction,
+            playbackSpeed = m.playbackSpeed,
+            isEdited = m.isEdited,
+            pinnedAt = m.pinnedAt,
+            isDeleted = m.isDeleted,
+            publicId = m.publicId,
+            mediaDuration = m.mediaDuration,
+            mediaFormat = m.mediaFormat,
+            fileSize = m.fileSize
         )
     }
 }

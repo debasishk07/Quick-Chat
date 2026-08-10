@@ -21,6 +21,25 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.ui.Alignment
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 
 // 1. sketchyBorder Modifier - Draws double, hand-drawn look lines
 fun Modifier.sketchyBorder(
@@ -257,6 +276,95 @@ fun UserAvatar(
                 fontSize = (size.value * 0.45f).sp,
                 fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
             )
+        }
+    }
+}
+
+@Composable
+fun SketchyBottomSheet(
+    onDismissRequest: () -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
+    val colors = LocalSketchyColors.current
+    var isVisible by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        isVisible = true
+    }
+
+    fun dismissWithAnimation() {
+        isVisible = false
+        scope.launch {
+            delay(200)
+            onDismissRequest()
+        }
+    }
+
+    val EaseOutQuart = CubicBezierEasing(0.22f, 1f, 0.36f, 1f)
+
+    Dialog(
+        onDismissRequest = { dismissWithAnimation() },
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false,
+            decorFitsSystemWindows = false
+        )
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.4f))
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = { dismissWithAnimation() }
+                ),
+            contentAlignment = Alignment.BottomCenter
+        ) {
+            AnimatedVisibility(
+                visible = isVisible,
+                enter = slideInVertically(
+                    animationSpec = tween(durationMillis = 250, easing = EaseOutQuart),
+                    initialOffsetY = { it }
+                ) + fadeIn(animationSpec = tween(durationMillis = 250)),
+                exit = slideOutVertically(
+                    animationSpec = tween(durationMillis = 200, easing = EaseOutQuart),
+                    targetOffsetY = { it }
+                ) + fadeOut(animationSpec = tween(durationMillis = 200))
+            ) {
+                Box(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null,
+                            onClick = {} // Consume click
+                        )
+                        .background(
+                            color = colors.background, // Match sketchy calm background
+                            shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
+                        )
+                        .sketchyBorder(
+                            width = 2.dp,
+                            color = colors.text,
+                            cornerRadius = 20.dp
+                        )
+                        .navigationBarsPadding()
+                        .padding(24.dp)
+                ) {
+                    Column {
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .size(width = 40.dp, height = 4.dp)
+                                .background(colors.text.copy(alpha = 0.2f), RoundedCornerShape(2.dp))
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        content()
+                    }
+                }
+            }
         }
     }
 }

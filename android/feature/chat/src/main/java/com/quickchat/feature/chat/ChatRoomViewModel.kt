@@ -86,6 +86,7 @@ class ChatRoomViewModel @Inject constructor(
         viewModelScope.launch {
             chatRepository.syncUserProfile(phone)
             chatRepository.clearUnreadCount(phone)
+            chatRepository.markMessagesAsRead(phone)
         }
 
         // 2. Collect messages flow
@@ -93,6 +94,7 @@ class ChatRoomViewModel @Inject constructor(
         messageCollectionJob = viewModelScope.launch {
             chatRepository.getMessagesFlow(phone).collect { list ->
                 _messages.value = list
+                chatRepository.markMessagesAsRead(phone)
             }
         }
 
@@ -118,8 +120,37 @@ class ChatRoomViewModel @Inject constructor(
         computeSecurityFingerprint(phone)
     }
 
+    private var typingJob: Job? = null
+    private var isTypingStateSent = false
+
+    fun onInputTextChanged(text: String) {
+        if (text.isNotEmpty()) {
+            if (!isTypingStateSent) {
+                isTypingStateSent = true
+                sendTyping(true)
+            }
+            typingJob?.cancel()
+            typingJob = viewModelScope.launch {
+                kotlinx.coroutines.delay(2500)
+                sendTyping(false)
+                isTypingStateSent = false
+            }
+        } else {
+            stopTyping()
+        }
+    }
+
+    fun stopTyping() {
+        typingJob?.cancel()
+        if (isTypingStateSent) {
+            isTypingStateSent = false
+            sendTyping(false)
+        }
+    }
+
     fun sendMessage(text: String) {
         if (text.isBlank()) return
+        stopTyping()
         viewModelScope.launch {
             chatRepository.sendMessage(_recipientPhone.value, text, MessageType.TEXT)
         }
@@ -131,20 +162,38 @@ class ChatRoomViewModel @Inject constructor(
         }
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        stopTyping()
+    }
+
     private fun computeSecurityFingerprint(phone: String) {
         viewModelScope.launch {
             try {
-                // Fetch our identity key
-                val ourKeyPair = userRepository.getLocalIdentityKey() ?: return@launch
+                var ourKeyPair = userRepository.getLocalIdentityKey()
+                if (ourKeyPair == null) {
+                    val me = userRepository.currentUser.value?.phone
+                    if (me != null) {
+                        try {
+                            userRepository.generateAndPublishPreKeys(me)
+                        } catch (e: Exception) {}
+                        ourKeyPair = userRepository.getLocalIdentityKey()
+                    }
+                }
+                if (ourKeyPair == null) return@launch
                 
-                // Fetch partner identity key from server
-                val bundle = api.getPreKeyBundle(phone)
-                val partnerPubKey = SignalKeys.decodePublicKey(bundle.identityKey)
-                
-                val fingerprint = SecurityCodeVerifier.generateFingerprint(ourKeyPair.public, partnerPubKey)
-                _securityFingerprint.value = fingerprint
+                val bundle = try {
+                    api.getPreKeyBundle(phone)
+                } catch (e: Exception) {
+                    null
+                }
+                if (bundle != null && bundle.identityKey.isNotBlank()) {
+                    val partnerPubKey = SignalKeys.decodePublicKey(bundle.identityKey)
+                    val fingerprint = SecurityCodeVerifier.generateFingerprint(ourKeyPair.public, partnerPubKey)
+                    _securityFingerprint.value = fingerprint
+                }
             } catch (e: Exception) {
-                Log.e("ChatRoomViewModel", "Failed to compute fingerprint", e)
+                Log.w("ChatRoomViewModel", "Could not compute fingerprint: ${e.message}")
             }
         }
     }
@@ -186,6 +235,72 @@ class ChatRoomViewModel @Inject constructor(
             val lastN = messages.value.filter { it.plainText != null }.takeLast(5)
             val success = chatRepository.reportUser(phone, reason, description, attachMessages, lastN)
             onCompleted(success)
+        }
+    }
+
+    // Delight Features VM APIs
+    
+    fun reactToMessage(messageId: String, reaction: String?) {
+        viewModelScope.launch {
+            chatRepository.setMessageReaction(messageId, reaction)
+        }
+    }
+
+    fun pinMessage(messageId: String, isPinned: Boolean) {
+        viewModelScope.launch {
+            chatRepository.setPinMessage(messageId, isPinned)
+        }
+    }
+
+    fun setVoicePlaybackSpeed(messageId: String, speed: Float) {
+        viewModelScope.launch {
+            chatRepository.setVoiceMessagePlaybackSpeed(messageId, speed)
+        }
+    }
+
+    fun scheduleMessage(text: String, scheduledTime: Long) {
+        if (text.isBlank()) return
+        viewModelScope.launch {
+            chatRepository.scheduleMessage(_recipientPhone.value, text, scheduledTime)
+        }
+    }
+
+    fun editMessage(messageId: String, newText: String) {
+        if (newText.isBlank()) return
+        viewModelScope.launch {
+            chatRepository.editMessage(messageId, newText)
+        }
+    }
+
+    fun sendVoiceMessage(filePath: String, amplitudes: List<Int>) {
+        viewModelScope.launch {
+            val amplitudeStr = amplitudes.joinToString(",")
+            chatRepository.sendMessage(_recipientPhone.value, amplitudeStr, MessageType.VOICE, mediaPath = filePath)
+        }
+    }
+
+    fun sendViewOnceMedia(filePath: String, isVideo: Boolean) {
+        viewModelScope.launch {
+            val type = if (isVideo) MessageType.VIDEO else MessageType.IMAGE
+            chatRepository.sendMessage(_recipientPhone.value, "view_once", type, mediaPath = filePath)
+        }
+    }
+
+    fun notifyViewOnceOpened(messageId: String) {
+        viewModelScope.launch {
+            // Update local DB text to "Opened" and send acknowledgement to partner
+            val msgList = messages.value
+            val target = msgList.firstOrNull { it.id == messageId }
+            if (target != null) {
+                // Update Bob's DB locally
+                chatRepository.sendMessage(_recipientPhone.value, "view_once_opened:$messageId", MessageType.TEXT)
+            }
+        }
+    }
+
+    fun deleteMessage(messageId: String, mode: String) {
+        viewModelScope.launch {
+            chatRepository.deleteMessage(messageId, mode)
         }
     }
 }

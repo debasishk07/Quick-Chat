@@ -16,6 +16,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_PHONE_CALL" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 
     <application
         android:name=".QuickChatApplication"
@@ -25,7 +26,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@android:style/Theme.Material.NoActionBar"
-        android:usesCleartextTraffic="true"> <!-- CleartextTraffic allowed for local dev server (10.0.2.2) HTTP queries -->
+        android:usesCleartextTraffic="true"
+        android:enableOnBackInvokedCallback="true"> <!-- CleartextTraffic allowed for local dev server (10.0.2.2) HTTP queries -->
         
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -71,6 +73,33 @@
             <intent-filter>
                 <action android:name="ACTION_END_CALL" />
             </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name="com.quickchat.app.scheduling.ScheduledMessageReceiver"
+            android:enabled="true"
+            android:exported="false" />
+
+        <receiver
+            android:name="com.quickchat.app.scheduling.ReminderReceiver"
+            android:enabled="true"
+            android:exported="false" />
+
+        <receiver
+            android:name="com.quickchat.app.scheduling.NotificationReplyReceiver"
+            android:enabled="true"
+            android:exported="false" />
+
+        <receiver
+            android:name="com.quickchat.app.widget.RecentChatsWidgetReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/recent_chats_widget_info" />
         </receiver>
 
     </application>

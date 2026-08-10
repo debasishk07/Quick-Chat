@@ -1,4 +1,5 @@
 import { Server, Socket } from 'socket.io';
+import { v2 as cloudinary } from 'cloudinary';
 import { dbOperations } from './database';
 import { MessagePayload, User } from './types';
 
@@ -37,10 +38,20 @@ export function setupSocketIO(io: Server) {
       }
 
       // 2. Fetch and deliver offline messages
-      const offlineMessages = await dbOperations.all<MessagePayload>(
+      const rawOffline = await dbOperations.all<MessagePayload & { deletedFor?: string }>(
         'SELECT * FROM messages WHERE recipient = ? ORDER BY timestamp ASC',
         [phone]
       );
+
+      const offlineMessages = rawOffline.filter(msg => {
+        if (!msg.deletedFor) return true;
+        try {
+          const list: string[] = JSON.parse(msg.deletedFor);
+          return !list.includes(phone);
+        } catch (e) {
+          return true;
+        }
+      });
 
       if (offlineMessages.length > 0) {
         console.log(`Delivering ${offlineMessages.length} offline messages to ${phone}`);
@@ -61,6 +72,21 @@ export function setupSocketIO(io: Server) {
             });
           }
         }
+      }
+
+      // 3. Deliver pending events (e.g. offline deletions)
+      const pendingEvents = await dbOperations.all<{ id: number; event: string; payloadText: string }>(
+        'SELECT * FROM pending_events WHERE recipient = ? ORDER BY timestamp ASC',
+        [phone]
+      );
+      if (pendingEvents.length > 0) {
+        console.log(`Delivering ${pendingEvents.length} pending events to ${phone}`);
+        for (const pe of pendingEvents) {
+          try {
+            socket.emit(pe.event, JSON.parse(pe.payloadText));
+          } catch (e) {}
+        }
+        await dbOperations.run('DELETE FROM pending_events WHERE recipient = ?', [phone]);
       }
     } catch (err) {
       console.error('Error handling user connection state:', err);
@@ -131,15 +157,91 @@ export function setupSocketIO(io: Server) {
     });
 
     // 4. Handle delivery & read receipts from client
-    socket.on('message-receipt', async (receipt: { messageId: string; recipient: string; status: 'DELIVERED' | 'READ'; timestamp: number }) => {
-      // Forward the receipt to the original sender
-      const senderSocketId = activeSockets.get(receipt.recipient);
-      if (senderSocketId) {
-        io.to(senderSocketId).emit('message-receipt', receipt);
+    socket.on('message-receipt', async (receipt: { messageId?: string; messageIds?: string[]; recipient: string; status: 'DELIVERED' | 'READ'; timestamp: number }) => {
+      try {
+        const ids = receipt.messageIds || (receipt.messageId ? [receipt.messageId] : []);
+        for (const id of ids) {
+          await dbOperations.run('UPDATE messages SET status = ? WHERE id = ?', [receipt.status, id]);
+        }
+
+        const senderSocketId = activeSockets.get(receipt.recipient);
+        if (senderSocketId) {
+          io.to(senderSocketId).emit('message-receipt', receipt);
+        } else {
+          // Queue receipt for offline sender
+          await dbOperations.run(
+            'INSERT INTO pending_events (recipient, event, payloadText, timestamp) VALUES (?, ?, ?, ?)',
+            [receipt.recipient, 'message-receipt', JSON.stringify(receipt), Date.now()]
+          );
+        }
+      } catch (err) {
+        console.error('Error handling message-receipt event:', err);
       }
     });
 
-    // 5. Handle typing indicators
+    // 5. Handle message deletion
+    socket.on('delete-message', async (data: { messageId: string; recipient: string; mode: 'me' | 'everyone'; publicId?: string; resourceType?: string }, ackCallback?: (res: { success: boolean; error?: string }) => void) => {
+      console.log(`Delete message request from ${phone} for msg ${data.messageId} (mode: ${data.mode})`);
+      try {
+        if (data.mode === 'everyone') {
+          // Check if message exists in server offline queue and verify sender
+          const queued = await dbOperations.get<{ sender: string }>('SELECT sender FROM messages WHERE id = ?', [data.messageId]);
+          if (queued && queued.sender !== phone) {
+            if (ackCallback) ackCallback({ success: false, error: 'Unauthorized: Only the sender can delete for everyone' });
+            return;
+          }
+
+          // Mark offline message as deleted if stored
+          await dbOperations.run('UPDATE messages SET ciphertext = ?, isDeleted = 1 WHERE id = ?', ['', data.messageId]);
+
+          // Trigger Cloudinary destroy API if publicId is present
+          if (data.publicId) {
+            try {
+              await cloudinary.uploader.destroy(data.publicId, { resource_type: data.resourceType || 'auto' });
+              console.log(`Cloudinary destroyed asset: ${data.publicId}`);
+            } catch (cErr) {
+              console.error('Failed to destroy Cloudinary asset:', cErr);
+            }
+          }
+
+          // Broadcast real-time update to recipient if online, or queue for offline
+          const recipientSocketId = activeSockets.get(data.recipient);
+          const delPayload = {
+            messageId: data.messageId,
+            deletedBy: phone,
+            mode: 'everyone',
+            publicId: data.publicId
+          };
+          if (recipientSocketId) {
+            io.to(recipientSocketId).emit('message-deleted', delPayload);
+          } else {
+            await dbOperations.run(
+              'INSERT INTO pending_events (recipient, event, payloadText, timestamp) VALUES (?, ?, ?, ?)',
+              [data.recipient, 'message-deleted', JSON.stringify(delPayload), Date.now()]
+            );
+          }
+
+          if (ackCallback) ackCallback({ success: true });
+        } else if (data.mode === 'me') {
+          // Update deletedFor in offline queue if message exists
+          const queued = await dbOperations.get<{ deletedFor: string }>('SELECT deletedFor FROM messages WHERE id = ?', [data.messageId]);
+          if (queued) {
+            let list: string[] = [];
+            try { list = JSON.parse(queued.deletedFor || '[]'); } catch (e) {}
+            if (!list.includes(phone)) {
+              list.push(phone);
+              await dbOperations.run('UPDATE messages SET deletedFor = ? WHERE id = ?', [JSON.stringify(list), data.messageId]);
+            }
+          }
+          if (ackCallback) ackCallback({ success: true });
+        }
+      } catch (err: any) {
+        console.error('Error handling delete-message socket event:', err);
+        if (ackCallback) ackCallback({ success: false, error: err.message });
+      }
+    });
+
+    // 6. Handle typing indicators
     socket.on('typing', (data: { recipient: string; isTyping: boolean }) => {
       const recipientSocketId = activeSockets.get(data.recipient);
       if (recipientSocketId) {

@@ -28,6 +28,9 @@ class SocketManager @Inject constructor() {
     private val _typingNotifications = MutableSharedFlow<SocketTyping>(extraBufferCapacity = 64)
     val typingNotifications: SharedFlow<SocketTyping> = _typingNotifications.asSharedFlow()
 
+    private val _messageDeletedEvents = MutableSharedFlow<SocketDeleteMessage>(extraBufferCapacity = 64)
+    val messageDeletedEvents: SharedFlow<SocketDeleteMessage> = _messageDeletedEvents.asSharedFlow()
+
     fun connect(baseUrl: String, phone: String) {
         if (socket?.connected() == true) return
 
@@ -86,6 +89,12 @@ class SocketManager @Inject constructor() {
             val typing = gson.fromJson(json.toString(), SocketTyping::class.java)
             _typingNotifications.tryEmit(typing)
         }
+
+        s.on("message-deleted") { args ->
+            val json = args[0] as JSONObject
+            val del = gson.fromJson(json.toString(), SocketDeleteMessage::class.java)
+            _messageDeletedEvents.tryEmit(del)
+        }
     }
 
     fun sendMessage(msg: SocketMessage) {
@@ -103,12 +112,34 @@ class SocketManager @Inject constructor() {
         socket?.emit("message-receipt", json)
     }
 
+    fun sendBatchReceipts(messageIds: List<String>, recipientPhone: String, status: String) {
+        if (messageIds.isEmpty()) return
+        val jsonArray = org.json.JSONArray(messageIds)
+        val json = JSONObject().apply {
+            put("messageIds", jsonArray)
+            put("recipient", recipientPhone)
+            put("status", status)
+            put("timestamp", System.currentTimeMillis())
+        }
+        socket?.emit("message-receipt", json)
+    }
+
     fun sendTyping(recipientPhone: String, isTyping: Boolean) {
         val json = JSONObject().apply {
             put("recipient", recipientPhone)
             put("isTyping", isTyping)
         }
         socket?.emit("typing", json)
+    }
+
+    fun sendDeleteMessage(messageId: String, recipientPhone: String, mode: String, publicId: String? = null) {
+        val json = JSONObject().apply {
+            put("messageId", messageId)
+            put("recipient", recipientPhone)
+            put("mode", mode)
+            if (publicId != null) put("publicId", publicId)
+        }
+        socket?.emit("delete-message", json)
     }
 }
 
@@ -123,11 +154,13 @@ data class SocketMessage(
     val ephemeralPublicKey: String?,
     val messageType: String,
     val timestamp: Long,
-    val status: String
+    val status: String,
+    val isDeleted: Int? = 0
 )
 
 data class SocketReceipt(
-    val messageId: String,
+    val messageId: String? = null,
+    val messageIds: List<String>? = null,
     val recipient: String,
     val status: String,
     val timestamp: Long
@@ -142,4 +175,10 @@ data class SocketPresence(
 data class SocketTyping(
     val sender: String,
     val isTyping: Boolean
+)
+
+data class SocketDeleteMessage(
+    val messageId: String,
+    val deletedBy: String,
+    val mode: String
 )

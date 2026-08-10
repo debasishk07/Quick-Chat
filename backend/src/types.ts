@@ -32,6 +32,8 @@ export interface MessagePayload {
   messageType: 'TEXT' | 'IMAGE' | 'VIDEO' | 'VOICE' | 'DOCUMENT' | 'LOCATION' | 'CONTACT' | 'CALL_SIGNAL' | 'CALL_LOG';
   timestamp: number;
   status: 'SENDING' | 'SENT' | 'DELIVERED' | 'READ';
+  isDeleted?: number;
+  deletedFor?: string;
 }
 
 export interface StatusPayload {

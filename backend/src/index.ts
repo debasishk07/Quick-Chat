@@ -22,7 +22,8 @@ app.use(cors());
 app.use(express.json());
 
 // Serve uploaded media files statically
-app.use('/uploads', express.static(path.resolve(__dirname, '../uploads')));
+const uploadsDir = process.env.UPLOADS_PATH || path.resolve(__dirname, '../uploads');
+app.use('/uploads', express.static(uploadsDir));
 
 // Register routes
 app.use('/api', router);

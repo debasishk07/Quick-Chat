@@ -19,7 +19,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @HiltViewModel
 class ChatListViewModel @Inject constructor(
     private val chatRepository: ChatRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val sharedPreferences: android.content.SharedPreferences
 ) : ViewModel() {
 
     val currentUser = userRepository.currentUser
@@ -27,6 +28,58 @@ class ChatListViewModel @Inject constructor(
     // Observe chats flow from DB
     val chats: StateFlow<List<Chat>> = chatRepository.getChatsFlow()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    private val _favoriteOrder = MutableStateFlow<List<String>>(emptyList())
+    val favoriteOrder: StateFlow<List<String>> = _favoriteOrder.asStateFlow()
+
+    private fun loadFavoriteOrder() {
+        val json = sharedPreferences.getString("favorite_contacts_order", null)
+        if (json != null) {
+            try {
+                val array = org.json.JSONArray(json)
+                val list = mutableListOf<String>()
+                for (i in 0 until array.length()) {
+                    list.add(array.getString(i))
+                }
+                _favoriteOrder.value = list
+            } catch (e: Exception) {
+                // Ignore
+            }
+        }
+    }
+
+    fun saveFavoriteOrder(order: List<String>) {
+        _favoriteOrder.value = order
+        val array = org.json.JSONArray(order)
+        sharedPreferences.edit().putString("favorite_contacts_order", array.toString()).apply()
+    }
+
+    fun toggleChatPinned(phone: String, isPinned: Boolean) {
+        viewModelScope.launch {
+            chatRepository.setChatPinned(phone, isPinned)
+            val currentOrder = _favoriteOrder.value.toMutableList()
+            if (isPinned) {
+                if (!currentOrder.contains(phone)) {
+                    currentOrder.add(phone)
+                }
+            } else {
+                currentOrder.remove(phone)
+            }
+            saveFavoriteOrder(currentOrder)
+        }
+    }
+
+    fun deleteChat(phone: String) {
+        viewModelScope.launch {
+            chatRepository.deleteChat(phone)
+        }
+    }
+
+    val favorites: StateFlow<List<Chat>> = combine(chats, _favoriteOrder) { chatList, order ->
+        val pinned = chatList.filter { it.isPinned }
+        val orderMap = order.withIndex().associate { it.value to it.index }
+        pinned.sortedWith(compareBy({ orderMap[it.recipientPhone] ?: Integer.MAX_VALUE }, { it.recipientPhone }))
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     // Observe live typing states
     val typingStates = chatRepository.activeTypingState
@@ -98,6 +151,7 @@ class ChatListViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     init {
+        loadFavoriteOrder()
         // Connect socket for real-time messaging on launch if user is logged in
         currentUser.value?.let {
             chatRepository.initSocketConnection(it.phone)

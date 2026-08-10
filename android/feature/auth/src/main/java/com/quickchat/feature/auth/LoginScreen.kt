@@ -155,6 +155,22 @@ fun LoginScreen(
                     }
 
                     LoginFlowState.PHONE_OTP -> {
+                        var selectedCountryCode by remember { mutableStateOf("+1") }
+                        var countdownSeconds by remember { mutableStateOf(30) }
+                        var isTimerActive by remember { mutableStateOf(false) }
+
+                        androidx.compose.runtime.LaunchedEffect(otpSent, isTimerActive) {
+                            if (otpSent) {
+                                countdownSeconds = 30
+                                isTimerActive = true
+                                while (countdownSeconds > 0) {
+                                    kotlinx.coroutines.delay(1000)
+                                    countdownSeconds--
+                                }
+                                isTimerActive = false
+                            }
+                        }
+
                         Text(
                             text = if (otpSent) "Enter the 6-digit OTP sent to your phone" else "Verify your phone number to get started",
                             fontSize = 14.sp,
@@ -163,24 +179,58 @@ fun LoginScreen(
                         )
 
                         if (!otpSent) {
-                            OutlinedTextField(
-                                value = phone,
-                                onValueChange = { viewModel.updatePhone(it) },
-                                label = { Text("Phone Number") },
-                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                                singleLine = true,
-                                colors = OutlinedTextFieldDefaults.colors(
-                                    focusedTextColor = colors.text,
-                                    unfocusedTextColor = colors.text,
-                                    focusedBorderColor = colors.accent,
-                                    unfocusedBorderColor = colors.text.copy(alpha = 0.4f),
-                                    cursorColor = colors.accent
-                                ),
-                                modifier = Modifier.fillMaxWidth()
-                            )
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                var expandedCodeMenu by remember { mutableStateOf(false) }
+                                Box {
+                                    OutlinedButton(
+                                        onClick = { expandedCodeMenu = true },
+                                        shape = RoundedCornerShape(8.dp)
+                                    ) {
+                                        Text(text = selectedCountryCode, color = colors.text, fontWeight = FontWeight.Bold)
+                                    }
+                                    DropdownMenu(
+                                        expanded = expandedCodeMenu,
+                                        onDismissRequest = { expandedCodeMenu = false }
+                                    ) {
+                                        listOf("+1 (US/CA)", "+91 (IN)", "+44 (UK)", "+49 (DE)", "+81 (JP)").forEach { item ->
+                                            DropdownMenuItem(
+                                                text = { Text(item) },
+                                                onClick = {
+                                                    selectedCountryCode = item.split(" ")[0]
+                                                    expandedCodeMenu = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+
+                                OutlinedTextField(
+                                    value = phone,
+                                    onValueChange = { viewModel.updatePhone(it) },
+                                    label = { Text("Phone Number") },
+                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                                    singleLine = true,
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedTextColor = colors.text,
+                                        unfocusedTextColor = colors.text,
+                                        focusedBorderColor = colors.accent,
+                                        unfocusedBorderColor = colors.text.copy(alpha = 0.4f),
+                                        cursorColor = colors.accent
+                                    ),
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
 
                             Button(
-                                onClick = { viewModel.sendOtp() },
+                                onClick = {
+                                    val fullPhone = if (phone.startsWith("+")) phone else "$selectedCountryCode$phone"
+                                    viewModel.updatePhone(fullPhone)
+                                    viewModel.sendOtp()
+                                },
                                 enabled = !loading,
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = colors.accent,
@@ -233,6 +283,22 @@ fun LoginScreen(
                                 } else {
                                     Text("Verify Code", fontWeight = FontWeight.Bold, fontSize = 16.sp)
                                 }
+                            }
+
+                            TextButton(
+                                onClick = {
+                                    if (!isTimerActive) {
+                                        viewModel.sendOtp()
+                                    }
+                                },
+                                enabled = !isTimerActive && !loading
+                            ) {
+                                Text(
+                                    text = if (isTimerActive) "Resend OTP in ${countdownSeconds}s" else "Resend OTP",
+                                    color = if (isTimerActive) colors.text.copy(alpha = 0.4f) else colors.accent,
+                                    fontWeight = FontWeight.Medium,
+                                    fontSize = 14.sp
+                                )
                             }
                         }
 

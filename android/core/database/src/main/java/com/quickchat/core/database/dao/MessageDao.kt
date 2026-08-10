@@ -22,6 +22,12 @@ interface MessageDao {
     @Query("UPDATE messages SET status = :status WHERE id = :messageId")
     suspend fun updateMessageStatus(messageId: String, status: String)
 
+    @Query("UPDATE messages SET status = :status WHERE id IN (:messageIds)")
+    suspend fun updateMessagesStatus(messageIds: List<String>, status: String)
+
+    @Query("SELECT * FROM messages WHERE senderPhone = :senderPhone AND status != 'READ'")
+    suspend fun getUnreadReceivedMessages(senderPhone: String): List<MessageEntity>
+
     @Query("SELECT * FROM messages WHERE plainText LIKE '%' || :query || '%' ORDER BY timestamp DESC")
     suspend fun searchMessages(query: String): List<MessageEntity>
 
@@ -36,6 +42,15 @@ interface MessageDao {
 
     @Query("DELETE FROM messages WHERE senderPhone = :chatPartnerPhone OR recipientPhone = :chatPartnerPhone")
     suspend fun deleteMessagesForChat(chatPartnerPhone: String)
+
+    @Query("DELETE FROM messages WHERE id = :messageId")
+    suspend fun deleteMessageLocally(messageId: String)
+
+    @Query("UPDATE messages SET isDeleted = 1, plainText = 'This message was deleted' WHERE id = :messageId")
+    suspend fun markMessageAsDeleted(messageId: String)
+
+    @Query("DELETE FROM messages WHERE plainText LIKE 'delete:%'")
+    suspend fun purgeLeakedDeleteCommands()
 
     // FTS functions
     @Insert(onConflict = OnConflictStrategy.REPLACE)
