@@ -18,7 +18,7 @@ import com.quickchat.core.database.entities.*
         MessageFtsEntity::class,
         ScheduledMessageEntity::class
     ],
-    version = 6,
+    version = 7,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

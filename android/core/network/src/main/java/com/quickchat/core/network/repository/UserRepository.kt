@@ -33,6 +33,7 @@ interface UserRepository {
     fun getLocalIdentityKey(): KeyPair?
     fun getLocalSignedPreKey(): KeyPair?
     fun getLocalOneTimePreKey(publicKeyBase64: String): KeyPair?
+    suspend fun generateAndPublishPreKeys(phone: String)
     fun logout()
     suspend fun deleteAccount(): Boolean
     suspend fun uploadAvatar(mediaBytes: ByteArray): String?
@@ -62,7 +63,17 @@ class UserRepositoryImpl @Inject constructor(
         // Load logged in user if any
         val userJson = prefs.getString("current_user_profile", null)
         if (userJson != null) {
-            _currentUser.value = gson.fromJson(userJson, User::class.java)
+            val u = gson.fromJson(userJson, User::class.java)
+            _currentUser.value = u
+            if (getLocalIdentityKey() == null) {
+                kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+                    try {
+                        generateAndPublishPreKeys(u.phone)
+                    } catch (e: Exception) {
+                        Log.e("UserRepository", "Failed to generate prekeys on startup", e)
+                    }
+                }
+            }
         }
     }
 
@@ -251,14 +262,6 @@ class UserRepositoryImpl @Inject constructor(
             .remove("current_user_profile")
             .remove("auth_session_token")
             .apply()
-        // Purge all Room database cache tables
-        kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
-            try {
-                db.clearAllTables()
-            } catch (e: Exception) {
-                Log.e("UserRepository", "Failed to clear Room database on logout", e)
-            }
-        }
     }
 
     override suspend fun verifyFirebaseToken(
@@ -283,6 +286,13 @@ class UserRepositoryImpl @Inject constructor(
             if (response.success && response.user != null) {
                 val u = mapApiUser(response.user)
                 saveUserLocally(u)
+                if (getLocalIdentityKey() == null) {
+                    try {
+                        generateAndPublishPreKeys(u.phone)
+                    } catch (e: Exception) {
+                        Log.e("UserRepository", "Failed to publish prekeys on verifyFirebaseToken", e)
+                    }
+                }
                 if (response.token != null) {
                     prefs.edit().putString("auth_session_token", response.token).apply()
                 }
@@ -334,7 +344,7 @@ class UserRepositoryImpl @Inject constructor(
         return keyPairFromJson(json)
     }
 
-    private suspend fun generateAndPublishPreKeys(phone: String) {
+    override suspend fun generateAndPublishPreKeys(phone: String) {
         Log.d("UserRepository", "Generating encryption keys bundle for $phone...")
         val identityKeyPair = SignalKeys.generateKeyPair()
         val signedPreKeyPair = SignalKeys.generateKeyPair()

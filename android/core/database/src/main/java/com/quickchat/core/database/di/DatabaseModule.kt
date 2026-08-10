@@ -135,6 +135,17 @@ object DatabaseModule {
         }
     }
 
+    val MIGRATION_6_7 = object : Migration(6, 7) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL("ALTER TABLE `messages` ADD COLUMN `publicId` TEXT DEFAULT NULL")
+            db.execSQL("ALTER TABLE `messages` ADD COLUMN `mediaDuration` REAL DEFAULT NULL")
+            db.execSQL("ALTER TABLE `messages` ADD COLUMN `mediaFormat` TEXT DEFAULT NULL")
+            db.execSQL("ALTER TABLE `messages` ADD COLUMN `fileSize` INTEGER DEFAULT NULL")
+            db.execSQL("ALTER TABLE `users` ADD COLUMN `authProviders` TEXT DEFAULT NULL")
+            db.execSQL("ALTER TABLE `users` ADD COLUMN `usernameSearchEnabled` INTEGER DEFAULT 1")
+        }
+    }
+
     @Provides
     @Singleton
     fun provideAppDatabase(
@@ -152,7 +163,8 @@ object DatabaseModule {
             "quickchat_encrypted.db"
         )
             .openHelperFactory(factory)
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
+            .fallbackToDestructiveMigrationOnDowngrade()
             .build()
     }
 

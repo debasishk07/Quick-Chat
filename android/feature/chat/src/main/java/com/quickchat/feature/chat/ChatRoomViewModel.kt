@@ -170,17 +170,30 @@ class ChatRoomViewModel @Inject constructor(
     private fun computeSecurityFingerprint(phone: String) {
         viewModelScope.launch {
             try {
-                // Fetch our identity key
-                val ourKeyPair = userRepository.getLocalIdentityKey() ?: return@launch
+                var ourKeyPair = userRepository.getLocalIdentityKey()
+                if (ourKeyPair == null) {
+                    val me = userRepository.currentUser.value?.phone
+                    if (me != null) {
+                        try {
+                            userRepository.generateAndPublishPreKeys(me)
+                        } catch (e: Exception) {}
+                        ourKeyPair = userRepository.getLocalIdentityKey()
+                    }
+                }
+                if (ourKeyPair == null) return@launch
                 
-                // Fetch partner identity key from server
-                val bundle = api.getPreKeyBundle(phone)
-                val partnerPubKey = SignalKeys.decodePublicKey(bundle.identityKey)
-                
-                val fingerprint = SecurityCodeVerifier.generateFingerprint(ourKeyPair.public, partnerPubKey)
-                _securityFingerprint.value = fingerprint
+                val bundle = try {
+                    api.getPreKeyBundle(phone)
+                } catch (e: Exception) {
+                    null
+                }
+                if (bundle != null && bundle.identityKey.isNotBlank()) {
+                    val partnerPubKey = SignalKeys.decodePublicKey(bundle.identityKey)
+                    val fingerprint = SecurityCodeVerifier.generateFingerprint(ourKeyPair.public, partnerPubKey)
+                    _securityFingerprint.value = fingerprint
+                }
             } catch (e: Exception) {
-                Log.e("ChatRoomViewModel", "Failed to compute fingerprint", e)
+                Log.w("ChatRoomViewModel", "Could not compute fingerprint: ${e.message}")
             }
         }
     }

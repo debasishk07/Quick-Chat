@@ -1,7 +1,7 @@
 import sqlite3 from 'sqlite3';
 import path from 'path';
 
-const dbPath = path.resolve(__dirname, '../quickchat.db');
+const dbPath = process.env.DB_PATH || path.resolve(__dirname, '../quickchat.db');
 const db = new sqlite3.Database(dbPath);
 
 export function initializeDatabase(): Promise<void> {
