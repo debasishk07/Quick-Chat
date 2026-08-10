@@ -5,17 +5,10 @@ services:
     rootDir: backend
     buildCommand: npm install && npm run build
     startCommand: npm start
-    plan: free # or starter
+    plan: free
     envVars:
       - key: NODE_ENV
         value: production
       - key: JWT_SECRET
         generateValue: true
-      - key: DB_PATH
-        value: /var/data/quickchat.db
-      - key: UPLOADS_PATH
-        value: /var/data/uploads
-    disk:
-      name: quick-chat-storage
-      mountPath: /var/data
-      sizeGB: 1
+
