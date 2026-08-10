@@ -467,7 +467,7 @@ fun LoginScreen(
                     Divider(color = colors.text.copy(alpha = 0.2f))
 
                     Text(
-                        text = "Or Sign In with Custom Custom Account",
+                        text = "Or Sign In with Custom Account",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         color = colors.text.copy(alpha = 0.6f)

@@ -258,10 +258,25 @@ class UserRepositoryImpl @Inject constructor(
 
     override fun logout() {
         _currentUser.value = null
-        prefs.edit()
+        val editor = prefs.edit()
             .remove("current_user_profile")
             .remove("auth_session_token")
-            .apply()
+            .remove("local_identity_key")
+            .remove("local_signed_prekey")
+            
+        // Also clear any stored one-time prekeys
+        prefs.all.keys.filter { it.startsWith("local_otpk_") }.forEach { k ->
+            editor.remove(k)
+        }
+        editor.apply()
+
+        kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+            try {
+                db.clearAllTables()
+            } catch (e: Exception) {
+                Log.e("UserRepository", "Failed to clear database on logout", e)
+            }
+        }
     }
 
     override suspend fun verifyFirebaseToken(

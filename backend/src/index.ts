@@ -25,6 +25,11 @@ app.use(express.json());
 const uploadsDir = process.env.UPLOADS_PATH || path.resolve(__dirname, '../uploads');
 app.use('/uploads', express.static(uploadsDir));
 
+// Root Health check
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', service: 'Quick Chat Server Running', timestamp: new Date().toISOString() });
+});
+
 // Register routes
 app.use('/api', router);
 

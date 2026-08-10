@@ -148,7 +148,8 @@ class LoginViewModel @Inject constructor(
             _loading.value = true
             _error.value = null
             
-            val mockIdToken = "mock:user_${_phone.value.takeLast(6)}:null:${_phone.value}"
+            val cleanDigits = _phone.value.replace(Regex("[^0-9]"), "")
+            val mockIdToken = "mock:user_$cleanDigits:null:${_phone.value}"
             val isVerified = userRepository.verifyFirebaseToken(
                 idToken = mockIdToken,
                 provider = "phone",

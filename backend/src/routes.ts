@@ -49,6 +49,24 @@ function checkSearchRateLimit(userId: string): boolean {
   return true;
 }
 
+// 0. Health check endpoint
+router.get('/health', async (req: Request, res: Response) => {
+  try {
+    const userCount = await dbOperations.get<{ count: number }>('SELECT COUNT(*) as count FROM users');
+    const msgCount = await dbOperations.get<{ count: number }>('SELECT COUNT(*) as count FROM messages');
+    return res.json({
+      status: 'ok',
+      service: 'Quick Chat Backend API',
+      timestamp: new Date().toISOString(),
+      database: 'connected',
+      activeUsers: userCount?.count || 0,
+      totalMessages: msgCount?.count || 0
+    });
+  } catch (err: any) {
+    return res.status(500).json({ status: 'error', error: err.message });
+  }
+});
+
 // 1. Mock OTP verification
 router.post('/auth/verify-otp', async (req: Request, res: Response) => {
   const { phone, code } = req.body;
@@ -545,9 +563,17 @@ router.delete('/auth/account/:userId', async (req: Request, res: Response) => {
   }
 
   try {
-    await dbOperations.run('DELETE FROM users WHERE phone = ?', [userId]);
-    await dbOperations.run('DELETE FROM prekeys WHERE phone = ?', [userId]);
-    await dbOperations.run('DELETE FROM messages WHERE sender = ? OR recipient = ?', [userId, userId]);
+    const user = await dbOperations.get<User>('SELECT * FROM users WHERE phone = ? OR phoneNumber = ?', [userId, userId]);
+    if (user) {
+      const targetPhone = user.phone;
+      await dbOperations.run('DELETE FROM users WHERE phone = ?', [targetPhone]);
+      await dbOperations.run('DELETE FROM prekeys WHERE phone = ?', [targetPhone]);
+      await dbOperations.run('DELETE FROM messages WHERE sender = ? OR recipient = ?', [targetPhone, targetPhone]);
+      await dbOperations.run('DELETE FROM status WHERE sender = ?', [targetPhone]);
+      await dbOperations.run('DELETE FROM status_views WHERE viewer = ?', [targetPhone]);
+      await dbOperations.run('DELETE FROM blocked_contacts WHERE blocker = ? OR blocked = ?', [targetPhone, targetPhone]);
+      await dbOperations.run('DELETE FROM pending_events WHERE recipient = ?', [targetPhone]);
+    }
     res.json({ success: true });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
