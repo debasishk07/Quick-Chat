@@ -37,7 +37,8 @@ abstract class NetworkRepositoryModule {
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
-    private const val BASE_URL = "http://10.0.2.2:3000/api/"
+    const val SERVER_URL = "https://quick-chat-backend-o3ue.onrender.com"
+    private const val BASE_URL = "$SERVER_URL/api/"
 
     @Provides
     @Singleton

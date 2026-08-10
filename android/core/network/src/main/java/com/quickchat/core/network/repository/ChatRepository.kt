@@ -126,7 +126,7 @@ class ChatRepositoryImpl @Inject constructor(
 
     override fun initSocketConnection(phone: String) {
         // Points to host system loopback (standard Android emulator mapping for localhost)
-        socketManager.connect("http://10.0.2.2:3000", phone)
+        socketManager.connect(com.quickchat.core.network.di.NetworkModule.SERVER_URL, phone)
         repositoryScope.launch {
             syncOfflineOutbox()
         }
