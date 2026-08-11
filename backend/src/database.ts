@@ -38,6 +38,9 @@ export function initializeDatabase(): Promise<void> {
             // Ignore error if column already exists
           });
         }
+        // Cleanup migration to remove literal 'null' or 'undefined' or empty strings
+        db.run("UPDATE users SET phoneNumber = NULL WHERE phoneNumber = 'null' OR phoneNumber = 'undefined' OR phoneNumber = ''");
+        db.run("UPDATE users SET email = NULL WHERE email = 'null' OR email = 'undefined' OR email = ''");
       });
 
       // Prekeys table for E2EE

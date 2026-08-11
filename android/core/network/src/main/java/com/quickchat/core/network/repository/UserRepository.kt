@@ -351,8 +351,21 @@ class UserRepositoryImpl @Inject constructor(
     }
 
     // Cryptographic keys management (stored encrypted/sealed locally in secure preferences)
-    override fun getLocalIdentityKey(): KeyPair? = getKeyPair("local_identity_key")
-    override fun getLocalSignedPreKey(): KeyPair? = getKeyPair("local_signed_prekey")
+    override fun getLocalIdentityKey(): KeyPair? {
+        val existing = getKeyPair("local_identity_key")
+        if (existing != null) return existing
+        val newKey = SignalKeys.generateKeyPair()
+        saveKeyPair("local_identity_key", newKey)
+        return newKey
+    }
+
+    override fun getLocalSignedPreKey(): KeyPair? {
+        val existing = getKeyPair("local_signed_prekey")
+        if (existing != null) return existing
+        val newKey = SignalKeys.generateKeyPair()
+        saveKeyPair("local_signed_prekey", newKey)
+        return newKey
+    }
     
     override fun getLocalOneTimePreKey(publicKeyBase64: String): KeyPair? {
         val json = prefs.getString("local_otpk_$publicKeyBase64", null) ?: return null

@@ -51,12 +51,20 @@ export async function verifyFirebaseIdToken(idToken: string): Promise<DecodedFir
   // Development / Offline Fallback Verification Mode
   if (idToken.startsWith('mock:')) {
     const parts = idToken.split(':');
+    const rawUid = parts[1];
+    const rawEmail = parts[2];
+    const rawPhone = parts[3];
+
+    const uid = (rawUid && rawUid !== 'null' && rawUid !== 'undefined') ? rawUid : `mock_uid_${Date.now()}`;
+    const email = (rawEmail && rawEmail !== 'null' && rawEmail !== 'undefined') ? rawEmail : undefined;
+    const phone_number = (rawPhone && rawPhone !== 'null' && rawPhone !== 'undefined') ? rawPhone : undefined;
+
     return {
-      uid: parts[1] || 'mock_uid_123',
-      email: parts[2] || undefined,
-      phone_number: parts[3] || undefined,
-      name: 'Mock User',
-      provider_id: parts[2] ? 'google.com' : 'phone'
+      uid,
+      email,
+      phone_number,
+      name: email ? email.split('@')[0] : 'Mock User',
+      provider_id: email ? 'google.com' : 'phone'
     };
   }
 
@@ -65,11 +73,19 @@ export async function verifyFirebaseIdToken(idToken: string): Promise<DecodedFir
     if (parts.length === 3) {
       const payloadBuf = Buffer.from(parts[1], 'base64').toString('utf-8');
       const payload = JSON.parse(payloadBuf);
+      const rawUid = payload.sub || payload.uid || payload.user_id;
+      const rawEmail = payload.email;
+      const rawPhone = payload.phone_number;
+
+      const uid = (rawUid && rawUid !== 'null' && rawUid !== 'undefined') ? rawUid : `dev_firebase_${Date.now()}`;
+      const email = (rawEmail && rawEmail !== 'null' && rawEmail !== 'undefined') ? rawEmail : undefined;
+      const phone_number = (rawPhone && rawPhone !== 'null' && rawPhone !== 'undefined') ? rawPhone : undefined;
+
       return {
-        uid: payload.sub || payload.uid || 'dev_firebase_uid',
-        email: payload.email,
-        phone_number: payload.phone_number,
-        name: payload.name || payload.displayName,
+        uid,
+        email,
+        phone_number,
+        name: payload.name || payload.displayName || (email ? email.split('@')[0] : 'User'),
         picture: payload.picture || payload.photoURL,
         provider_id: payload.firebase?.sign_in_provider || 'google.com'
       };
@@ -77,7 +93,7 @@ export async function verifyFirebaseIdToken(idToken: string): Promise<DecodedFir
   } catch (e) {}
 
   return {
-    uid: idToken,
+    uid: idToken.length > 5 ? idToken : `firebase_user_${Date.now()}`,
     name: 'Firebase User',
     provider_id: 'firebase'
   };

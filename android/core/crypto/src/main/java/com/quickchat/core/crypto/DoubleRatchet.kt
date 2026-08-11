@@ -30,7 +30,7 @@ object DoubleRatchetEngine {
         ourIdentityKey: KeyPair,
         recipientIdentityKey: PublicKey,
         recipientSignedPreKey: PublicKey,
-        recipientOneTimePreKey: PublicKey?
+        recipientOneTimePreKey: PublicKey? = null
     ): DoubleRatchetSession {
         val ephemeralKeyPair = SignalKeys.generateKeyPair()
 
@@ -41,13 +41,7 @@ object DoubleRatchetEngine {
         // DH3 = DH(ephemeralKeyPair, recipientSignedPreKey)
         val dh3 = SignalKeys.calculateDH(ephemeralKeyPair.private, recipientSignedPreKey)
         
-        var combinedDh = dh1 + dh2 + dh3
-
-        if (recipientOneTimePreKey != null) {
-            // DH4 = DH(ephemeralKeyPair, recipientOneTimePreKey)
-            val dh4 = SignalKeys.calculateDH(ephemeralKeyPair.private, recipientOneTimePreKey)
-            combinedDh += dh4
-        }
+        val combinedDh = dh1 + dh2 + dh3
 
         // Shared master root key
         val sharedMaster = SignalKeys.hkdf(combinedDh, 64, INFO_ROOT, HKDF_SALT)
@@ -70,7 +64,7 @@ object DoubleRatchetEngine {
     fun initBob(
         ourIdentityKey: KeyPair,
         ourSignedPreKey: KeyPair,
-        ourOneTimePreKey: KeyPair?,
+        ourOneTimePreKey: KeyPair? = null,
         senderIdentityKey: PublicKey,
         senderEphemeralKey: PublicKey
     ): DoubleRatchetSession {
@@ -81,13 +75,7 @@ object DoubleRatchetEngine {
         // DH3 = DH(ourSignedPreKey, senderEphemeralKey)
         val dh3 = SignalKeys.calculateDH(ourSignedPreKey.private, senderEphemeralKey)
 
-        var combinedDh = dh1 + dh2 + dh3
-
-        if (ourOneTimePreKey != null) {
-            // DH4 = DH(ourOneTimePreKey, senderEphemeralKey)
-            val dh4 = SignalKeys.calculateDH(ourOneTimePreKey.private, senderEphemeralKey)
-            combinedDh += dh4
-        }
+        val combinedDh = dh1 + dh2 + dh3
 
         val sharedMaster = SignalKeys.hkdf(combinedDh, 64, INFO_ROOT, HKDF_SALT)
         val rootKey = sharedMaster.sliceArray(0..31)
@@ -151,7 +139,9 @@ object DoubleRatchetEngine {
         val iv = Base64.decode(payload.iv, Base64.DEFAULT)
 
         // DH Ratchet Step if remote key is new
-        if (session.remotePublicKey == null || session.remotePublicKey != remotePublicKey) {
+        val currentRemoteBase64 = session.remotePublicKey?.let { SignalKeys.encodePublicKey(it) }
+        val incomingRemoteBase64 = payload.ephemeralPublicKey.trim()
+        if (session.remotePublicKey == null || currentRemoteBase64 != incomingRemoteBase64) {
             // Skip keys for current receiving chain
             skipMessageKeys(session, session.sequenceNumberReceiving)
 

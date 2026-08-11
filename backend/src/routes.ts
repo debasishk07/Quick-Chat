@@ -254,16 +254,29 @@ router.post('/auth/verify', async (req: Request, res: Response) => {
   try {
     const decoded = await verifyFirebaseIdToken(idToken);
     const firebaseUid = decoded.uid;
-    const email = decoded.email || req.body.email || null;
-    const phoneNumber = decoded.phone_number || req.body.phone || null;
-    const displayName = decoded.name || req.body.displayName || (email ? email.split('@')[0] : 'User');
+    const email = (decoded.email && decoded.email !== 'null' && decoded.email !== 'undefined')
+      ? decoded.email
+      : (req.body.email && req.body.email !== 'null' && req.body.email !== 'undefined')
+      ? req.body.email
+      : null;
+
+    const phoneNumber = (decoded.phone_number && decoded.phone_number !== 'null' && decoded.phone_number !== 'undefined')
+      ? decoded.phone_number
+      : (req.body.phone && req.body.phone !== 'null' && req.body.phone !== 'undefined')
+      ? req.body.phone
+      : null;
+
+    const displayName = (decoded.name && decoded.name !== 'Mock User' && decoded.name !== 'Firebase User')
+      ? decoded.name
+      : (req.body.displayName || (email ? email.split('@')[0] : 'User'));
+
     const avatarUrl = decoded.picture || req.body.avatarUrl || null;
 
     let user = null;
     if (firebaseUid) {
       user = await dbOperations.get<User>(
-        'SELECT * FROM users WHERE phone = ? OR (email IS NOT NULL AND email = ?) OR (phoneNumber IS NOT NULL AND phoneNumber = ?)',
-        [firebaseUid, email || 'NO_MATCH', phoneNumber || 'NO_MATCH']
+        'SELECT * FROM users WHERE phone = ? OR (email IS NOT NULL AND email != "" AND email != "null" AND email = ?) OR (phoneNumber IS NOT NULL AND phoneNumber != "" AND phoneNumber != "null" AND phoneNumber = ?)',
+        [firebaseUid, email || '___NO_EMAIL_MATCH___', phoneNumber || '___NO_PHONE_MATCH___']
       );
     }
 

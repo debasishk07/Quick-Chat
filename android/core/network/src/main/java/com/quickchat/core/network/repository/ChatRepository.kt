@@ -710,7 +710,6 @@ class ChatRepositoryImpl @Inject constructor(
             
             val partnerIdentityKey = SignalKeys.decodePublicKey(bundle.identityKey)
             val partnerSignedPreKey = SignalKeys.decodePublicKey(bundle.signedPreKey)
-            val partnerOneTimePreKey = bundle.oneTimePreKey?.let { SignalKeys.decodePublicKey(it) }
 
             val ourIdentityKey = userRepository.getLocalIdentityKey() 
                 ?: throw IllegalStateException("Local Identity Key not generated")
@@ -718,15 +717,16 @@ class ChatRepositoryImpl @Inject constructor(
             val session = DoubleRatchetEngine.initAlice(
                 ourIdentityKey = ourIdentityKey,
                 recipientIdentityKey = partnerIdentityKey,
-                recipientSignedPreKey = partnerSignedPreKey,
-                recipientOneTimePreKey = partnerOneTimePreKey
+                recipientSignedPreKey = partnerSignedPreKey
             )
             return session
         } else {
             // Bob receiver flow
             Log.d("ChatRepository", "No E2EE session with $partnerPhone. Rebuilding X3DH from incoming message...")
-            val ourIdentityKey = userRepository.getLocalIdentityKey() ?: SignalKeys.generateKeyPair()
-            val ourSignedPreKey = userRepository.getLocalSignedPreKey() ?: SignalKeys.generateKeyPair()
+            val ourIdentityKey = userRepository.getLocalIdentityKey() 
+                ?: throw IllegalStateException("Local Identity Key not generated")
+            val ourSignedPreKey = userRepository.getLocalSignedPreKey() 
+                ?: throw IllegalStateException("Local Signed PreKey not generated")
             
             val partnerIdentityKey = try {
                 api.getPreKeyBundle(partnerPhone).identityKey.let { SignalKeys.decodePublicKey(it) }
@@ -734,14 +734,10 @@ class ChatRepositoryImpl @Inject constructor(
                 SignalKeys.generateKeyPair().public
             }
             val partnerEphemeralKey = SignalKeys.decodePublicKey(incomingEphemeralKey)
-            
-            // Try to find the OTPK used (simplified: use our local one-time prekey if active, or fall back to main key)
-            val ourOneTimePreKey = userRepository.getLocalOneTimePreKey(incomingEphemeralKey) // if ephemeral maps directly to one of our keys
 
             val session = DoubleRatchetEngine.initBob(
                 ourIdentityKey = ourIdentityKey,
                 ourSignedPreKey = ourSignedPreKey,
-                ourOneTimePreKey = ourOneTimePreKey,
                 senderIdentityKey = partnerIdentityKey,
                 senderEphemeralKey = partnerEphemeralKey
             )
