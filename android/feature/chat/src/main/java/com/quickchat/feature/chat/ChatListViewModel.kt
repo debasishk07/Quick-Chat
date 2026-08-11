@@ -152,11 +152,15 @@ class ChatListViewModel @Inject constructor(
 
     init {
         loadFavoriteOrder()
-        // Connect socket for real-time messaging on launch if user is logged in
-        currentUser.value?.let {
-            chatRepository.initSocketConnection(it.phone)
-            viewModelScope.launch {
-                chatRepository.syncAllChatProfiles()
+        // Connect socket for real-time messaging reactively whenever logged in user changes
+        viewModelScope.launch {
+            currentUser.collect { user ->
+                if (user != null) {
+                    chatRepository.initSocketConnection(user.phone)
+                    chatRepository.syncAllChatProfiles()
+                } else {
+                    chatRepository.closeSocketConnection()
+                }
             }
         }
     }

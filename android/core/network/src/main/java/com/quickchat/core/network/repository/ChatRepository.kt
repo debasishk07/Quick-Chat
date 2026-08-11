@@ -50,6 +50,7 @@ interface ChatRepository {
     suspend fun syncAllChatProfiles()
     suspend fun ensureChatExists(phone: String, displayName: String)
     fun getChatFlow(phone: String): Flow<Chat?>
+    fun getUserFlow(phone: String): Flow<com.quickchat.core.model.User?>
     fun getStarredMessagesFlow(recipientPhone: String): Flow<List<Message>>
     suspend fun setMessageStarred(messageId: String, isStarred: Boolean)
     suspend fun setDisappearingDuration(phone: String, durationMs: Long)
@@ -894,6 +895,10 @@ class ChatRepositoryImpl @Inject constructor(
                 isProfileLoaded = isLoaded
             )
         }
+    }
+
+    override fun getUserFlow(phone: String): Flow<com.quickchat.core.model.User?> {
+        return userDao.getUserFlow(phone).map { it?.toDomain() }
     }
 
     override fun getStarredMessagesFlow(recipientPhone: String): Flow<List<Message>> {

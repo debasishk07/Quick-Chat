@@ -101,17 +101,28 @@ class ChatRoomViewModel @Inject constructor(
         // 3. Listen to live presence and typing of this contact
         presenceCollectionJob?.cancel()
         presenceCollectionJob = viewModelScope.launch {
-            // Check typing
-            chatRepository.activeTypingState.collect { map ->
-                _partnerTyping.value = map[phone] ?: false
+            // Observe typing
+            launch {
+                chatRepository.activeTypingState.collect { map ->
+                    _partnerTyping.value = map[phone] ?: false
+                }
             }
-        }
-
-        viewModelScope.launch {
-            socketManager.presenceChanges.collect { p ->
-                if (p.phone == phone) {
-                    _isPartnerOnline.value = p.isOnline
-                    _partnerLastSeen.value = p.lastSeen
+            // Observe stored user DB presence (populated when syncUserProfile is called)
+            launch {
+                chatRepository.getUserFlow(phone).collect { u ->
+                    if (u != null) {
+                        _isPartnerOnline.value = u.isOnline
+                        _partnerLastSeen.value = u.lastSeen
+                    }
+                }
+            }
+            // Observe live socket presence changes
+            launch {
+                socketManager.presenceChanges.collect { p ->
+                    if (p.phone == phone) {
+                        _isPartnerOnline.value = p.isOnline
+                        _partnerLastSeen.value = p.lastSeen
+                    }
                 }
             }
         }
