@@ -65,13 +65,11 @@ class UserRepositoryImpl @Inject constructor(
         if (userJson != null) {
             val u = gson.fromJson(userJson, User::class.java)
             _currentUser.value = u
-            if (getLocalIdentityKey() == null) {
-                kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
-                    try {
-                        generateAndPublishPreKeys(u.phone)
-                    } catch (e: Exception) {
-                        Log.e("UserRepository", "Failed to generate prekeys on startup", e)
-                    }
+            kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+                try {
+                    generateAndPublishPreKeys(u.phone)
+                } catch (e: Exception) {
+                    Log.e("UserRepository", "Failed to generate prekeys on startup", e)
                 }
             }
         }
@@ -121,9 +119,11 @@ class UserRepositoryImpl @Inject constructor(
                 val u = mapApiUser(response.user)
                 saveUserLocally(u)
                 
-                // On first launch / registration, generate and publish E2EE prekeys!
-                if (getLocalIdentityKey() == null) {
+                // Publish E2EE prekeys bundle on server
+                try {
                     generateAndPublishPreKeys(phone)
+                } catch (e: Exception) {
+                    Log.e("UserRepository", "Failed to publish prekeys on registerProfile", e)
                 }
                 
                 true
@@ -158,9 +158,11 @@ class UserRepositoryImpl @Inject constructor(
                 val u = mapApiUser(response.user)
                 saveUserLocally(u)
                 
-                // If first launch / registration, generate and publish E2EE prekeys!
-                if (getLocalIdentityKey() == null) {
+                // Publish E2EE prekeys bundle on server
+                try {
                     generateAndPublishPreKeys(u.phone)
+                } catch (e: Exception) {
+                    Log.e("UserRepository", "Failed to publish prekeys on googleLogin", e)
                 }
                 true
             } else {
@@ -301,12 +303,10 @@ class UserRepositoryImpl @Inject constructor(
             if (response.success && response.user != null) {
                 val u = mapApiUser(response.user)
                 saveUserLocally(u)
-                if (getLocalIdentityKey() == null) {
-                    try {
-                        generateAndPublishPreKeys(u.phone)
-                    } catch (e: Exception) {
-                        Log.e("UserRepository", "Failed to publish prekeys on verifyFirebaseToken", e)
-                    }
+                try {
+                    generateAndPublishPreKeys(u.phone)
+                } catch (e: Exception) {
+                    Log.e("UserRepository", "Failed to publish prekeys on verifyFirebaseToken", e)
                 }
                 if (response.token != null) {
                     prefs.edit().putString("auth_session_token", response.token).apply()

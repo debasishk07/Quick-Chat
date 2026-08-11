@@ -25,7 +25,7 @@ export function setupSocketIO(io: Server) {
     try {
       await dbOperations.run('UPDATE users SET isOnline = 1, lastSeen = ? WHERE phone = ?', [Date.now(), phone]);
       
-      // Filter presence changes: do not broadcast if blocker-blocked relationship exists
+      // Broadcast presence changes: notify existing clients & inform newly connected client of online users
       for (const [recipientPhone, socketId] of activeSockets.entries()) {
         if (recipientPhone === phone) continue;
         const isBlocked = await dbOperations.get(
@@ -34,6 +34,7 @@ export function setupSocketIO(io: Server) {
         );
         if (!isBlocked) {
           io.to(socketId).emit('presence-change', { phone, isOnline: true, lastSeen: Date.now() });
+          socket.emit('presence-change', { phone: recipientPhone, isOnline: true, lastSeen: Date.now() });
         }
       }
 

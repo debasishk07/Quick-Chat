@@ -112,9 +112,9 @@ router.post('/auth/register-profile', async (req: Request, res: Response) => {
   }
 });
 
-// 3. Contact Sync (Uses phoneNumber instead of stable internal ID phone)
+// 3. Contact Sync (Matches stable internal ID phone or linked phoneNumber)
 router.post('/contacts/sync', async (req: Request, res: Response) => {
-  const { phones } = req.body; // Array of phone numbers
+  const { phones } = req.body; // Array of phone numbers/user IDs
   if (!Array.isArray(phones)) {
     return res.status(400).json({ error: 'Phones array is required' });
   }
@@ -125,8 +125,8 @@ router.post('/contacts/sync', async (req: Request, res: Response) => {
     }
     const placeholders = phones.map(() => '?').join(',');
     const contacts = await dbOperations.all<User>(
-      `SELECT * FROM users WHERE phoneNumber IN (${placeholders})`,
-      phones
+      `SELECT * FROM users WHERE phone IN (${placeholders}) OR phoneNumber IN (${placeholders})`,
+      [...phones, ...phones]
     );
     res.json({ contacts });
   } catch (err: any) {
